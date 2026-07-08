@@ -5,9 +5,9 @@ export default function Quote({ text }: { text: string }) {
 
   return (
     <section className="py-24 px-6 bg-olive-700 text-cream">
-      <Reveal>
+      <Reveal soft>
         <div className="max-w-2xl mx-auto text-center">
-          <span className="font-display text-6xl text-gold-light leading-none">"</span>
+          <span className="font-display text-6xl text-gold-light leading-none">&ldquo;</span>
           <p className="font-display italic text-2xl sm:text-3xl leading-relaxed -mt-4">
             {text}
           </p>

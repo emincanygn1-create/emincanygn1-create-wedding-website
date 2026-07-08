@@ -1,15 +1,18 @@
 import Reveal from "./Reveal";
+import type { Dict } from "@/lib/i18n/dictionaries";
 
 function Person({
   role,
   name,
   parents,
   photoUrl,
+  placeholder,
 }: {
   role: string;
   name: string;
   parents: string;
   photoUrl: string | null;
+  placeholder: string;
 }) {
   return (
     <div className="flex flex-col items-center text-center max-w-xs">
@@ -18,7 +21,7 @@ function Person({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={photoUrl} alt={name} className="w-full h-full object-cover" />
         ) : (
-          <span className="text-olive-400 text-sm font-body">Fotoğraf Alanı</span>
+          <span className="text-olive-400 text-sm font-body">{placeholder}</span>
         )}
       </div>
       <p className="eyebrow mb-2">{role}</p>
@@ -37,6 +40,7 @@ export default function CoupleInfo({
   groomParents,
   bridePhotoUrl,
   groomPhotoUrl,
+  d,
 }: {
   brideName: string;
   groomName: string;
@@ -44,27 +48,40 @@ export default function CoupleInfo({
   groomParents: string;
   bridePhotoUrl: string | null;
   groomPhotoUrl: string | null;
+  d: Dict;
 }) {
   return (
-    <section className="py-24 px-6 bg-cream">
+    <section id="couple" className="py-24 px-6 bg-cream scroll-mt-8">
       <Reveal>
-        <p className="eyebrow text-center mb-3">Bizi Tanıyın</p>
+        <p className="eyebrow text-center mb-3">{d.couple.eyebrow}</p>
         <h2 className="font-display text-4xl text-center text-olive-800 mb-16">
-          Mutlu Çift
+          {d.couple.title}
         </h2>
       </Reveal>
 
       <div className="flex flex-col sm:flex-row items-center justify-center gap-16 sm:gap-24">
-        <Reveal>
-          <Person role="Gelin" name={brideName} parents={brideParents} photoUrl={bridePhotoUrl} />
+        <Reveal variant="left">
+          <Person
+            role={d.couple.bride}
+            name={brideName}
+            parents={brideParents}
+            photoUrl={bridePhotoUrl}
+            placeholder={d.couple.photoPlaceholder}
+          />
         </Reveal>
 
-        <Reveal delay={150}>
+        <Reveal variant="zoom" delay={150}>
           <span className="font-display italic text-4xl text-gold hidden sm:block">&</span>
         </Reveal>
 
-        <Reveal delay={150}>
-          <Person role="Damat" name={groomName} parents={groomParents} photoUrl={groomPhotoUrl} />
+        <Reveal variant="right" delay={150}>
+          <Person
+            role={d.couple.groom}
+            name={groomName}
+            parents={groomParents}
+            photoUrl={groomPhotoUrl}
+            placeholder={d.couple.photoPlaceholder}
+          />
         </Reveal>
       </div>
     </section>

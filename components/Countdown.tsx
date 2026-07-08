@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { Dict } from "@/lib/i18n/dictionaries";
 
 function getTimeLeft(targetDate: string) {
   const diff = new Date(targetDate).getTime() - Date.now();
@@ -13,7 +14,13 @@ function getTimeLeft(targetDate: string) {
   };
 }
 
-export default function Countdown({ weddingDate }: { weddingDate: string }) {
+export default function Countdown({
+  weddingDate,
+  d,
+}: {
+  weddingDate: string;
+  d: Dict;
+}) {
   const [time, setTime] = useState(() => getTimeLeft(weddingDate));
 
   useEffect(() => {
@@ -22,10 +29,10 @@ export default function Countdown({ weddingDate }: { weddingDate: string }) {
   }, [weddingDate]);
 
   const units = [
-    { label: "Gün", value: time.days },
-    { label: "Saat", value: time.hours },
-    { label: "Dakika", value: time.minutes },
-    { label: "Saniye", value: time.seconds },
+    { label: d.countdown.days, value: time.days },
+    { label: d.countdown.hours, value: time.hours },
+    { label: d.countdown.minutes, value: time.minutes },
+    { label: d.countdown.seconds, value: time.seconds },
   ];
 
   return (

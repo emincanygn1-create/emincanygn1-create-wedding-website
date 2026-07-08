@@ -2,14 +2,32 @@
 
 import { useEffect, useRef, useState } from "react";
 
+type Variant = "up" | "down" | "left" | "right" | "zoom" | "fade";
+
+const variantClass: Record<Variant, string> = {
+  up: "reveal-up",
+  down: "reveal-down",
+  left: "reveal-left",
+  right: "reveal-right",
+  zoom: "reveal-zoom",
+  fade: "",
+};
+
 export default function Reveal({
   children,
   className = "",
   delay = 0,
+  variant = "up",
+  soft = false,
+  once = true,
 }: {
   children: React.ReactNode;
   className?: string;
   delay?: number;
+  variant?: Variant;
+  /** Hafif bulanıklıkla açılsın mı */
+  soft?: boolean;
+  once?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -18,24 +36,33 @@ export default function Reveal({
     const node = ref.current;
     if (!node) return;
 
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setTimeout(() => setVisible(true), delay);
-          observer.disconnect();
+          timer = setTimeout(() => setVisible(true), delay);
+          if (once) observer.disconnect();
+          return;
         }
+        if (!once) setVisible(false);
       },
-      { threshold: 0.15 }
+      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
     );
 
     observer.observe(node);
-    return () => observer.disconnect();
-  }, [delay]);
+    return () => {
+      if (timer) clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, [delay, once]);
 
   return (
     <div
       ref={ref}
-      className={`reveal ${visible ? "reveal-visible" : ""} ${className}`}
+      className={`reveal ${variantClass[variant]} ${soft ? "reveal-soft" : ""} ${
+        visible ? "reveal-visible" : ""
+      } ${className}`}
     >
       {children}
     </div>

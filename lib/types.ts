@@ -1,4 +1,26 @@
-export type SiteContent = {
+/** Türkçe yazılan, dil başına çevirisi olabilen alanlar. */
+export const TRANSLATABLE_FIELDS = [
+  "bride_parents",
+  "groom_parents",
+  "wedding_city",
+  "ceremony_venue",
+  "ceremony_date_text",
+  "ceremony_time_text",
+  "ceremony_address",
+  "reception_venue",
+  "reception_date_text",
+  "reception_time_text",
+  "reception_address",
+  "quote_text",
+] as const;
+
+export type TranslatableField = (typeof TRANSLATABLE_FIELDS)[number];
+
+type Translations = {
+  [K in `${TranslatableField}_en` | `${TranslatableField}_it`]: string | null;
+};
+
+export type SiteContent = Translations & {
   id: number;
   bride_name: string;
   groom_name: string;
@@ -28,4 +50,37 @@ export type GalleryPhoto = {
   id: string;
   url: string;
   sort_order: number;
+};
+
+export type Rsvp = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  attending: boolean;
+  guest_count: number;
+  side: string;
+  message: string;
+  locale: string;
+  created_at: string;
+};
+
+export type Wish = {
+  id: string;
+  name: string;
+  message: string;
+  locale: string;
+  is_visible: boolean;
+  created_at: string;
+};
+
+export type GuestPhoto = {
+  id: string;
+  url: string;
+  storage_path: string;
+  caption: string;
+  uploader_name: string;
+  likes: number;
+  is_visible: boolean;
+  created_at: string;
 };

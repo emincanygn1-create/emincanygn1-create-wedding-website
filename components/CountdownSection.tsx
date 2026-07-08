@@ -1,17 +1,24 @@
 import Reveal from "./Reveal";
 import Countdown from "./Countdown";
+import type { Dict } from "@/lib/i18n/dictionaries";
 
-export default function CountdownSection({ weddingDate }: { weddingDate: string }) {
+export default function CountdownSection({
+  weddingDate,
+  d,
+}: {
+  weddingDate: string;
+  d: Dict;
+}) {
   return (
     <section className="py-24 px-6 bg-olive-100/60">
       <Reveal>
-        <p className="eyebrow text-center mb-3">Geriye Kalan Süre</p>
+        <p className="eyebrow text-center mb-3">{d.countdown.eyebrow}</p>
         <h2 className="font-display text-4xl text-center text-olive-800 mb-14">
-          Büyük Güne Sayılı Günler
+          {d.countdown.title}
         </h2>
       </Reveal>
-      <Reveal delay={100}>
-        <Countdown weddingDate={weddingDate} />
+      <Reveal variant="zoom" delay={100}>
+        <Countdown weddingDate={weddingDate} d={d} />
       </Reveal>
     </section>
   );

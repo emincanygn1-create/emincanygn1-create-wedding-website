@@ -1,17 +1,42 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import LanguageSwitcher from "./LanguageSwitcher";
+import type { Dict } from "@/lib/i18n/dictionaries";
+import type { Locale } from "@/lib/i18n/config";
+
 export default function Cover({
   brideName,
   groomName,
   dateText,
   city,
+  d,
+  locale,
 }: {
   brideName: string;
   groomName: string;
   dateText: string;
   city: string;
+  d: Dict;
+  locale: Locale;
 }) {
+  const [offset, setOffset] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => setOffset(window.scrollY);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const fade = Math.max(0, 1 - offset / 500);
+
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-olive-700 via-olive-600 to-olive-700 text-cream px-6 text-center">
-      <div className="pointer-events-none absolute inset-0 opacity-[0.08]">
+      <div className="absolute top-5 right-5 z-20">
+        <LanguageSwitcher current={locale} tone="light" />
+      </div>
+
+      <div className="pointer-events-none absolute inset-0 opacity-[0.08] animate-slowZoom">
         <svg
           className="absolute -top-10 -left-10 w-72 h-72"
           viewBox="0 0 200 200"
@@ -36,8 +61,14 @@ export default function Cover({
         </svg>
       </div>
 
-      <div className="relative animate-fadeIn">
-        <p className="eyebrow text-gold-light mb-6">Davetlisiniz</p>
+      <div
+        className="relative animate-fadeIn"
+        style={{
+          transform: `translateY(${offset * 0.25}px)`,
+          opacity: fade,
+        }}
+      >
+        <p className="eyebrow text-gold-light mb-6">{d.cover.eyebrow}</p>
 
         <h1 className="font-display text-5xl sm:text-6xl md:text-7xl leading-tight mb-4">
           {brideName} <span className="italic text-gold-light">&</span> {groomName}
@@ -46,11 +77,13 @@ export default function Cover({
         <div className="w-16 h-px bg-gold mx-auto my-6" />
 
         <p className="font-body tracking-widest text-sm sm:text-base uppercase text-cream/90">
-          {dateText}{dateText && city ? " · " : ""}{city}
+          {dateText}
+          {dateText && city ? " · " : ""}
+          {city}
         </p>
 
         <div className="mt-14 flex flex-col items-center gap-2 text-cream/70">
-          <span className="text-xs tracking-widest uppercase">Aşağı Kaydırın</span>
+          <span className="text-xs tracking-widest uppercase">{d.cover.scroll}</span>
           <span className="block w-px h-10 bg-cream/40 animate-pulse" />
         </div>
       </div>
