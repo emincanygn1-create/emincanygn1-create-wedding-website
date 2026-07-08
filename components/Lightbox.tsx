@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useRef } from "react";
 
 export type LightboxItem = {
   url: string;
@@ -43,6 +43,17 @@ export default function Lightbox({
     };
   }, [go, onClose]);
 
+  const touchStartX = useRef(0);
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.changedTouches[0].clientX;
+  };
+
+  const onTouchEnd = (e: React.TouchEvent) => {
+    const delta = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(delta) > 50) go(delta < 0 ? 1 : -1);
+  };
+
   const item = items[index];
   if (!item) return null;
 
@@ -50,6 +61,8 @@ export default function Lightbox({
     <div
       className="fixed inset-0 z-[70] bg-olive-900/95 flex items-center justify-center p-4"
       onClick={onClose}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
     >
       <button
         onClick={onClose}

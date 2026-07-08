@@ -1,53 +1,87 @@
-# Adım 7b — Düzeltmeler
+# Adım 8 — Geçiş Hatası, RSVP Kontrolü ve Eklemeler
 
-Sadece dosyaları GitHub'a yükle. SQL yok, silinecek dosya yok.
-`lib/gate.ts` yeni bir dosya, diğerleri mevcutların üzerine yazacak.
+## Kurulum
 
----
+1. `supabase-step8.sql`'i çalıştır.
+2. Dosyaları GitHub'a yükle.
 
-## 1. Geçişler neden görünmüyordu
-
-İki ayrı hata vardı, ikisi de gerçek.
-
-**Kapak yazıları perdenin arkasında oynayıp bitiyordu.** Animasyonlar "öğe ekranda mı"
-diye bakan bir gözlemciyle tetikleniyor. Davetiye kapısı `fixed` bir katman olduğu için
-arkasındaki kapak yazıları teknik olarak "ekranda" sayılıyordu — sen kapıyı açana kadar
-animasyon çoktan bitmiş oluyordu, açınca duran bir yazı görüyordun.
-
-Artık kapak yazıları kapı açılana kadar bekliyor. "Davetiyeyi Aç"a bastığın anda perde
-kalkarken isimler kelime kelime yükseliyor. Kapıyı bir kez açtıysan (aynı sekmede geri
-dönersen) bekleme olmuyor.
-
-**Parallax, perde animasyonunu eziyordu.** Fotoğrafların açılış efekti `transform: scale()`
-ile çalışıyor. Parallax kodu da aynı elemana `transform` yazıyordu. İkisi aynı özelliğe
-yazınca sonuncusu kazanıyor — yani fotoğraf hiç büyüyüp küçülmüyor, sadece belirip
-kalıyordu. Bazı durumlarda perde de hiç açılmıyordu.
-
-Artık üç ayrı katman var: perde (kırpma), parallax (kaydırma), görsel (ölçek). Kimse
-kimsenin üzerine yazmıyor.
-
-**Bonus:** Sayfa açıldığında ekranda zaten görünen öğeler artık gözlemciyi beklemiyor,
-doğrudan başlıyor. Geniş ekranlarda ilk bölümün donuk kalması bundandı.
+Silinecek dosya yok. `Preloader.tsx`, `Celebration.tsx`, `InviteLinkBuilder.tsx` ve
+`app/admin/(protected)/invite/page.tsx` yeni, gerisi mevcutların üzerine yazar.
 
 ---
 
-## 2. Çerçeve
+## 1. Geçişler neden hiç görünmüyordu
 
-Eski çerçevede fotoğraf üstte, hatlar altta duruyordu — kaçınılmaz olarak iç içe
-giriyorlardı. Ters kurdum: **fotoğraf artık çerçevenin içinde.**
+Sebep büyük ihtimalle bilgisayarının ayarı: **hareket azaltma**.
 
-Dıştan içe: 32 px yarıçaplı, ince altın hatlı bir çerçeve; 12 px iç boşluk; içeride
-22 px yarıçaplı fotoğraf. Dört köşede çerçevenin dış kenarına oturan altın işaretler.
-Hiçbir çizgi fotoğrafın üzerine binmiyor. Fotoğraf içeride hâlâ hafifçe kayıyor
-(parallax), ama çerçeveden taşmıyor.
+Windows'ta *Ayarlar → Erişilebilirlik → Görsel efektler → Animasyon efektleri* kapalıysa,
+macOS'ta *Sistem Ayarları → Erişilebilirlik → Ekran → Hareketi azalt* açıksa, tarayıcı
+her siteye "bu kullanıcı animasyon istemiyor" diye haber verir. Tarayıcı konsoluna
+şunu yazarsan görürsün:
+
+```js
+matchMedia('(prefers-reduced-motion: reduce)').matches
+```
+
+`true` çıkıyorsa sebep bu.
+
+Ama asıl hata bendeydi. Bu sinyali alınca **her şeyi** kapatıyordum: solmalar, perdeler,
+kaymalar, hepsi. Doğrusu bu değil. Hareket azaltma isteyen kişi, ekranda büyük hareket
+ve kayma istemez — yumuşak bir solmadan rahatsız olmaz. Şimdi öyle:
+
+- Hareket azaltma **kapalıysa**: her şey tam çalışır (perde, parallax, kelime kelime yükselme).
+- Hareket azaltma **açıksa**: yazılar ve fotoğraflar yine yumuşakça solarak gelir, sadece
+  kayma / ölçek / parallax devre dışı kalır.
+
+Yani ayarını değiştirmesen de artık geçişleri göreceksin. Tam halini görmek istersen
+ayarı açman yeterli.
 
 ---
 
-## 3. Video
+## 2. RSVP açma / kapatma
 
-"Harici bağlantı" kutusunu kaldırdım, panelde sadece dosya yükleme kaldı. 3 MB'lık
-dosya zaten sınırların çok altında, sorunsuz yüklenir.
+Panelde **Site İçeriği** sayfasının en üstünde yeni bir kutu var:
 
-Kapak fotoğrafını yine de yüklü bırak — video hazır olana kadar poster olarak o
-görünüyor, ayrıca veri tasarrufu açık olan telefonlarda video hiç indirilmiyor,
-fotoğraf gösteriliyor.
+- **Katılım formu açık** anahtarı. Kapatınca sitede formun yerine senin yazdığın mesaj çıkar.
+- **Son katılım bildirim tarihi** (isteğe bağlı). Bu tarih geçince form kendiliğinden kapanır.
+  Form açıkken misafir başlığın altında "Son katılım bildirimi: 1 Haziran 2027" yazısını görür.
+- Kapalıyken gösterilecek **mesaj**, aşağıdaki *Çevrilebilir Metinler* bölümünde — üç dilde
+  ayrı ayrı. Boş bırakırsan hazır bir metin kullanılır.
+
+Önemli kısım: kapatma işlemi sadece görsel değil. `supabase-step8.sql` veritabanı kuralını
+da güncelliyor, form kapalıyken sunucu yeni cevabı **reddediyor**. Yoksa tarayıcı
+konsolunu bilen biri kapalı formdan kayıt gönderebilirdi.
+
+---
+
+## 3. Eklediklerim
+
+Beğenmezsen hepsi tek dosya silmekle geri alınır, söyle yeter.
+
+**Açılış ekranı.** Site açılırken koyu bir ekranda isimler ve ince bir altın ilerleme
+çizgisi görünüyor, sayfa hazır olunca yumuşakça kayboluyor ve davetiye kapısı çıkıyor.
+Fontlar ve kapak videosu yüklenirken misafirin yarım yamalak bir sayfa görmesini engelliyor.
+Ağ çok yavaşsa 5 saniyede kendini kapatıyor, kimse ekranda kalmıyor.
+
+**Kalp yağmuru.** "Davetiyeyi Aç"a basıldığı anda dört saniyeliğine altın ve krem
+kalpler düşüyor. Perde kalkışıyla aynı anda oluyor, güzel duruyor.
+
+**Davetiye linki üretici.** Panelde yeni bir sayfa: **Davetiye Linki**. Misafirin adını
+yazıyorsun, dili seçiyorsun; sana hem linki hem de altına hazır bir davet mesajı veriyor.
+"WhatsApp'ta gönder" butonu doğrudan paylaşım ekranını açıyor. `?to=` parametresini elle
+yazma derdi bitti.
+
+**Link önizlemesi.** Davetiyeyi WhatsApp veya Instagram'da paylaşınca artık çıplak bir
+adres değil; kapak fotoğrafı, isimler, tarih ve şehir görünüyor. (Kapak fotoğrafı yüklü
+olmalı.)
+
+**Galeride kaydırma.** Telefonda büyütülmüş fotoğrafta sağa sola kaydırarak
+gezinebiliyorsun. Bilgisayarda ok tuşları zaten çalışıyordu.
+
+---
+
+## Öneri
+
+Kapak fotoğrafını mutlaka yükle. Üç ayrı yerde çalışıyor: video yüklenene kadar poster
+olarak, veri tasarrufu açık telefonlarda videonun yerine, ve link paylaşıldığında
+önizleme görseli olarak.

@@ -65,6 +65,7 @@ export default function RevealImage({
 
   useEffect(() => {
     if (!parallax) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     let frame = 0;
     const onScroll = () => {

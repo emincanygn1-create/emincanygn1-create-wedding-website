@@ -13,6 +13,7 @@ export const TRANSLATABLE_FIELDS = [
   "reception_address",
   "quote_text",
   "closing_text",
+  "rsvp_closed_message",
 ] as const;
 
 export type TranslatableField = (typeof TRANSLATABLE_FIELDS)[number];
@@ -41,6 +42,9 @@ export type SiteContent = Translations & {
   reception_map_url: string;
   quote_text: string;
   closing_text: string;
+  rsvp_enabled: boolean;
+  rsvp_deadline: string | null;
+  rsvp_closed_message: string;
   gift_account_name: string;
   gift_iban: string;
   bride_photo_url: string | null;

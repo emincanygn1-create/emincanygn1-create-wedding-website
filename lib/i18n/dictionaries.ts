@@ -78,6 +78,10 @@ const tr = {
     again: "Yeni bir cevap gönder",
     error: "Bir hata oluştu, lütfen tekrar deneyin.",
     required: "Lütfen adınızı yazın.",
+    closedTitle: "Katılım Formu Kapandı",
+    closedDefault:
+      "Katılım bildirimi süresi doldu. Yine de bize ulaşmak isterseniz aşağıya bir dilek bırakabilirsiniz.",
+    deadlineNote: "Son katılım bildirimi:",
   },
   wishes: {
     eyebrow: "Bize Katılın",
@@ -227,6 +231,10 @@ const en: Dict = {
     again: "Send another response",
     error: "Something went wrong, please try again.",
     required: "Please enter your name.",
+    closedTitle: "RSVP Is Now Closed",
+    closedDefault:
+      "The RSVP period has ended. If you would still like to reach us, please leave a wish below.",
+    deadlineNote: "Please reply by:",
   },
   wishes: {
     eyebrow: "Join Us",
@@ -375,6 +383,10 @@ const it: Dict = {
     again: "Invia un'altra risposta",
     error: "Si è verificato un errore, riprovate.",
     required: "Inserite il vostro nome.",
+    closedTitle: "Le Conferme Sono Chiuse",
+    closedDefault:
+      "Il periodo per confermare la presenza è terminato. Se desiderate comunque scriverci, lasciate un augurio qui sotto.",
+    deadlineNote: "Rispondete entro:",
   },
   wishes: {
     eyebrow: "Unitevi a Noi",

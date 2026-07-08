@@ -37,6 +37,11 @@ const TRANSLATED_FIELDS: {
   { name: "reception_address", label: "Düğün Adresi" },
   { name: "quote_text", label: "Alıntı / Söz", multiline: true },
   { name: "closing_text", label: "Kapanış Metni (teşekkür bölümü)", multiline: true },
+  {
+    name: "rsvp_closed_message",
+    label: "Katılım Formu Kapalıyken Gösterilecek Mesaj",
+    multiline: true,
+  },
 ];
 
 function fieldKey(name: TranslatableField, lang: Locale): keyof SiteContent {
@@ -180,6 +185,71 @@ export default function ContentForm({ initial }: { initial: SiteContent }) {
         <p className="text-xs text-olive-400 font-body mt-2">
           Geri sayımda ve kapak sayfasında kullanılır. Tarih her dilde otomatik olarak
           doğru biçimde yazılır.
+        </p>
+      </section>
+
+      <section className="space-y-5 rounded-2xl border border-olive-200 bg-white p-6">
+        <h2 className="eyebrow">Katılım Formu (RSVP)</h2>
+
+        <label className="flex cursor-pointer items-start gap-3">
+          <input
+            type="checkbox"
+            checked={form.rsvp_enabled ?? true}
+            onChange={(e) =>
+              setForm((prev) => ({ ...prev, rsvp_enabled: e.target.checked }))
+            }
+            className="mt-1 h-4 w-4 accent-[#3F4E32]"
+          />
+          <span>
+            <span className="block font-body text-sm text-olive-800">
+              Katılım formu açık
+            </span>
+            <span className="block font-body text-xs text-olive-400">
+              Kapatırsan sitede formun yerine aşağıda yazdığın mesaj görünür ve
+              yeni cevap kabul edilmez.
+            </span>
+          </span>
+        </label>
+
+        <div>
+          <label className="mb-1 block font-body text-xs text-olive-500">
+            Son katılım bildirim tarihi (isteğe bağlı)
+          </label>
+          <input
+            type="datetime-local"
+            value={
+              form.rsvp_deadline
+                ? new Date(form.rsvp_deadline).toISOString().slice(0, 16)
+                : ""
+            }
+            onChange={(e) =>
+              setForm((prev) => ({
+                ...prev,
+                rsvp_deadline: e.target.value
+                  ? new Date(e.target.value).toISOString()
+                  : null,
+              }))
+            }
+            className="rounded-lg border border-olive-200 px-4 py-2 font-body text-sm"
+          />
+          <p className="mt-2 font-body text-xs text-olive-400">
+            Bu tarih geçince form kendiliğinden kapanır. Boş bırakırsan sadece
+            yukarıdaki anahtar geçerli olur.
+          </p>
+          {form.rsvp_deadline && (
+            <button
+              type="button"
+              onClick={() => setForm((prev) => ({ ...prev, rsvp_deadline: null }))}
+              className="mt-2 font-body text-xs text-rust hover:underline"
+            >
+              Tarihi temizle
+            </button>
+          )}
+        </div>
+
+        <p className="font-body text-xs text-olive-400">
+          Formun kapalıyken göstereceği mesajı aşağıdaki{" "}
+          <strong>Çevrilebilir Metinler</strong> bölümünden üç dilde yazabilirsin.
         </p>
       </section>
 
