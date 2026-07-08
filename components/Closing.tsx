@@ -1,4 +1,5 @@
 import Reveal from "./Reveal";
+import RevealText from "./RevealText";
 import Petals from "./Petals";
 import { OrnamentCorner, OrnamentDivider } from "./Ornament";
 import type { Dict } from "@/lib/i18n/dictionaries";
@@ -35,9 +36,11 @@ export default function Closing({
       <div className="relative max-w-xl mx-auto text-center">
         <Reveal>
           <p className="eyebrow text-gold-light mb-3">{d.closing.eyebrow}</p>
-          <h2 className="font-display text-3xl sm:text-4xl mb-6 leading-snug">
-            {d.closing.title}
-          </h2>
+          <RevealText
+            text={d.closing.title}
+            as="h2"
+            className="mb-6 font-display text-3xl leading-snug sm:text-4xl"
+          />
           <p className="font-body text-sm text-cream/80 leading-relaxed">
             {text || d.closing.text}
           </p>
@@ -46,10 +49,10 @@ export default function Closing({
 
         <Reveal variant="zoom" delay={150}>
           <p className="eyebrow text-cream/60 mb-4">{d.closing.seeYou}</p>
-          <p className="font-script text-5xl sm:text-6xl text-cream leading-tight">
-            {brideName}
+          <p className="font-script text-5xl leading-tight text-cream sm:text-6xl">
+            <RevealText text={brideName} as="span" step={70} />
             <span className="text-gold-light"> & </span>
-            {groomName}
+            <RevealText text={groomName} as="span" delay={250} step={70} />
           </p>
         </Reveal>
       </div>

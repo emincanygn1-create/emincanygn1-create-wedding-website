@@ -1,4 +1,6 @@
 import Reveal from "./Reveal";
+import RevealText from "./RevealText";
+import RevealImage from "./RevealImage";
 import { OrnamentDivider } from "./Ornament";
 import type { Dict } from "@/lib/i18n/dictionaries";
 
@@ -23,21 +25,23 @@ function EventCard({
   return (
     <div className="group relative w-full max-w-sm overflow-hidden rounded-2xl border border-olive-200 bg-cream shadow-sm transition-transform duration-500 hover:-translate-y-1.5">
       {info.photoUrl && (
-        <div className="h-44 overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={info.photoUrl}
-            alt=""
-            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-          />
-        </div>
+        <RevealImage
+          src={info.photoUrl}
+          className="h-44 w-full"
+          imgClassName="transition-transform duration-700 group-hover:scale-110"
+          parallax
+          strength={14}
+        />
       )}
 
       <div className="p-8 sm:p-10 text-center">
         <p className="eyebrow mb-3">{title}</p>
-        <h3 className="font-script text-3xl text-olive-800 mb-5 leading-tight">
-          {info.venue}
-        </h3>
+        <RevealText
+          text={info.venue}
+          as="h3"
+          className="mb-5 font-script text-3xl leading-tight text-olive-800"
+          step={60}
+        />
 
         <OrnamentDivider className="w-28 h-6 text-olive-300 mx-auto mb-6" />
 
@@ -84,9 +88,11 @@ export default function EventDetails({
     <section id="event" className="relative py-28 px-6 bg-cream scroll-mt-8">
       <Reveal>
         <p className="eyebrow text-center mb-3">{d.events.eyebrow}</p>
-        <h2 className="font-display text-4xl text-center text-olive-800 mb-4">
-          {d.events.title}
-        </h2>
+        <RevealText
+          text={d.events.title}
+          as="h2"
+          className="mb-4 text-center font-display text-4xl text-olive-800"
+        />
         <OrnamentDivider className="w-40 h-8 text-olive-400 mx-auto mb-16" />
       </Reveal>
 

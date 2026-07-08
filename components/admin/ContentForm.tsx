@@ -14,6 +14,10 @@ const BASE_FIELDS: { name: keyof SiteContent; label: string }[] = [
   { name: "reception_map_url", label: "Düğün Google Maps Linki" },
   { name: "gift_account_name", label: "Hediye Hesap Sahibi Adı" },
   { name: "gift_iban", label: "IBAN" },
+  {
+    name: "cover_video_url",
+    label: "Kapak Videosu — harici bağlantı (dosya yüklemek yerine)",
+  },
   { name: "bride_instagram", label: "Gelin Instagram kullanıcı adı (@ olmadan)" },
   { name: "groom_instagram", label: "Damat Instagram kullanıcı adı (@ olmadan)" },
 ];
@@ -47,6 +51,7 @@ type UploadKey =
   | "bride_photo_url"
   | "groom_photo_url"
   | "cover_photo_url"
+  | "cover_video_url"
   | "quote_bg_url"
   | "closing_bg_url"
   | "video_url"

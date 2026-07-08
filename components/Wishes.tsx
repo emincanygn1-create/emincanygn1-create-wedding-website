@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import Reveal from "./Reveal";
+import RevealText from "./RevealText";
 import { OrnamentDivider } from "./Ornament";
 import { createClient } from "@/lib/supabase/client";
 import type { Wish } from "@/lib/types";
@@ -84,9 +85,11 @@ export default function Wishes({
     <section id="wishes" className="py-24 px-6 bg-cream scroll-mt-8">
       <Reveal>
         <p className="eyebrow text-center mb-3">{d.wishes.eyebrow}</p>
-        <h2 className="font-display text-4xl text-center text-olive-800 mb-4">
-          {d.wishes.title}
-        </h2>
+        <RevealText
+          text={d.wishes.title}
+          as="h2"
+          className="mb-4 text-center font-display text-4xl text-olive-800"
+        />
         <OrnamentDivider className="w-40 h-8 text-olive-400 mx-auto mb-6" />
         <p className="text-center text-olive-500 font-body text-sm mb-14">
           {d.wishes.subtitle}

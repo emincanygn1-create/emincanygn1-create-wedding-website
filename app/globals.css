@@ -237,3 +237,129 @@ body {
     animation: none;
   }
 }
+
+/* ---------------------------------------------
+   Fotoğraf perdesi: aşağıdan yukarı açılır,
+   aynı anda görsel yavaşça normale döner.
+   --------------------------------------------- */
+.img-wipe {
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 1.15s cubic-bezier(0.76, 0, 0.24, 1);
+  will-change: clip-path;
+}
+
+.img-wipe.is-visible {
+  clip-path: inset(0 0 0 0);
+}
+
+.img-wipe > img,
+.img-wipe > .img-inner {
+  transform: scale(1.18);
+  transition: transform 1.6s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.img-wipe.is-visible > img,
+.img-wipe.is-visible > .img-inner {
+  transform: scale(1);
+}
+
+/* ---------------------------------------------
+   Kelime kelime yükselen başlıklar
+   --------------------------------------------- */
+.word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.85em) rotate(2deg);
+  filter: blur(4px);
+  transition:
+    opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.75s ease-out;
+}
+
+.word.is-visible {
+  opacity: 1;
+  transform: translateY(0) rotate(0);
+  filter: blur(0);
+}
+
+.word-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.12em;
+}
+
+/* ---------------------------------------------
+   Sayaç rakamlarının dönerek değişmesi
+   --------------------------------------------- */
+@keyframes digitIn {
+  0% {
+    transform: translateY(60%) rotateX(-70deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) rotateX(0);
+    opacity: 1;
+  }
+}
+
+.digit-roll {
+  display: inline-block;
+  animation: digitIn 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: 50% 0;
+  backface-visibility: hidden;
+}
+
+/* ---------------------------------------------
+   Fotoğraf çerçevesi: yumuşak köşeler,
+   içeride ince altın hat, arkada kaydırılmış çizgi.
+   --------------------------------------------- */
+.frame-photo {
+  border-radius: 28px;
+}
+
+.frame-outline {
+  border-radius: 28px;
+  border: 1px solid rgba(201, 162, 39, 0.55);
+}
+
+.frame-inline {
+  border-radius: 22px;
+  box-shadow: inset 0 0 0 1px rgba(250, 246, 236, 0.35);
+}
+
+/* Sayaç kutusu */
+.frame-digit {
+  border-radius: 20px;
+  position: relative;
+}
+
+.frame-digit::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 14px;
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .img-wipe,
+  .img-wipe > img,
+  .img-wipe > .img-inner {
+    clip-path: none;
+    transform: none;
+    transition: none;
+  }
+  .word {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+  .digit-roll {
+    animation: none;
+  }
+}

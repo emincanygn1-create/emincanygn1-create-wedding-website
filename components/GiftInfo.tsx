@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Reveal from "./Reveal";
+import RevealText from "./RevealText";
 import { OrnamentDivider } from "./Ornament";
 import type { Dict } from "@/lib/i18n/dictionaries";
 
@@ -33,9 +34,11 @@ export default function GiftInfo({
     <section id="gift" className="relative py-28 px-6 bg-olive-100/60 scroll-mt-8">
       <Reveal>
         <p className="eyebrow text-center mb-3">{d.gift.eyebrow}</p>
-        <h2 className="font-display text-4xl text-center text-olive-800 mb-4">
-          {d.gift.title}
-        </h2>
+        <RevealText
+          text={d.gift.title}
+          as="h2"
+          className="mb-4 text-center font-display text-4xl text-olive-800"
+        />
         <OrnamentDivider className="w-40 h-8 text-olive-400 mx-auto mb-14" />
       </Reveal>
 

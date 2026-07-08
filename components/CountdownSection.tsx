@@ -1,4 +1,5 @@
 import Reveal from "./Reveal";
+import RevealText from "./RevealText";
 import Countdown from "./Countdown";
 import AddToCalendar from "./AddToCalendar";
 import { OrnamentDivider } from "./Ornament";
@@ -32,9 +33,11 @@ export default function CountdownSection({
       <div className="relative">
         <Reveal>
           <p className="eyebrow text-center mb-3">{d.countdown.saveDate}</p>
-          <h2 className="font-display text-4xl text-center text-olive-800 mb-4">
-            {d.countdown.title}
-          </h2>
+          <RevealText
+            text={d.countdown.title}
+            as="h2"
+            className="mb-4 text-center font-display text-4xl text-olive-800"
+          />
           <OrnamentDivider className="w-40 h-8 text-olive-400 mx-auto mb-14" />
         </Reveal>
 

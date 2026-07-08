@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Reveal from "./Reveal";
+import RevealText from "./RevealText";
+import RevealImage from "./RevealImage";
 import Lightbox from "./Lightbox";
 import { OrnamentDivider } from "./Ornament";
 import type { GalleryPhoto } from "@/lib/types";
@@ -28,9 +30,11 @@ export default function Gallery({
     <section id="gallery" className="relative py-28 px-6 bg-olive-100/60 scroll-mt-8">
       <Reveal>
         <p className="eyebrow text-center mb-3">{d.gallery.eyebrow}</p>
-        <h2 className="font-display text-4xl text-center text-olive-800 mb-4">
-          {d.gallery.title}
-        </h2>
+        <RevealText
+          text={d.gallery.title}
+          as="h2"
+          className="mb-4 text-center font-display text-4xl text-olive-800"
+        />
         <OrnamentDivider className="w-40 h-8 text-olive-400 mx-auto mb-16" />
       </Reveal>
 
@@ -39,26 +43,19 @@ export default function Gallery({
       ) : (
         <div className="grid grid-cols-4 auto-rows-[110px] sm:auto-rows-[150px] gap-2 sm:gap-3 max-w-4xl mx-auto">
           {photos.map((photo, i) => (
-            <Reveal
+            <button
               key={photo.id}
-              variant="zoom"
-              delay={Math.min(i, 6) * 70}
-              className={spanClass(i)}
+              onClick={() => setOpenIndex(i)}
+              className={`group relative block h-full w-full overflow-hidden rounded-xl border border-olive-300 bg-olive-200/70 ${spanClass(i)}`}
             >
-              <button
-                onClick={() => setOpenIndex(i)}
-                className="group relative block w-full h-full overflow-hidden rounded-xl bg-olive-200/70 border border-olive-300"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={photo.url}
-                  alt=""
-                  loading="lazy"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                <span className="absolute inset-0 bg-olive-900/0 group-hover:bg-olive-900/25 transition-colors" />
-              </button>
-            </Reveal>
+              <RevealImage
+                src={photo.url}
+                delay={Math.min(i, 6) * 90}
+                className="h-full w-full"
+                imgClassName="transition-transform duration-700 group-hover:scale-110"
+              />
+              <span className="absolute inset-0 bg-olive-900/0 transition-colors group-hover:bg-olive-900/25" />
+            </button>
           ))}
         </div>
       )}

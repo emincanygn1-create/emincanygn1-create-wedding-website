@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Petals from "./Petals";
+import BackgroundVideo from "./BackgroundVideo";
+import RevealText from "./RevealText";
 import { OrnamentCorner, OrnamentDivider } from "./Ornament";
 import LanguageSwitcher from "./LanguageSwitcher";
 import type { Dict } from "@/lib/i18n/dictionaries";
@@ -15,6 +17,7 @@ export default function InvitationGate({
   dateText,
   guestName,
   coverPhotoUrl,
+  coverVideoUrl,
   d,
   locale,
 }: {
@@ -23,6 +26,7 @@ export default function InvitationGate({
   dateText: string;
   guestName: string;
   coverPhotoUrl: string | null;
+  coverVideoUrl: string | null;
   d: Dict;
   locale: Locale;
 }) {
@@ -64,14 +68,7 @@ export default function InvitationGate({
         closing ? "animate-curtainUp" : ""
       }`}
     >
-      <div
-        className="absolute inset-0 bg-olive-800 bg-parallax animate-slowZoom"
-        style={
-          coverPhotoUrl
-            ? { backgroundImage: `url(${coverPhotoUrl})` }
-            : undefined
-        }
-      />
+      <BackgroundVideo src={coverVideoUrl} posterUrl={coverPhotoUrl} />
       <div className="absolute inset-0 bg-gradient-to-b from-olive-900/85 via-olive-800/70 to-olive-900/90" />
 
       <OrnamentCorner className="absolute -top-6 -left-6 w-44 h-44 text-gold-light/40 rotate-180" />
@@ -88,10 +85,12 @@ export default function InvitationGate({
           {d.cover.theWeddingOf}
         </p>
 
-        <h1 className="font-script text-6xl sm:text-7xl md:text-8xl leading-tight text-cream animate-fadeIn">
-          {brideName}
-          <span className="block text-4xl sm:text-5xl text-gold-light my-2">&</span>
-          {groomName}
+        <h1 className="font-script text-6xl sm:text-7xl md:text-8xl leading-tight text-cream">
+          <RevealText text={brideName} as="span" delay={150} step={70} />
+          <span className="block text-4xl sm:text-5xl text-gold-light my-2">
+            <RevealText text="&" as="span" delay={450} />
+          </span>
+          <RevealText text={groomName} as="span" delay={550} step={70} />
         </h1>
 
         <OrnamentDivider className="w-44 h-8 text-gold-light/70 my-7 animate-fadeIn" />

@@ -14,6 +14,24 @@ function getTimeLeft(targetDate: string) {
   };
 }
 
+/** Her rakam ayrı ayrı, sadece değiştiğinde dönerek yenilenir. */
+function Digits({ value, pad = 2 }: { value: number; pad?: number }) {
+  const chars = String(value).padStart(pad, "0").split("");
+
+  return (
+    <span className="flex justify-center [perspective:600px]">
+      {chars.map((char, i) => (
+        <span
+          key={`${i}-${char}`}
+          className="digit-roll font-display text-2xl sm:text-4xl text-olive-700 tabular-nums w-[0.62em] text-center"
+        >
+          {char}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 export default function Countdown({
   weddingDate,
   d,
@@ -29,23 +47,20 @@ export default function Countdown({
   }, [weddingDate]);
 
   const units = [
-    { label: d.countdown.days, value: time.days },
-    { label: d.countdown.hours, value: time.hours },
-    { label: d.countdown.minutes, value: time.minutes },
-    { label: d.countdown.seconds, value: time.seconds },
+    { label: d.countdown.days, value: time.days, pad: time.days > 99 ? 3 : 2 },
+    { label: d.countdown.hours, value: time.hours, pad: 2 },
+    { label: d.countdown.minutes, value: time.minutes, pad: 2 },
+    { label: d.countdown.seconds, value: time.seconds, pad: 2 },
   ];
 
   return (
-    <div className="flex justify-center gap-3 sm:gap-6">
+    <div className="flex justify-center gap-3 sm:gap-5">
       {units.map((unit) => (
         <div key={unit.label} className="flex flex-col items-center">
-          <div className="relative w-[70px] h-[86px] sm:w-24 sm:h-28 rounded-t-full rounded-b-xl border border-olive-300 bg-cream/90 backdrop-blur flex items-center justify-center shadow-sm">
-            <span className="absolute inset-1.5 rounded-t-full rounded-b-lg border border-gold/30" />
-            <span className="font-display text-2xl sm:text-4xl text-olive-700 tabular-nums">
-              {String(unit.value).padStart(2, "0")}
-            </span>
+          <div className="frame-digit flex h-[78px] w-[72px] items-center justify-center border border-olive-300 bg-cream/90 shadow-sm backdrop-blur sm:h-24 sm:w-24">
+            <Digits value={unit.value} pad={unit.pad} />
           </div>
-          <span className="eyebrow mt-3 text-olive-500 text-[10px]">{unit.label}</span>
+          <span className="eyebrow mt-3 text-[10px] text-olive-500">{unit.label}</span>
         </div>
       ))}
     </div>

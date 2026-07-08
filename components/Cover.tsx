@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import LanguageSwitcher from "./LanguageSwitcher";
 import Petals from "./Petals";
+import BackgroundVideo from "./BackgroundVideo";
+import RevealText from "./RevealText";
 import { OrnamentCorner, OrnamentDivider } from "./Ornament";
 import type { Dict } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
@@ -13,6 +15,7 @@ export default function Cover({
   dateText,
   city,
   coverPhotoUrl,
+  coverVideoUrl,
   d,
   locale,
 }: {
@@ -21,32 +24,43 @@ export default function Cover({
   dateText: string;
   city: string;
   coverPhotoUrl: string | null;
+  coverVideoUrl: string | null;
   d: Dict;
   locale: Locale;
 }) {
   const [offset, setOffset] = useState(0);
 
   useEffect(() => {
-    const onScroll = () => setOffset(window.scrollY);
+    let frame = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => setOffset(window.scrollY));
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(frame);
+    };
   }, []);
 
-  const fade = Math.max(0, 1 - offset / 520);
+  const fade = Math.max(0, 1 - offset / 560);
+  const hasMedia = Boolean(coverVideoUrl || coverPhotoUrl);
 
   return (
     <section
       id="section-cover"
       className="relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden text-cream px-6 text-center"
     >
-      <div
-        className="absolute inset-0 bg-olive-700 bg-parallax animate-slowZoom"
-        style={coverPhotoUrl ? { backgroundImage: `url(${coverPhotoUrl})` } : undefined}
+      <BackgroundVideo
+        src={coverVideoUrl}
+        posterUrl={coverPhotoUrl}
+        playOnOpen
       />
+
       <div
         className={`absolute inset-0 ${
-          coverPhotoUrl
-            ? "bg-gradient-to-b from-olive-900/75 via-olive-800/55 to-olive-900/90"
+          hasMedia
+            ? "bg-gradient-to-b from-olive-900/75 via-olive-800/50 to-olive-900/95"
             : "bg-gradient-to-b from-olive-700 via-olive-600 to-olive-700"
         }`}
       />
@@ -61,24 +75,33 @@ export default function Cover({
       </div>
 
       <div
-        className="relative z-10 animate-fadeIn"
+        className="relative z-10"
         style={{ transform: `translateY(${offset * 0.22}px)`, opacity: fade }}
       >
-        <p className="eyebrow text-gold-light mb-6">{d.cover.theWeddingOf}</p>
+        <RevealText
+          text={d.cover.theWeddingOf}
+          as="p"
+          className="eyebrow text-gold-light mb-6"
+          step={40}
+        />
 
         <h1 className="font-script text-6xl sm:text-7xl md:text-8xl leading-[1.15]">
-          {brideName}
-          <span className="block text-4xl sm:text-5xl text-gold-light my-1">&</span>
-          {groomName}
+          <RevealText text={brideName} as="span" delay={120} step={70} />
+          <span className="block text-4xl sm:text-5xl text-gold-light my-1">
+            <RevealText text="&" as="span" delay={420} />
+          </span>
+          <RevealText text={groomName} as="span" delay={520} step={70} />
         </h1>
 
         <OrnamentDivider className="w-40 h-8 text-gold-light/70 mx-auto my-7" />
 
-        <p className="font-body tracking-[0.22em] text-xs sm:text-sm uppercase text-cream/90">
-          {dateText}
-          {dateText && city ? " · " : ""}
-          {city}
-        </p>
+        <RevealText
+          text={`${dateText}${dateText && city ? " · " : ""}${city}`}
+          as="p"
+          className="font-body tracking-[0.22em] text-xs sm:text-sm uppercase text-cream/90"
+          delay={800}
+          step={35}
+        />
 
         <div className="mt-16 flex flex-col items-center gap-2 text-cream/70">
           <span className="text-[10px] tracking-[0.3em] uppercase">{d.cover.scroll}</span>

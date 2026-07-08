@@ -1,5 +1,7 @@
 import Link from "next/link";
 import Reveal from "./Reveal";
+import RevealText from "./RevealText";
+import RevealImage from "./RevealImage";
 import { OrnamentDivider } from "./Ornament";
 import type { Dict } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
@@ -20,7 +22,11 @@ export default function MomentsCta({
     <section id="moments" className="py-24 px-6 bg-olive-700 text-cream scroll-mt-8">
       <Reveal>
         <p className="eyebrow text-center mb-3 text-gold-light">{d.moments.ctaEyebrow}</p>
-        <h2 className="font-display text-4xl text-center mb-4">{d.moments.ctaTitle}</h2>
+        <RevealText
+          text={d.moments.ctaTitle}
+          as="h2"
+          className="mb-4 text-center font-display text-4xl"
+        />
         <OrnamentDivider className="w-40 h-8 text-gold-light/70 mx-auto mb-6" />
         <p className="text-center text-cream/80 font-body text-sm max-w-md mx-auto leading-relaxed mb-12">
           {d.moments.ctaText}
@@ -30,17 +36,12 @@ export default function MomentsCta({
       {preview.length > 0 && (
         <div className="max-w-3xl mx-auto grid grid-cols-4 gap-2 sm:gap-3 mb-12">
           {preview.map((photo, i) => (
-            <Reveal key={photo.id} variant="zoom" delay={i * 90}>
-              <div className="aspect-square rounded-lg overflow-hidden border border-cream/20">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={photo.url}
-                  alt=""
-                  loading="lazy"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </Reveal>
+            <RevealImage
+              key={photo.id}
+              src={photo.url}
+              delay={i * 110}
+              className="aspect-square overflow-hidden rounded-lg border border-cream/20"
+            />
           ))}
         </div>
       )}

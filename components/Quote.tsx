@@ -1,4 +1,5 @@
 import Reveal from "./Reveal";
+import RevealText from "./RevealText";
 import { OrnamentDivider } from "./Ornament";
 
 export default function Quote({
@@ -27,9 +28,12 @@ export default function Quote({
           <span className="font-display text-7xl text-gold-light leading-none block">
             &ldquo;
           </span>
-          <p className="font-display italic text-2xl sm:text-3xl leading-relaxed -mt-6">
-            {text}
-          </p>
+          <RevealText
+            text={text}
+            as="p"
+            className="-mt-6 font-display text-2xl italic leading-relaxed sm:text-3xl"
+            step={45}
+          />
           <OrnamentDivider className="w-40 h-8 text-gold-light/70 mx-auto mt-10" />
         </div>
       </Reveal>

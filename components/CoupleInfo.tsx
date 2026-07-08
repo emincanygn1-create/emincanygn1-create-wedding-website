@@ -1,4 +1,6 @@
 import Reveal from "./Reveal";
+import RevealText from "./RevealText";
+import PhotoFrame from "./PhotoFrame";
 import { OrnamentDivider } from "./Ornament";
 import type { Dict } from "@/lib/i18n/dictionaries";
 
@@ -31,6 +33,7 @@ function Person({
   photoUrl,
   placeholder,
   instagram,
+  delay = 0,
 }: {
   role: string;
   name: string;
@@ -38,29 +41,21 @@ function Person({
   photoUrl: string | null;
   placeholder: string;
   instagram: string;
+  delay?: number;
 }) {
   return (
-    <div className="flex flex-col items-center text-center max-w-xs">
-      <div className="relative">
-        <div className="absolute -inset-2.5 arch border border-gold/40" />
-        <div className="arch w-44 h-60 sm:w-52 sm:h-72 overflow-hidden bg-olive-100 border border-olive-200 flex items-center justify-center">
-          {photoUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={photoUrl}
-              alt={name}
-              className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
-            />
-          ) : (
-            <span className="text-olive-400 text-sm font-body">{placeholder}</span>
-          )}
-        </div>
-      </div>
+    <div className="flex max-w-xs flex-col items-center text-center">
+      <PhotoFrame src={photoUrl} alt={name} placeholder={placeholder} delay={delay} />
 
-      <p className="eyebrow mt-8 mb-2">{role}</p>
-      <h3 className="font-script text-4xl text-olive-800 mb-3 leading-tight">{name}</h3>
+      <p className="eyebrow mb-2 mt-10">{role}</p>
+      <RevealText
+        text={name}
+        as="h3"
+        className="mb-3 font-script text-4xl leading-tight text-olive-800"
+        step={70}
+      />
       {parents && (
-        <p className="font-body text-sm text-olive-600 leading-relaxed">{parents}</p>
+        <p className="font-body text-sm leading-relaxed text-olive-600">{parents}</p>
       )}
       <InstagramLink handle={instagram} />
     </div>
@@ -97,9 +92,11 @@ export default function CoupleInfo({
 
       <Reveal>
         <p className="eyebrow text-center mb-3">{d.couple.eyebrow}</p>
-        <h2 className="font-display text-4xl text-center text-olive-800 mb-4">
-          {d.couple.title}
-        </h2>
+        <RevealText
+          text={d.couple.title}
+          as="h2"
+          className="mb-4 text-center font-display text-4xl text-olive-800"
+        />
         <OrnamentDivider className="w-40 h-8 text-olive-400 mx-auto mb-16" />
       </Reveal>
 
@@ -112,6 +109,7 @@ export default function CoupleInfo({
             photoUrl={bridePhotoUrl}
             placeholder={d.couple.photoPlaceholder}
             instagram={brideInstagram}
+            delay={120}
           />
         </Reveal>
 
@@ -127,6 +125,7 @@ export default function CoupleInfo({
             photoUrl={groomPhotoUrl}
             placeholder={d.couple.photoPlaceholder}
             instagram={groomInstagram}
+            delay={260}
           />
         </Reveal>
       </div>

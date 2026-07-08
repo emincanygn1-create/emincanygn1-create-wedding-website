@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import Reveal from "./Reveal";
+import RevealText from "./RevealText";
 import { OrnamentDivider } from "./Ornament";
 import { createClient } from "@/lib/supabase/client";
 import type { Dict } from "@/lib/i18n/dictionaries";
@@ -74,9 +75,11 @@ export default function Rsvp({ d, locale }: { d: Dict; locale: Locale }) {
     <section id="rsvp" className="py-24 px-6 bg-cream scroll-mt-8">
       <Reveal>
         <p className="eyebrow text-center mb-3">{d.rsvp.eyebrow}</p>
-        <h2 className="font-display text-4xl text-center text-olive-800 mb-4">
-          {d.rsvp.title}
-        </h2>
+        <RevealText
+          text={d.rsvp.title}
+          as="h2"
+          className="mb-4 text-center font-display text-4xl text-olive-800"
+        />
         <OrnamentDivider className="w-40 h-8 text-olive-400 mx-auto mb-6" />
         <p className="text-center text-olive-500 font-body text-sm mb-14 max-w-md mx-auto leading-relaxed">
           {d.rsvp.subtitle}

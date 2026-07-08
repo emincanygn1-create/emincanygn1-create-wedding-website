@@ -65,6 +65,7 @@ export default async function Home({
         dateText={dateText}
         guestName={guestName}
         coverPhotoUrl={content?.cover_photo_url || null}
+        coverVideoUrl={content?.cover_video_url || null}
         d={d}
         locale={locale}
       />
@@ -79,6 +80,7 @@ export default async function Home({
         dateText={dateText}
         city={city}
         coverPhotoUrl={content?.cover_photo_url || null}
+        coverVideoUrl={content?.cover_video_url || null}
         d={d}
         locale={locale}
       />
