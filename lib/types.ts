@@ -12,6 +12,7 @@ export const TRANSLATABLE_FIELDS = [
   "reception_time_text",
   "reception_address",
   "quote_text",
+  "closing_text",
 ] as const;
 
 export type TranslatableField = (typeof TRANSLATABLE_FIELDS)[number];
@@ -39,11 +40,18 @@ export type SiteContent = Translations & {
   reception_address: string;
   reception_map_url: string;
   quote_text: string;
+  closing_text: string;
   gift_account_name: string;
   gift_iban: string;
   bride_photo_url: string | null;
   groom_photo_url: string | null;
   video_url: string | null;
+  cover_photo_url: string | null;
+  quote_bg_url: string | null;
+  closing_bg_url: string | null;
+  music_url: string | null;
+  bride_instagram: string;
+  groom_instagram: string;
 };
 
 export type GalleryPhoto = {

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Reveal from "./Reveal";
+import { OrnamentDivider } from "./Ornament";
 import type { Dict } from "@/lib/i18n/dictionaries";
 
 export default function GiftInfo({
@@ -14,6 +15,7 @@ export default function GiftInfo({
   d: Dict;
 }) {
   const [copied, setCopied] = useState(false);
+  const [revealed, setRevealed] = useState(false);
 
   const handleCopy = async () => {
     try {
@@ -28,29 +30,52 @@ export default function GiftInfo({
   if (!iban) return null;
 
   return (
-    <section id="gift" className="py-24 px-6 bg-olive-100/60 scroll-mt-8">
+    <section id="gift" className="relative py-28 px-6 bg-olive-100/60 scroll-mt-8">
       <Reveal>
         <p className="eyebrow text-center mb-3">{d.gift.eyebrow}</p>
-        <h2 className="font-display text-4xl text-center text-olive-800 mb-16">
+        <h2 className="font-display text-4xl text-center text-olive-800 mb-4">
           {d.gift.title}
         </h2>
+        <OrnamentDivider className="w-40 h-8 text-olive-400 mx-auto mb-14" />
       </Reveal>
 
       <Reveal variant="zoom">
-        <div className="max-w-md mx-auto bg-cream border border-olive-200 rounded-2xl p-8 text-center">
-          <p className="font-body text-olive-600 text-sm mb-6 leading-relaxed">
+        <div className="max-w-md mx-auto bg-cream border border-olive-200 rounded-2xl p-8 text-center shadow-sm">
+          <p className="font-body text-olive-600 text-sm mb-8 leading-relaxed">
             {d.gift.text}
           </p>
-          {accountName && <p className="eyebrow mb-2">{accountName}</p>}
-          <div className="flex items-center justify-center gap-3 bg-olive-50 border border-olive-200 rounded-lg px-4 py-3">
-            <span className="font-body text-olive-700 text-sm tracking-wide">{iban}</span>
-          </div>
+
           <button
-            onClick={handleCopy}
-            className="mt-4 border border-olive-400 text-olive-700 rounded-full px-6 py-2 text-sm tracking-wide hover:bg-olive-700 hover:text-cream transition-colors"
+            onClick={() => setRevealed((v) => !v)}
+            className="inline-flex items-center gap-2 border border-olive-400 text-olive-700 rounded-full px-6 py-2.5 text-xs tracking-widest uppercase hover:bg-olive-700 hover:text-cream transition-colors"
           >
-            {copied ? d.gift.copied : d.gift.copy}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="7" width="18" height="12" rx="2" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M3 11h18M7 15h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            {revealed ? d.gift.hide : d.gift.reveal}
           </button>
+
+          <div
+            className={`grid transition-all duration-500 ${
+              revealed ? "grid-rows-[1fr] opacity-100 mt-7" : "grid-rows-[0fr] opacity-0"
+            }`}
+          >
+            <div className="overflow-hidden">
+              {accountName && <p className="eyebrow mb-3">{accountName}</p>}
+              <div className="flex items-center justify-center gap-3 bg-olive-50 border border-olive-200 rounded-lg px-4 py-3">
+                <span className="font-body text-olive-700 text-sm tracking-wide break-all">
+                  {iban}
+                </span>
+              </div>
+              <button
+                onClick={handleCopy}
+                className="mt-4 bg-olive-700 text-cream rounded-full px-6 py-2.5 text-xs tracking-widest uppercase hover:bg-olive-800 transition-colors"
+              >
+                {copied ? d.gift.copied : d.gift.copy}
+              </button>
+            </div>
+          </div>
         </div>
       </Reveal>
     </section>

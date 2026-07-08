@@ -157,3 +157,83 @@ body {
 .animate-heartPop {
   animation: heartPop 0.4s ease-out;
 }
+
+/* ---------------------------------------------
+   Kemer (arch) formunda fotoğraf çerçevesi
+   --------------------------------------------- */
+.arch {
+  border-radius: 999px 999px 16px 16px;
+}
+
+.arch-soft {
+  border-radius: 999px 999px 999px 999px / 340px 340px 40px 40px;
+}
+
+/* ---------------------------------------------
+   Sabit (parallax) arka plan katmanları
+   Mobilde iOS bg-fixed'i desteklemediği için kapatılır.
+   --------------------------------------------- */
+.bg-parallax {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+@media (min-width: 768px) {
+  .bg-parallax {
+    background-attachment: fixed;
+  }
+}
+
+/* ---------------------------------------------
+   Davetiye kapısı
+   --------------------------------------------- */
+.gate-locked {
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* ---------------------------------------------
+   Süsleme kıvrımları
+   --------------------------------------------- */
+.ornament-fade {
+  mask-image: linear-gradient(to bottom, black 55%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 55%, transparent 100%);
+}
+
+/* ---------------------------------------------
+   Yavaşça yukarı süzülen taç yaprakları
+   --------------------------------------------- */
+@keyframes petalFall {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.5;
+  }
+  90% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(110vh) rotate(320deg);
+    opacity: 0;
+  }
+}
+
+.petal {
+  position: absolute;
+  top: 0;
+  animation: petalFall linear infinite;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .petal {
+    display: none;
+  }
+  .animate-slowZoom,
+  .animate-floatSoft {
+    animation: none;
+  }
+}

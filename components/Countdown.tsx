@@ -36,15 +36,16 @@ export default function Countdown({
   ];
 
   return (
-    <div className="flex justify-center gap-4 sm:gap-8">
+    <div className="flex justify-center gap-3 sm:gap-6">
       {units.map((unit) => (
         <div key={unit.label} className="flex flex-col items-center">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border border-olive-300 flex items-center justify-center bg-cream">
-            <span className="font-display text-2xl sm:text-3xl text-olive-700">
+          <div className="relative w-[70px] h-[86px] sm:w-24 sm:h-28 rounded-t-full rounded-b-xl border border-olive-300 bg-cream/90 backdrop-blur flex items-center justify-center shadow-sm">
+            <span className="absolute inset-1.5 rounded-t-full rounded-b-lg border border-gold/30" />
+            <span className="font-display text-2xl sm:text-4xl text-olive-700 tabular-nums">
               {String(unit.value).padStart(2, "0")}
             </span>
           </div>
-          <span className="eyebrow mt-3 text-olive-500">{unit.label}</span>
+          <span className="eyebrow mt-3 text-olive-500 text-[10px]">{unit.label}</span>
         </div>
       ))}
     </div>

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Jost } from "next/font/google";
+import { Fraunces, Jost, Great_Vibes } from "next/font/google";
 import { headers, cookies } from "next/headers";
 import { defaultLocale, isLocale } from "@/lib/i18n/config";
 import "./globals.css";
@@ -16,6 +16,13 @@ const jost = Jost({
   subsets: ["latin"],
   weight: ["300", "400", "500"],
   variable: "--font-jost",
+  display: "swap",
+});
+
+const greatVibes = Great_Vibes({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-script",
   display: "swap",
 });
 
@@ -43,7 +50,7 @@ export default async function RootLayout({
 
   return (
     <html lang={lang}>
-      <body className={`${fraunces.variable} ${jost.variable} font-body`}>
+      <body className={`${fraunces.variable} ${jost.variable} ${greatVibes.variable} font-body`}>
         {children}
       </body>
     </html>

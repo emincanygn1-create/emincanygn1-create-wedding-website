@@ -1,6 +1,6 @@
+import InvitationGate from "@/components/InvitationGate";
 import Cover from "@/components/Cover";
 import CoupleInfo from "@/components/CoupleInfo";
-import SectionDivider from "@/components/SectionDivider";
 import CountdownSection from "@/components/CountdownSection";
 import EventDetails from "@/components/EventDetails";
 import Gallery from "@/components/Gallery";
@@ -10,9 +10,11 @@ import Rsvp from "@/components/Rsvp";
 import Wishes from "@/components/Wishes";
 import MomentsCta from "@/components/MomentsCta";
 import GiftInfo from "@/components/GiftInfo";
+import Closing from "@/components/Closing";
 import Footer from "@/components/Footer";
 import ScrollProgress from "@/components/ScrollProgress";
 import StickyNav from "@/components/StickyNav";
+import MusicPlayer from "@/components/MusicPlayer";
 
 import {
   getSiteContent,
@@ -29,8 +31,10 @@ export const dynamic = "force-dynamic";
 
 export default async function Home({
   params,
+  searchParams,
 }: {
   params: { locale: string };
+  searchParams: { to?: string };
 }) {
   const locale = isLocale(params.locale) ? params.locale : defaultLocale;
   const d = getDictionary(locale);
@@ -44,35 +48,58 @@ export default async function Home({
 
   const dateText = formatDate(content?.wedding_date, locale);
   const city = lz(content, "wedding_city", locale);
+  const brideName = content?.bride_name || "İsim";
+  const groomName = content?.groom_name || "İsim";
+
+  // Davetiyeye ?to=Ahmet%20Bey şeklinde misafir adı eklenebilir.
+  const guestName = (searchParams?.to ?? "").toString().slice(0, 60);
+
+  const receptionVenue = lz(content, "reception_venue", locale);
+  const receptionAddress = lz(content, "reception_address", locale);
 
   return (
     <main>
+      <InvitationGate
+        brideName={brideName}
+        groomName={groomName}
+        dateText={dateText}
+        guestName={guestName}
+        coverPhotoUrl={content?.cover_photo_url || null}
+        d={d}
+        locale={locale}
+      />
+
+      <MusicPlayer src={content?.music_url || null} d={d} />
       <ScrollProgress />
       <StickyNav d={d} locale={locale} />
 
       <Cover
-        brideName={content?.bride_name || "İsim"}
-        groomName={content?.groom_name || "İsim"}
+        brideName={brideName}
+        groomName={groomName}
         dateText={dateText}
         city={city}
+        coverPhotoUrl={content?.cover_photo_url || null}
         d={d}
         locale={locale}
       />
 
       <CoupleInfo
-        brideName={content?.bride_name || "İsim Soyisim"}
-        groomName={content?.groom_name || "İsim Soyisim"}
+        brideName={brideName}
+        groomName={groomName}
         brideParents={lz(content, "bride_parents", locale)}
         groomParents={lz(content, "groom_parents", locale)}
         bridePhotoUrl={content?.bride_photo_url || null}
         groomPhotoUrl={content?.groom_photo_url || null}
+        brideInstagram={content?.bride_instagram || ""}
+        groomInstagram={content?.groom_instagram || ""}
         d={d}
       />
 
-      <SectionDivider />
-
       <CountdownSection
         weddingDate={content?.wedding_date || new Date().toISOString()}
+        calendarTitle={`${brideName} & ${groomName}`}
+        calendarLocation={[receptionVenue, receptionAddress].filter(Boolean).join(", ")}
+        backgroundUrl={photos[2]?.url || null}
         d={d}
       />
 
@@ -83,34 +110,33 @@ export default async function Home({
           timeText: lz(content, "ceremony_time_text", locale),
           address: lz(content, "ceremony_address", locale),
           mapUrl: content?.ceremony_map_url || "",
+          photoUrl: photos[0]?.url || null,
         }}
         reception={{
-          venue: lz(content, "reception_venue", locale),
+          venue: receptionVenue,
           dateText: lz(content, "reception_date_text", locale),
           timeText: lz(content, "reception_time_text", locale),
-          address: lz(content, "reception_address", locale),
+          address: receptionAddress,
           mapUrl: content?.reception_map_url || "",
+          photoUrl: photos[1]?.url || null,
         }}
         d={d}
       />
-
-      <SectionDivider />
 
       <Gallery photos={photos} d={d} />
 
       <VideoSection videoUrl={content?.video_url || null} d={d} />
 
-      <Quote text={lz(content, "quote_text", locale)} />
+      <Quote
+        text={lz(content, "quote_text", locale)}
+        backgroundUrl={content?.quote_bg_url || null}
+      />
 
       <MomentsCta d={d} locale={locale} previewPhotos={guestPhotos} />
 
       <Rsvp d={d} locale={locale} />
 
-      <SectionDivider />
-
       <Wishes initialWishes={wishes} d={d} locale={locale} />
-
-      <SectionDivider />
 
       <GiftInfo
         accountName={content?.gift_account_name || ""}
@@ -118,13 +144,15 @@ export default async function Home({
         d={d}
       />
 
-      <Footer
-        brideName={content?.bride_name || "İsim"}
-        groomName={content?.groom_name || "İsim"}
-        dateText={dateText}
-        city={city}
+      <Closing
+        brideName={brideName}
+        groomName={groomName}
+        text={lz(content, "closing_text", locale)}
+        backgroundUrl={content?.closing_bg_url || null}
         d={d}
       />
+
+      <Footer />
     </main>
   );
 }

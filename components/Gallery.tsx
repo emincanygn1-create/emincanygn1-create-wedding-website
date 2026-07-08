@@ -3,8 +3,17 @@
 import { useState } from "react";
 import Reveal from "./Reveal";
 import Lightbox from "./Lightbox";
+import { OrnamentDivider } from "./Ornament";
 import type { GalleryPhoto } from "@/lib/types";
 import type { Dict } from "@/lib/i18n/dictionaries";
+
+/** Mozaik düzeni: bazı kareler büyük gelir, ızgara monoton durmaz. */
+function spanClass(index: number) {
+  const pattern = index % 6;
+  if (pattern === 0) return "col-span-2 row-span-2";
+  if (pattern === 3) return "col-span-2";
+  return "";
+}
 
 export default function Gallery({
   photos,
@@ -16,33 +25,38 @@ export default function Gallery({
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section id="gallery" className="py-24 px-6 bg-olive-100/60 scroll-mt-8">
+    <section id="gallery" className="relative py-28 px-6 bg-olive-100/60 scroll-mt-8">
       <Reveal>
         <p className="eyebrow text-center mb-3">{d.gallery.eyebrow}</p>
-        <h2 className="font-display text-4xl text-center text-olive-800 mb-16">
+        <h2 className="font-display text-4xl text-center text-olive-800 mb-4">
           {d.gallery.title}
         </h2>
+        <OrnamentDivider className="w-40 h-8 text-olive-400 mx-auto mb-16" />
       </Reveal>
 
       {photos.length === 0 ? (
-        <p className="text-center text-olive-500 font-body text-sm">
-          {d.gallery.empty}
-        </p>
+        <p className="text-center text-olive-500 font-body text-sm">{d.gallery.empty}</p>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 max-w-4xl mx-auto">
+        <div className="grid grid-cols-4 auto-rows-[110px] sm:auto-rows-[150px] gap-2 sm:gap-3 max-w-4xl mx-auto">
           {photos.map((photo, i) => (
-            <Reveal key={photo.id} variant="zoom" delay={i * 70}>
+            <Reveal
+              key={photo.id}
+              variant="zoom"
+              delay={Math.min(i, 6) * 70}
+              className={spanClass(i)}
+            >
               <button
                 onClick={() => setOpenIndex(i)}
-                className="block w-full aspect-square rounded-xl overflow-hidden bg-olive-200/70 border border-olive-300 hover:scale-[1.02] transition-transform"
+                className="group relative block w-full h-full overflow-hidden rounded-xl bg-olive-200/70 border border-olive-300"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={photo.url}
                   alt=""
                   loading="lazy"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
+                <span className="absolute inset-0 bg-olive-900/0 group-hover:bg-olive-900/25 transition-colors" />
               </button>
             </Reveal>
           ))}

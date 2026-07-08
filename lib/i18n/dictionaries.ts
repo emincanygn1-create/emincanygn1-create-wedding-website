@@ -14,6 +14,11 @@ const tr = {
   cover: {
     eyebrow: "Davetlisiniz",
     scroll: "Aşağı Kaydırın",
+    theWeddingOf: "Düğün Davetiyesi",
+    dear: "Sayın",
+    guest: "Değerli Misafirimiz",
+    nameNote: "İsim veya unvan yazımında bir hata olduysa affınıza sığınırız.",
+    open: "Davetiyeyi Aç",
   },
   couple: {
     eyebrow: "Bizi Tanıyın",
@@ -29,6 +34,8 @@ const tr = {
     hours: "Saat",
     minutes: "Dakika",
     seconds: "Saniye",
+    saveDate: "Tarihi Kaydedin",
+    addToCalendar: "Takvime Ekle",
   },
   events: {
     eyebrow: "Ne Zaman, Nerede",
@@ -120,6 +127,18 @@ const tr = {
     text: "Anlayışınız ve sevginiz bizim için en büyük hediye. Yine de katkıda bulunmak isterseniz, aşağıdaki hesabı kullanabilirsiniz.",
     copy: "IBAN'ı Kopyala",
     copied: "Kopyalandı ✓",
+    reveal: "Hesabı Göster",
+    hide: "Hesabı Gizle",
+  },
+  closing: {
+    eyebrow: "Teşekkür Ederiz",
+    title: "Katılımınız ve Dualarınız İçin",
+    text: "Bu mutlu günümüzde yanımızda olmanız bizim için büyük bir onur ve mutluluktur. Sevginizi ve iyi dileklerinizi paylaştığınız için teşekkür ederiz.",
+    seeYou: "Mutlu Günümüzde Görüşmek Üzere",
+  },
+  music: {
+    play: "Müziği aç",
+    pause: "Müziği kapat",
   },
   footer: {
     thanks: "Bizimle bu özel günü paylaştığınız için teşekkür ederiz.",
@@ -145,6 +164,11 @@ const en: Dict = {
   cover: {
     eyebrow: "You Are Invited",
     scroll: "Scroll Down",
+    theWeddingOf: "The Wedding Of",
+    dear: "Dear",
+    guest: "Our Honoured Guest",
+    nameNote: "Our apologies for any mistake in the spelling of your name or title.",
+    open: "Open Invitation",
   },
   couple: {
     eyebrow: "Meet Us",
@@ -160,6 +184,8 @@ const en: Dict = {
     hours: "Hours",
     minutes: "Minutes",
     seconds: "Seconds",
+    saveDate: "Save The Date",
+    addToCalendar: "Add to Calendar",
   },
   events: {
     eyebrow: "When & Where",
@@ -250,6 +276,18 @@ const en: Dict = {
     text: "Your presence and your love are the greatest gift to us. If you would still like to contribute, you may use the account below.",
     copy: "Copy IBAN",
     copied: "Copied ✓",
+    reveal: "Show Account",
+    hide: "Hide Account",
+  },
+  closing: {
+    eyebrow: "Thank You",
+    title: "For Your Presence and Your Blessings",
+    text: "It would be our greatest honour and joy to have you beside us on this happy day. Thank you for sharing your love and your kind wishes with us.",
+    seeYou: "See You on Our Happy Day",
+  },
+  music: {
+    play: "Play music",
+    pause: "Pause music",
   },
   footer: {
     thanks: "Thank you for sharing this special day with us.",
@@ -273,6 +311,11 @@ const it: Dict = {
   cover: {
     eyebrow: "Siete Invitati",
     scroll: "Scorri Giù",
+    theWeddingOf: "Il Matrimonio Di",
+    dear: "Gentile",
+    guest: "Nostro Caro Ospite",
+    nameNote: "Ci scusiamo per eventuali errori nella scrittura del nome o del titolo.",
+    open: "Apri l'Invito",
   },
   couple: {
     eyebrow: "Chi Siamo",
@@ -288,6 +331,8 @@ const it: Dict = {
     hours: "Ore",
     minutes: "Minuti",
     seconds: "Secondi",
+    saveDate: "Salva la Data",
+    addToCalendar: "Aggiungi al Calendario",
   },
   events: {
     eyebrow: "Quando e Dove",
@@ -379,6 +424,18 @@ const it: Dict = {
     text: "La vostra presenza e il vostro affetto sono per noi il regalo più grande. Se desiderate comunque contribuire, potete usare il conto qui sotto.",
     copy: "Copia IBAN",
     copied: "Copiato ✓",
+    reveal: "Mostra il Conto",
+    hide: "Nascondi il Conto",
+  },
+  closing: {
+    eyebrow: "Grazie di Cuore",
+    title: "Per la Vostra Presenza e i Vostri Auguri",
+    text: "Sarebbe per noi un grande onore e una grande gioia avervi accanto in questo giorno felice. Grazie per aver condiviso con noi il vostro affetto e i vostri auguri.",
+    seeYou: "Ci Vediamo nel Nostro Giorno Felice",
+  },
+  music: {
+    play: "Riproduci la musica",
+    pause: "Metti in pausa",
   },
   footer: {
     thanks: "Grazie per aver condiviso con noi questo giorno speciale.",

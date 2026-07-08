@@ -1,28 +1,9 @@
-import type { Dict } from "@/lib/i18n/dictionaries";
-
-export default function Footer({
-  brideName,
-  groomName,
-  dateText,
-  city,
-  d,
-}: {
-  brideName: string;
-  groomName: string;
-  dateText: string;
-  city: string;
-  d: Dict;
-}) {
+export default function Footer() {
   return (
-    <footer className="py-16 pb-28 px-6 bg-olive-800 text-cream/80 text-center">
-      <p className="font-display italic text-2xl text-cream mb-3">
-        {brideName} & {groomName}
-      </p>
-      <p className="font-body text-sm mb-8">{d.footer.thanks}</p>
-      <p className="text-xs text-cream/50 font-body">
-        {dateText}
-        {dateText && city ? " · " : ""}
-        {city}
+    <footer className="py-10 pb-28 px-6 bg-olive-900 text-center">
+      <div className="w-10 h-px bg-gold/50 mx-auto mb-6" />
+      <p className="text-[11px] text-cream/40 font-body tracking-wider">
+        Made with love · {new Date().getFullYear()}
       </p>
     </footer>
   );

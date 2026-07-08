@@ -14,6 +14,8 @@ const BASE_FIELDS: { name: keyof SiteContent; label: string }[] = [
   { name: "reception_map_url", label: "Düğün Google Maps Linki" },
   { name: "gift_account_name", label: "Hediye Hesap Sahibi Adı" },
   { name: "gift_iban", label: "IBAN" },
+  { name: "bride_instagram", label: "Gelin Instagram kullanıcı adı (@ olmadan)" },
+  { name: "groom_instagram", label: "Damat Instagram kullanıcı adı (@ olmadan)" },
 ];
 
 /** Her dil için ayrı yazılabilen alanlar. */
@@ -34,11 +36,61 @@ const TRANSLATED_FIELDS: {
   { name: "reception_time_text", label: "Düğün Saati" },
   { name: "reception_address", label: "Düğün Adresi" },
   { name: "quote_text", label: "Alıntı / Söz", multiline: true },
+  { name: "closing_text", label: "Kapanış Metni (teşekkür bölümü)", multiline: true },
 ];
 
 function fieldKey(name: TranslatableField, lang: Locale): keyof SiteContent {
   return (lang === "tr" ? name : `${name}_${lang}`) as keyof SiteContent;
 }
+
+type UploadKey =
+  | "bride_photo_url"
+  | "groom_photo_url"
+  | "cover_photo_url"
+  | "quote_bg_url"
+  | "closing_bg_url"
+  | "video_url"
+  | "music_url";
+
+const UPLOADS: {
+  key: UploadKey;
+  label: string;
+  hint?: string;
+  accept: string;
+  preview: "image" | "none";
+}[] = [
+  {
+    key: "cover_photo_url",
+    label: "Kapak Fotoğrafı",
+    hint: "Davetiye kapısında ve açılış ekranında tam sayfa görünür. Dikey (portre) fotoğraf en iyi sonucu verir.",
+    accept: "image/*",
+    preview: "image",
+  },
+  { key: "bride_photo_url", label: "Gelin Fotoğrafı", accept: "image/*", preview: "image" },
+  { key: "groom_photo_url", label: "Damat Fotoğrafı", accept: "image/*", preview: "image" },
+  {
+    key: "quote_bg_url",
+    label: "Alıntı Bölümü Arka Planı",
+    hint: "Boş bırakırsan düz zeytin yeşili kullanılır.",
+    accept: "image/*",
+    preview: "image",
+  },
+  {
+    key: "closing_bg_url",
+    label: "Kapanış Bölümü Arka Planı",
+    hint: "Boş bırakırsan düz zeytin yeşili kullanılır.",
+    accept: "image/*",
+    preview: "image",
+  },
+  { key: "video_url", label: "Video", accept: "video/*", preview: "none" },
+  {
+    key: "music_url",
+    label: "Arka Plan Müziği",
+    hint: "Misafir davetiyeyi açtığı anda çalmaya başlar, sol alttaki butondan susturulabilir. MP3 önerilir.",
+    accept: "audio/*",
+    preview: "none",
+  },
+];
 
 export default function ContentForm({ initial }: { initial: SiteContent }) {
   const [form, setForm] = useState<SiteContent>(initial);
@@ -48,9 +100,7 @@ export default function ContentForm({ initial }: { initial: SiteContent }) {
       ? new Date(initial.wedding_date).toISOString().slice(0, 16)
       : ""
   );
-  const [bridePhotoFile, setBridePhotoFile] = useState<File | null>(null);
-  const [groomPhotoFile, setGroomPhotoFile] = useState<File | null>(null);
-  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<Partial<Record<UploadKey, File>>>({});
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const router = useRouter();
@@ -72,28 +122,18 @@ export default function ContentForm({ initial }: { initial: SiteContent }) {
     }
 
     try {
-      if (bridePhotoFile) {
-        const path = `bride-${Date.now()}-${bridePhotoFile.name}`;
-        const { error } = await supabase.storage.from("media").upload(path, bridePhotoFile);
-        if (error) throw error;
-        const { data } = supabase.storage.from("media").getPublicUrl(path);
-        updates.bride_photo_url = data.publicUrl;
-      }
+      for (const upload of UPLOADS) {
+        const file = files[upload.key];
+        if (!file) continue;
 
-      if (groomPhotoFile) {
-        const path = `groom-${Date.now()}-${groomPhotoFile.name}`;
-        const { error } = await supabase.storage.from("media").upload(path, groomPhotoFile);
-        if (error) throw error;
-        const { data } = supabase.storage.from("media").getPublicUrl(path);
-        updates.groom_photo_url = data.publicUrl;
-      }
+        const extension = file.name.split(".").pop()?.toLowerCase() ?? "bin";
+        const path = `${upload.key}-${Date.now()}.${extension}`;
 
-      if (videoFile) {
-        const path = `video-${Date.now()}-${videoFile.name}`;
-        const { error } = await supabase.storage.from("media").upload(path, videoFile);
+        const { error } = await supabase.storage.from("media").upload(path, file);
         if (error) throw error;
+
         const { data } = supabase.storage.from("media").getPublicUrl(path);
-        updates.video_url = data.publicUrl;
+        updates[upload.key] = data.publicUrl;
       }
 
       const { error: updateError } = await supabase
@@ -103,9 +143,8 @@ export default function ContentForm({ initial }: { initial: SiteContent }) {
       if (updateError) throw updateError;
 
       setMessage("Kaydedildi ✓");
-      setBridePhotoFile(null);
-      setGroomPhotoFile(null);
-      setVideoFile(null);
+      setFiles({});
+      setForm((prev) => ({ ...prev, ...(updates as Partial<SiteContent>) }));
       router.refresh();
     } catch {
       setMessage("Bir hata oluştu, tekrar dene.");
@@ -203,61 +242,57 @@ export default function ContentForm({ initial }: { initial: SiteContent }) {
         })}
       </section>
 
-      <section className="space-y-6">
-        <h2 className="eyebrow">Fotoğraflar ve Video</h2>
+      <section className="space-y-8">
+        <h2 className="eyebrow">Fotoğraflar, Video ve Müzik</h2>
 
-        <div>
-          <label className="block text-xs text-olive-500 mb-2 font-body">
-            Gelin Fotoğrafı
-          </label>
-          {form.bride_photo_url && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={form.bride_photo_url}
-              alt=""
-              className="w-20 h-20 rounded-full object-cover mb-2"
-            />
-          )}
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setBridePhotoFile(e.target.files?.[0] || null)}
-            className="text-sm font-body"
-          />
-        </div>
+        {UPLOADS.map((upload) => {
+          const currentUrl = form[upload.key] as string | null;
+          const selected = files[upload.key];
 
-        <div>
-          <label className="block text-xs text-olive-500 mb-2 font-body">
-            Damat Fotoğrafı
-          </label>
-          {form.groom_photo_url && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={form.groom_photo_url}
-              alt=""
-              className="w-20 h-20 rounded-full object-cover mb-2"
-            />
-          )}
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setGroomPhotoFile(e.target.files?.[0] || null)}
-            className="text-sm font-body"
-          />
-        </div>
+          return (
+            <div key={upload.key}>
+              <label className="block text-xs text-olive-500 mb-1 font-body">
+                {upload.label}
+              </label>
+              {upload.hint && (
+                <p className="text-[11px] text-olive-400 font-body mb-3 max-w-md leading-relaxed">
+                  {upload.hint}
+                </p>
+              )}
 
-        <div>
-          <label className="block text-xs text-olive-500 mb-2 font-body">Video</label>
-          {form.video_url && (
-            <p className="text-xs text-olive-500 mb-2 font-body">Mevcut bir video yüklü.</p>
-          )}
-          <input
-            type="file"
-            accept="video/*"
-            onChange={(e) => setVideoFile(e.target.files?.[0] || null)}
-            className="text-sm font-body"
-          />
-        </div>
+              {upload.preview === "image" && currentUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={currentUrl}
+                  alt=""
+                  className="w-24 h-24 rounded-lg object-cover mb-3 border border-olive-200"
+                />
+              )}
+
+              {upload.preview === "none" && currentUrl && (
+                <p className="text-xs text-olive-500 mb-2 font-body">
+                  Yüklü bir dosya var.
+                </p>
+              )}
+
+              <input
+                type="file"
+                accept={upload.accept}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  setFiles((prev) => ({ ...prev, [upload.key]: file ?? undefined }));
+                }}
+                className="text-sm font-body"
+              />
+
+              {selected && (
+                <p className="text-[11px] text-olive-500 font-body mt-2">
+                  Seçildi: {selected.name} — kaydedince yüklenecek.
+                </p>
+              )}
+            </div>
+          );
+        })}
       </section>
 
       <div className="flex items-center gap-4">

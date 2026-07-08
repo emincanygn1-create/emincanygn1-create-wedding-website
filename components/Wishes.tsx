@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import Reveal from "./Reveal";
+import { OrnamentDivider } from "./Ornament";
 import { createClient } from "@/lib/supabase/client";
 import type { Wish } from "@/lib/types";
 import { withCount, type Dict } from "@/lib/i18n/dictionaries";
@@ -86,6 +87,7 @@ export default function Wishes({
         <h2 className="font-display text-4xl text-center text-olive-800 mb-4">
           {d.wishes.title}
         </h2>
+        <OrnamentDivider className="w-40 h-8 text-olive-400 mx-auto mb-6" />
         <p className="text-center text-olive-500 font-body text-sm mb-14">
           {d.wishes.subtitle}
         </p>

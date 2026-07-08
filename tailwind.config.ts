@@ -37,6 +37,7 @@ const config: Config = {
       fontFamily: {
         display: ["var(--font-fraunces)", "serif"],
         body: ["var(--font-jost)", "sans-serif"],
+        script: ["var(--font-script)", "cursive"],
       },
       keyframes: {
         fadeUp: {
@@ -47,10 +48,20 @@ const config: Config = {
           "0%": { opacity: "0" },
           "100%": { opacity: "1" },
         },
+        fadeOut: {
+          "0%": { opacity: "1" },
+          "100%": { opacity: "0", visibility: "hidden" },
+        },
+        curtainUp: {
+          "0%": { transform: "translateY(0)" },
+          "100%": { transform: "translateY(-100%)" },
+        },
       },
       animation: {
         fadeUp: "fadeUp 0.9s ease-out forwards",
         fadeIn: "fadeIn 1.4s ease-out forwards",
+        fadeOut: "fadeOut 0.9s ease-in forwards",
+        curtainUp: "curtainUp 1.1s cubic-bezier(0.76, 0, 0.24, 1) forwards",
       },
     },
   },

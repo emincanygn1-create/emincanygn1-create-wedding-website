@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import Reveal from "./Reveal";
+import { OrnamentDivider } from "./Ornament";
 import { createClient } from "@/lib/supabase/client";
 import type { Dict } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
@@ -76,6 +77,7 @@ export default function Rsvp({ d, locale }: { d: Dict; locale: Locale }) {
         <h2 className="font-display text-4xl text-center text-olive-800 mb-4">
           {d.rsvp.title}
         </h2>
+        <OrnamentDivider className="w-40 h-8 text-olive-400 mx-auto mb-6" />
         <p className="text-center text-olive-500 font-body text-sm mb-14 max-w-md mx-auto leading-relaxed">
           {d.rsvp.subtitle}
         </p>

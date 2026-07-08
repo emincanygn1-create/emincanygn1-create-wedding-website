@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Reveal from "./Reveal";
+import { OrnamentDivider } from "./Ornament";
 import type { Dict } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
 import type { GuestPhoto } from "@/lib/types";
@@ -19,7 +20,8 @@ export default function MomentsCta({
     <section id="moments" className="py-24 px-6 bg-olive-700 text-cream scroll-mt-8">
       <Reveal>
         <p className="eyebrow text-center mb-3 text-gold-light">{d.moments.ctaEyebrow}</p>
-        <h2 className="font-display text-4xl text-center mb-5">{d.moments.ctaTitle}</h2>
+        <h2 className="font-display text-4xl text-center mb-4">{d.moments.ctaTitle}</h2>
+        <OrnamentDivider className="w-40 h-8 text-gold-light/70 mx-auto mb-6" />
         <p className="text-center text-cream/80 font-body text-sm max-w-md mx-auto leading-relaxed mb-12">
           {d.moments.ctaText}
         </p>
