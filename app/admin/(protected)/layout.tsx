@@ -21,8 +21,14 @@ export default async function AdminLayout({
       <aside className="w-full sm:w-56 bg-olive-800 text-cream p-6 flex sm:flex-col gap-6 sm:gap-2 items-center sm:items-stretch">
         <p className="font-display text-xl">Yönetim Paneli</p>
         <nav className="flex-1 flex sm:flex-col gap-2 font-body text-sm">
-          <a href="/admin" className="block py-2 px-3 rounded-lg bg-olive-700">
+          <a href="/admin" className="block py-2 px-3 rounded-lg hover:bg-olive-700">
             Genel Bakış
+          </a>
+          <a href="/admin/content" className="block py-2 px-3 rounded-lg hover:bg-olive-700">
+            Site İçeriği
+          </a>
+          <a href="/admin/gallery" className="block py-2 px-3 rounded-lg hover:bg-olive-700">
+            Galeri
           </a>
         </nav>
         <LogoutButton />

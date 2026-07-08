@@ -1,8 +1,7 @@
 import Reveal from "./Reveal";
+import type { GalleryPhoto } from "@/lib/types";
 
-export default function Gallery() {
-  const placeholders = Array.from({ length: 6 });
-
+export default function Gallery({ photos }: { photos: GalleryPhoto[] }) {
   return (
     <section className="py-24 px-6 bg-olive-100/60">
       <Reveal>
@@ -12,15 +11,22 @@ export default function Gallery() {
         </h2>
       </Reveal>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 max-w-4xl mx-auto">
-        {placeholders.map((_, i) => (
-          <Reveal key={i} delay={i * 80}>
-            <div className="aspect-square rounded-xl bg-olive-200/70 border border-olive-300 flex items-center justify-center hover:scale-[1.02] transition-transform">
-              <span className="text-olive-500 text-xs font-body">Fotoğraf {i + 1}</span>
-            </div>
-          </Reveal>
-        ))}
-      </div>
+      {photos.length === 0 ? (
+        <p className="text-center text-olive-500 font-body text-sm">
+          Fotoğraflar yakında eklenecek.
+        </p>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 max-w-4xl mx-auto">
+          {photos.map((photo, i) => (
+            <Reveal key={photo.id} delay={i * 80}>
+              <div className="aspect-square rounded-xl overflow-hidden bg-olive-200/70 border border-olive-300 hover:scale-[1.02] transition-transform">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={photo.url} alt="" className="w-full h-full object-cover" />
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

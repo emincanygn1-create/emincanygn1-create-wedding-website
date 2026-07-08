@@ -1,7 +1,7 @@
 import Reveal from "./Reveal";
 import Countdown from "./Countdown";
 
-export default function CountdownSection() {
+export default function CountdownSection({ weddingDate }: { weddingDate: string }) {
   return (
     <section className="py-24 px-6 bg-olive-100/60">
       <Reveal>
@@ -11,7 +11,7 @@ export default function CountdownSection() {
         </h2>
       </Reveal>
       <Reveal delay={100}>
-        <Countdown />
+        <Countdown weddingDate={weddingDate} />
       </Reveal>
     </section>
   );

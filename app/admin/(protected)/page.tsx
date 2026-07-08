@@ -5,8 +5,8 @@ export default function AdminHome() {
         Hoş geldin 👋
       </h1>
       <p className="font-body text-olive-500 text-sm max-w-md">
-        Giriş sistemi çalışıyor. Bir sonraki adımda buraya site içeriklerini
-        (metin, fotoğraf, video) düzenleme araçları eklenecek.
+        Sol menüden <strong>Site İçeriği</strong> ile metinleri, tarihi, fotoğrafları
+        ve videoyu; <strong>Galeri</strong> ile fotoğraf galerisini düzenleyebilirsin.
       </p>
     </div>
   );

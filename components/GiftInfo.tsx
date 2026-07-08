@@ -3,9 +3,14 @@
 import { useState } from "react";
 import Reveal from "./Reveal";
 
-export default function GiftInfo() {
+export default function GiftInfo({
+  accountName,
+  iban,
+}: {
+  accountName: string;
+  iban: string;
+}) {
   const [copied, setCopied] = useState(false);
-  const iban = "TR00 0000 0000 0000 0000 0000 00";
 
   const handleCopy = async () => {
     try {
@@ -16,6 +21,8 @@ export default function GiftInfo() {
       // pano erişimi yoksa sessizce geç
     }
   };
+
+  if (!iban) return null;
 
   return (
     <section className="py-24 px-6 bg-olive-100/60">
@@ -32,7 +39,7 @@ export default function GiftInfo() {
             Anlayışınız ve sevginiz bizim için en büyük hediye. Yine de katkıda
             bulunmak isterseniz, aşağıdaki hesabı kullanabilirsiniz.
           </p>
-          <p className="eyebrow mb-2">İsim Soyisim</p>
+          {accountName && <p className="eyebrow mb-2">{accountName}</p>}
           <div className="flex items-center justify-center gap-3 bg-olive-50 border border-olive-200 rounded-lg px-4 py-3">
             <span className="font-body text-olive-700 text-sm tracking-wide">{iban}</span>
           </div>

@@ -2,11 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-// Yer tutucu tarih - admin panel bağlandığında gerçek tarih buradan gelecek
-const WEDDING_DATE = new Date("2027-06-12T16:00:00");
-
-function getTimeLeft() {
-  const diff = WEDDING_DATE.getTime() - Date.now();
+function getTimeLeft(targetDate: string) {
+  const diff = new Date(targetDate).getTime() - Date.now();
   const clamped = Math.max(diff, 0);
   return {
     days: Math.floor(clamped / (1000 * 60 * 60 * 24)),
@@ -16,13 +13,13 @@ function getTimeLeft() {
   };
 }
 
-export default function Countdown() {
-  const [time, setTime] = useState(getTimeLeft());
+export default function Countdown({ weddingDate }: { weddingDate: string }) {
+  const [time, setTime] = useState(() => getTimeLeft(weddingDate));
 
   useEffect(() => {
-    const timer = setInterval(() => setTime(getTimeLeft()), 1000);
+    const timer = setInterval(() => setTime(getTimeLeft(weddingDate)), 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [weddingDate]);
 
   const units = [
     { label: "Gün", value: time.days },
