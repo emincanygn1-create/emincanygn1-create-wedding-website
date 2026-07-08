@@ -67,6 +67,13 @@ const UPLOADS: {
     accept: "image/*",
     preview: "image",
   },
+  {
+    key: "cover_video_url",
+    label: "Kapak Videosu",
+    hint: "Kapak fotoğrafının üzerinde sessiz ve döngüsel oynar. Kapak fotoğrafını da yüklü bırak: video hazır olana kadar o görünür, veri tasarrufu açık telefonlarda video hiç indirilmez. 20 MB'ı geçmemesi önerilir.",
+    accept: "video/mp4,video/webm,video/quicktime",
+    preview: "none",
+  },
   { key: "bride_photo_url", label: "Gelin Fotoğrafı", accept: "image/*", preview: "image" },
   { key: "groom_photo_url", label: "Damat Fotoğrafı", accept: "image/*", preview: "image" },
   {
@@ -83,7 +90,13 @@ const UPLOADS: {
     accept: "image/*",
     preview: "image",
   },
-  { key: "video_url", label: "Video", accept: "video/*", preview: "none" },
+  {
+    key: "video_url",
+    label: "Hikaye Videosu",
+    hint: "Galerinin altındaki \"Bizim Hikayemiz\" bölümünde, oynat butonuyla izlenir. Kapak videosuyla karıştırma.",
+    accept: "video/*",
+    preview: "none",
+  },
   {
     key: "music_url",
     label: "Arka Plan Müziği",
