@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { GATE_EVENT } from "@/lib/gate";
 import type { Dict } from "@/lib/i18n/dictionaries";
 
 export default function MusicPlayer({
@@ -24,8 +25,8 @@ export default function MusicPlayer({
         .catch(() => setPlaying(false));
     };
 
-    window.addEventListener("wedding:open", start);
-    return () => window.removeEventListener("wedding:open", start);
+    window.addEventListener(GATE_EVENT, start);
+    return () => window.removeEventListener(GATE_EVENT, start);
   }, []);
 
   if (!src) return null;

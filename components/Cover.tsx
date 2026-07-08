@@ -83,14 +83,15 @@ export default function Cover({
           as="p"
           className="eyebrow text-gold-light mb-6"
           step={40}
+          waitForGate
         />
 
         <h1 className="font-script text-6xl sm:text-7xl md:text-8xl leading-[1.15]">
-          <RevealText text={brideName} as="span" delay={120} step={70} />
+          <RevealText text={brideName} as="span" delay={120} step={70} waitForGate />
           <span className="block text-4xl sm:text-5xl text-gold-light my-1">
-            <RevealText text="&" as="span" delay={420} />
+            <RevealText text="&" as="span" delay={420} waitForGate />
           </span>
-          <RevealText text={groomName} as="span" delay={520} step={70} />
+          <RevealText text={groomName} as="span" delay={520} step={70} waitForGate />
         </h1>
 
         <OrnamentDivider className="w-40 h-8 text-gold-light/70 mx-auto my-7" />
@@ -101,6 +102,7 @@ export default function Cover({
           className="font-body tracking-[0.22em] text-xs sm:text-sm uppercase text-cream/90"
           delay={800}
           step={35}
+          waitForGate
         />
 
         <div className="mt-16 flex flex-col items-center gap-2 text-cream/70">

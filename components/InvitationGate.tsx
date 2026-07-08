@@ -8,8 +8,7 @@ import { OrnamentCorner, OrnamentDivider } from "./Ornament";
 import LanguageSwitcher from "./LanguageSwitcher";
 import type { Dict } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
-
-const SESSION_KEY = "wedding_invitation_opened";
+import { GATE_EVENT, GATE_SESSION_KEY } from "@/lib/gate";
 
 export default function InvitationGate({
   brideName,
@@ -38,7 +37,7 @@ export default function InvitationGate({
     setMounted(true);
 
     const alreadyOpened =
-      window.sessionStorage.getItem(SESSION_KEY) === "1";
+      window.sessionStorage.getItem(GATE_SESSION_KEY) === "1";
 
     if (alreadyOpened) {
       setHidden(true);
@@ -54,9 +53,9 @@ export default function InvitationGate({
 
   const handleOpen = () => {
     setClosing(true);
-    window.sessionStorage.setItem(SESSION_KEY, "1");
+    window.sessionStorage.setItem(GATE_SESSION_KEY, "1");
     document.body.classList.remove("gate-locked");
-    window.dispatchEvent(new CustomEvent("wedding:open"));
+    window.dispatchEvent(new CustomEvent(GATE_EVENT));
     setTimeout(() => setHidden(true), 1100);
   };
 

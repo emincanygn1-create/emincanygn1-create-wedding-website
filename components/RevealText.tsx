@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { isGateOpen, onGateOpen } from "@/lib/gate";
 
 /**
  * Metni kelime kelime, sırayla aşağıdan yukarı süzerek açar.
- * `as` ile hangi etikette render edileceği seçilir.
+ *
+ * `waitForGate` açıkken davetiye kapısı açılmadan animasyon başlamaz —
+ * yoksa kapağın arkasındaki yazılar kimse görmeden açılıp bitiyor.
  */
 export default function RevealText({
   text,
@@ -12,12 +15,14 @@ export default function RevealText({
   as: Tag = "span",
   delay = 0,
   step = 55,
+  waitForGate = false,
 }: {
   text: string;
   className?: string;
   as?: "h1" | "h2" | "h3" | "p" | "span";
   delay?: number;
   step?: number;
+  waitForGate?: boolean;
 }) {
   const ref = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
@@ -26,19 +31,40 @@ export default function RevealText({
     const node = ref.current;
     if (!node) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.2, rootMargin: "0px 0px -30px 0px" }
-    );
+    let observer: IntersectionObserver | undefined;
+    let stopGate: (() => void) | undefined;
 
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
+    const watch = () => {
+      // Öğe zaten ekrandaysa gözlemciyi beklemeden başlat.
+      const rect = node.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        setVisible(true);
+        return;
+      }
+
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            setVisible(true);
+            observer?.disconnect();
+          }
+        },
+        { threshold: 0.15, rootMargin: "0px 0px -40px 0px" }
+      );
+      observer.observe(node);
+    };
+
+    if (waitForGate && !isGateOpen()) {
+      stopGate = onGateOpen(watch);
+    } else {
+      watch();
+    }
+
+    return () => {
+      observer?.disconnect();
+      stopGate?.();
+    };
+  }, [waitForGate]);
 
   const words = text.split(" ").filter(Boolean);
 

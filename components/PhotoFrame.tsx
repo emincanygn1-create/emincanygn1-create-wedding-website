@@ -2,8 +2,10 @@ import RevealImage from "./RevealImage";
 
 /**
  * Gelin / damat fotoğrafı için çerçeve.
- * Yumuşak köşeli dikdörtgen, arkasında kaydırılmış altın hat,
- * köşelerinde ince kesikler. Kemer (mezar taşı) formu kullanılmaz.
+ *
+ * Fotoğraf çerçevenin içinde, 12 px'lik bir iç boşlukla durur —
+ * hiçbir hat fotoğrafın üzerine binmez. Köşe işaretleri çerçevenin
+ * dış kenarına oturur.
  */
 export default function PhotoFrame({
   src,
@@ -17,18 +19,15 @@ export default function PhotoFrame({
   delay?: number;
 }) {
   return (
-    <div className="relative">
-      {/* arkada kaydırılmış altın çerçeve */}
-      <div className="frame-outline absolute -left-3 -top-3 h-full w-full" />
-
-      <div className="frame-photo relative h-64 w-48 overflow-hidden border border-olive-200 bg-olive-100 sm:h-80 sm:w-60">
+    <div className="frame-outer relative w-52 sm:w-64">
+      <div className="frame-inner relative h-64 bg-olive-100 sm:h-80">
         {src ? (
           <RevealImage
             src={src}
             alt={alt}
             delay={delay}
             parallax
-            strength={18}
+            strength={16}
             className="h-full w-full"
           />
         ) : (
@@ -36,13 +35,13 @@ export default function PhotoFrame({
             <span className="font-body text-sm text-olive-400">{placeholder}</span>
           </div>
         )}
-
-        <span className="frame-inline pointer-events-none absolute inset-2" />
       </div>
 
-      {/* köşe kesikleri */}
-      <span className="pointer-events-none absolute -left-3 -top-3 h-5 w-5 border-l border-t border-gold" />
-      <span className="pointer-events-none absolute -bottom-1 -right-1 h-5 w-5 border-b border-r border-gold" />
+      {/* çerçevenin dış köşelerinde ince altın işaretler */}
+      <span className="frame-corner -left-px -top-px border-l border-t rounded-tl-[32px]" />
+      <span className="frame-corner -right-px -top-px border-r border-t rounded-tr-[32px]" />
+      <span className="frame-corner -bottom-px -left-px border-b border-l rounded-bl-[32px]" />
+      <span className="frame-corner -bottom-px -right-px border-b border-r rounded-br-[32px]" />
     </div>
   );
 }

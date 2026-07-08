@@ -241,8 +241,16 @@ body {
 /* ---------------------------------------------
    Fotoğraf perdesi: aşağıdan yukarı açılır,
    aynı anda görsel yavaşça normale döner.
+
+   Katmanlar ayrı tutulur:
+     .img-wipe      -> clip-path (perde)
+     .img-parallax  -> JS'in yazdığı kaydırma
+     img            -> ölçek animasyonu
+   Aksi halde biri diğerinin transform'unu ezer.
    --------------------------------------------- */
 .img-wipe {
+  position: relative;
+  overflow: hidden;
   clip-path: inset(0 0 100% 0);
   transition: clip-path 1.15s cubic-bezier(0.76, 0, 0.24, 1);
   will-change: clip-path;
@@ -252,16 +260,29 @@ body {
   clip-path: inset(0 0 0 0);
 }
 
-.img-wipe > img,
-.img-wipe > .img-inner {
-  transform: scale(1.18);
+.img-parallax {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+.img-wipe.has-parallax .img-parallax {
+  inset: -7% 0;
+}
+
+.img-wipe img {
+  transform: scale(1.2);
   transition: transform 1.6s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
 }
 
-.img-wipe.is-visible > img,
-.img-wipe.is-visible > .img-inner {
+.img-wipe.is-visible img {
   transform: scale(1);
+}
+
+/* Kaydırma sırasında kenar boşluğu açılmasın diye hafif yakın durur. */
+.img-wipe.has-parallax.is-visible img {
+  transform: scale(1.06);
 }
 
 /* ---------------------------------------------
@@ -313,21 +334,32 @@ body {
 }
 
 /* ---------------------------------------------
-   Fotoğraf çerçevesi: yumuşak köşeler,
-   içeride ince altın hat, arkada kaydırılmış çizgi.
+   Fotoğraf çerçevesi
+   Fotoğraf, çerçevenin İÇİNDE durur; üst üste binmez.
    --------------------------------------------- */
-.frame-photo {
-  border-radius: 28px;
+.frame-outer {
+  border-radius: 32px;
+  border: 1px solid rgba(201, 162, 39, 0.45);
+  padding: 12px;
+  background: linear-gradient(
+    160deg,
+    rgba(250, 246, 236, 0.9),
+    rgba(232, 236, 223, 0.55)
+  );
 }
 
-.frame-outline {
-  border-radius: 28px;
-  border: 1px solid rgba(201, 162, 39, 0.55);
-}
-
-.frame-inline {
+.frame-inner {
   border-radius: 22px;
-  box-shadow: inset 0 0 0 1px rgba(250, 246, 236, 0.35);
+  overflow: hidden;
+  border: 1px solid rgba(63, 78, 50, 0.18);
+}
+
+.frame-corner {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: #c9a227;
+  pointer-events: none;
 }
 
 /* Sayaç kutusu */
@@ -347,8 +379,8 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .img-wipe,
-  .img-wipe > img,
-  .img-wipe > .img-inner {
+  .img-wipe img,
+  .img-parallax {
     clip-path: none;
     transform: none;
     transition: none;

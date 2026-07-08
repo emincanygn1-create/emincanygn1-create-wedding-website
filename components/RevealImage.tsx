@@ -4,7 +4,10 @@ import { useEffect, useRef, useState } from "react";
 
 /**
  * Görseli aşağıdan yukarı açılan bir perdeyle gösterir.
- * `parallax` açıkken sayfa kaydıkça görsel hafifçe zıt yönde kayar.
+ *
+ * Önemli: parallax kaydırması ayrı bir katmana (.img-parallax) uygulanır.
+ * Görselin kendi `transform`'u perde animasyonuna aittir; ikisi aynı
+ * elemana yazılırsa biri diğerini ezer ve animasyon hiç görünmez.
  */
 export default function RevealImage({
   src,
@@ -13,7 +16,7 @@ export default function RevealImage({
   imgClassName = "",
   delay = 0,
   parallax = false,
-  strength = 24,
+  strength = 20,
 }: {
   src: string;
   alt?: string;
@@ -24,26 +27,40 @@ export default function RevealImage({
   strength?: number;
 }) {
   const wrapRef = useRef<HTMLDivElement>(null);
-  const imgRef = useRef<HTMLImageElement>(null);
+  const layerRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const node = wrapRef.current;
     if (!node) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          const timer = setTimeout(() => setVisible(true), delay);
-          observer.disconnect();
-          return () => clearTimeout(timer);
-        }
-      },
-      { threshold: 0.15 }
-    );
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let observer: IntersectionObserver | undefined;
 
-    observer.observe(node);
-    return () => observer.disconnect();
+    const show = () => {
+      timer = setTimeout(() => setVisible(true), delay);
+    };
+
+    const rect = node.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      show();
+    } else {
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            show();
+            observer?.disconnect();
+          }
+        },
+        { threshold: 0.12 }
+      );
+      observer.observe(node);
+    }
+
+    return () => {
+      if (timer) clearTimeout(timer);
+      observer?.disconnect();
+    };
   }, [delay]);
 
   useEffect(() => {
@@ -54,36 +71,44 @@ export default function RevealImage({
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
         const wrap = wrapRef.current;
-        const img = imgRef.current;
-        if (!wrap || !img || !visible) return;
+        const layer = layerRef.current;
+        if (!wrap || !layer) return;
 
         const rect = wrap.getBoundingClientRect();
+        if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+
         const progress = (rect.top + rect.height / 2) / window.innerHeight - 0.5;
-        img.style.transform = `scale(1.08) translateY(${-progress * strength}px)`;
+        layer.style.transform = `translate3d(0, ${-progress * strength}px, 0)`;
       });
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     onScroll();
+
     return () => {
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
       cancelAnimationFrame(frame);
     };
-  }, [parallax, strength, visible]);
+  }, [parallax, strength]);
 
   return (
     <div
       ref={wrapRef}
-      className={`img-wipe ${visible ? "is-visible" : ""} ${className}`}
+      className={`img-wipe ${parallax ? "has-parallax" : ""} ${
+        visible ? "is-visible" : ""
+      } ${className}`}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        ref={imgRef}
-        src={src}
-        alt={alt}
-        loading="lazy"
-        className={`w-full h-full object-cover ${imgClassName}`}
-      />
+      <div ref={layerRef} className="img-parallax">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={src}
+          alt={alt}
+          loading="lazy"
+          className={`h-full w-full object-cover ${imgClassName}`}
+        />
+      </div>
     </div>
   );
 }

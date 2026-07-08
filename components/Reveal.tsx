@@ -38,6 +38,15 @@ export default function Reveal({
 
     let timer: ReturnType<typeof setTimeout> | undefined;
 
+    // Öğe sayfa açılırken zaten ekrandaysa gözlemciyi bekletme.
+    const rect = node.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      timer = setTimeout(() => setVisible(true), delay);
+      return () => {
+        if (timer) clearTimeout(timer);
+      };
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {

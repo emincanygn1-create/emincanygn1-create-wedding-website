@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { GATE_EVENT } from "@/lib/gate";
 
 type Connection = { saveData?: boolean };
 
@@ -42,8 +43,8 @@ export default function BackgroundVideo({
     if (!allowed || !playOnOpen) return;
 
     const start = () => videoRef.current?.play().catch(() => {});
-    window.addEventListener("wedding:open", start);
-    return () => window.removeEventListener("wedding:open", start);
+    window.addEventListener(GATE_EVENT, start);
+    return () => window.removeEventListener(GATE_EVENT, start);
   }, [allowed, playOnOpen]);
 
   const showVideo = src && allowed;
