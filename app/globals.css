@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #faf6ec;
+  color: #2c3823;
+}
+
+::selection {
+  background-color: #c9a227;
+  color: #faf6ec;
+}
+
+.eyebrow {
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: #a8841e;
+  font-weight: 500;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.reveal.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
