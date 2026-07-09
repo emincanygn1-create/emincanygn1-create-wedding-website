@@ -8,6 +8,9 @@ import { useEffect, useRef, useState } from "react";
  *
  * Katmanlar ayrı: perde (clip-path), parallax (translate), görsel (scale).
  * Üçü aynı elemana yazılırsa biri diğerinin transform'unu ezer.
+ *
+ * Perde bir şekilde açılmazsa güvenlik zamanlayıcısı devreye girer —
+ * animasyon kaçar ama fotoğraf asla kaybolmaz.
  */
 export default function RevealImage({
   src,
@@ -28,12 +31,13 @@ export default function RevealImage({
   parallax?: boolean;
   strength?: number;
   sizes?: string;
-  /** Ekranın üstünde görünen görseller için: erken yükle. */
   priority?: boolean;
 }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  const [forced, setForced] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     const node = wrapRef.current;
@@ -67,6 +71,22 @@ export default function RevealImage({
       observer?.disconnect();
     };
   }, [delay]);
+
+  // Görsel ekranda olmasına rağmen perde açılmadıysa kilidi kaldır.
+  useEffect(() => {
+    if (visible) return;
+
+    const guard = setTimeout(() => {
+      const node = wrapRef.current;
+      if (!node) return;
+
+      const rect = node.getBoundingClientRect();
+      const onScreen = rect.top < window.innerHeight && rect.bottom > 0;
+      if (onScreen) setForced(true);
+    }, 2500);
+
+    return () => clearTimeout(guard);
+  }, [visible]);
 
   useEffect(() => {
     if (!parallax) return;
@@ -104,18 +124,30 @@ export default function RevealImage({
       ref={wrapRef}
       className={`img-wipe ${parallax ? "has-parallax" : ""} ${
         visible ? "is-visible" : ""
-      } ${className}`}
+      } ${forced ? "is-shown" : ""} ${className}`}
     >
       <div ref={layerRef} className="img-parallax">
-        <Image
-          src={src}
-          alt={alt}
-          fill
-          sizes={sizes}
-          priority={priority}
-          loading={priority ? undefined : "lazy"}
-          className={`object-cover ${imgClassName}`}
-        />
+        {failed ? (
+          // Görsel optimizasyonu bir sebeple başarısız olursa
+          // dosyayı doğrudan servis et; boş kutu gösterme.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={src}
+            alt={alt}
+            className={`absolute inset-0 h-full w-full object-cover ${imgClassName}`}
+          />
+        ) : (
+          <Image
+            src={src}
+            alt={alt}
+            fill
+            sizes={sizes}
+            priority={priority}
+            loading={priority ? undefined : "lazy"}
+            onError={() => setFailed(true)}
+            className={`object-cover ${imgClassName}`}
+          />
+        )}
       </div>
     </div>
   );

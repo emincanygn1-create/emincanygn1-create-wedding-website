@@ -256,29 +256,41 @@ body {
 .img-wipe {
   position: relative;
   overflow: hidden;
+  -webkit-clip-path: inset(0 0 100% 0);
   clip-path: inset(0 0 100% 0);
-  transition: clip-path 1.15s cubic-bezier(0.76, 0, 0.24, 1);
-  will-change: clip-path;
+  transition:
+    -webkit-clip-path 1.15s cubic-bezier(0.76, 0, 0.24, 1),
+    clip-path 1.15s cubic-bezier(0.76, 0, 0.24, 1);
+  /* DİKKAT: buraya `will-change: clip-path` YAZMA.
+     iOS Safari elemanı ayrı bir GPU katmanına alıp hiç boyamıyor,
+     fotoğraf tamamen görünmez kalıyor. */
 }
 
 .img-wipe.is-visible {
+  -webkit-clip-path: inset(0 0 0 0);
   clip-path: inset(0 0 0 0);
+}
+
+/* Perde hiç açılmazsa (eski tarayıcı, beklenmedik bir hata)
+   fotoğraf yine de görünsün. */
+.img-wipe.is-shown {
+  -webkit-clip-path: none;
+  clip-path: none;
 }
 
 .img-parallax {
   position: absolute;
   inset: 0;
-  will-change: transform;
 }
 
 .img-wipe.has-parallax .img-parallax {
   inset: -7% 0;
+  will-change: transform;
 }
 
 .img-wipe img {
   transform: scale(1.2);
   transition: transform 1.6s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
 }
 
 .img-wipe.is-visible img {
