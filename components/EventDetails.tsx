@@ -101,34 +101,44 @@ function EventCard({
 
 /** Nikah ve düğün aynı yerde: tek kart, iki saat. */
 function CombinedCard({
-  info,
-  ceremonyTime,
-  receptionTime,
+  ceremony,
+  reception,
   d,
 }: {
-  info: EventInfo;
-  ceremonyTime: string;
-  receptionTime: string;
+  ceremony: EventInfo;
+  reception: EventInfo;
   d: Dict;
 }) {
+  // Hangi alan doluysa o kullanılır. Bilgileri sadece nikah
+  // alanlarına yazmış olabilirsin, sadece düğün alanlarına da.
+  const pick = (a: string, b: string) => (a.trim() ? a : b);
+
+  const venue = pick(ceremony.venue, reception.venue);
+  const dateText = pick(ceremony.dateText, reception.dateText);
+  const address = pick(ceremony.address, reception.address);
+  const mapUrl = pick(ceremony.mapUrl, reception.mapUrl);
+  const photoUrl = ceremony.photoUrl || reception.photoUrl || null;
+
   const schedule = [
-    { label: d.events.ceremony, time: ceremonyTime },
-    { label: d.events.reception, time: receptionTime },
-  ].filter((row) => row.time);
+    { label: d.events.ceremony, time: ceremony.timeText },
+    { label: d.events.reception, time: reception.timeText },
+  ].filter((row) => row.time.trim());
 
   return (
-    <CardShell photoUrl={info.photoUrl} wide>
+    <CardShell photoUrl={photoUrl} wide>
       <p className="eyebrow mb-3">{d.events.combined}</p>
-      <RevealText
-        text={info.venue}
-        as="h3"
-        className="mb-5 font-script text-4xl leading-tight text-olive-800"
-        step={60}
-      />
+      {venue && (
+        <RevealText
+          text={venue}
+          as="h3"
+          className="mb-5 font-script text-4xl leading-tight text-olive-800"
+          step={60}
+        />
+      )}
       <OrnamentDivider className="mx-auto mb-7 h-6 w-32 text-olive-300" />
 
-      {info.dateText && (
-        <p className="mb-6 font-body text-sm text-olive-800">{info.dateText}</p>
+      {dateText && (
+        <p className="mb-6 font-body text-sm text-olive-800">{dateText}</p>
       )}
 
       {schedule.length > 0 && (
@@ -149,13 +159,13 @@ function CombinedCard({
         </div>
       )}
 
-      {info.address && (
+      {address && (
         <p className="mb-8 font-body text-xs leading-relaxed text-olive-500">
-          {info.address}
+          {address}
         </p>
       )}
 
-      <MapButton url={info.mapUrl} label={d.events.map} />
+      <MapButton url={mapUrl} label={d.events.map} />
     </CardShell>
   );
 }
@@ -185,12 +195,7 @@ export default function EventDetails({
 
       {singleEvent ? (
         <Reveal variant="zoom" className="flex justify-center">
-          <CombinedCard
-            info={ceremony}
-            ceremonyTime={ceremony.timeText}
-            receptionTime={reception.timeText}
-            d={d}
-          />
+          <CombinedCard ceremony={ceremony} reception={reception} d={d} />
         </Reveal>
       ) : (
         <div className="flex flex-col items-stretch justify-center gap-8 md:flex-row">

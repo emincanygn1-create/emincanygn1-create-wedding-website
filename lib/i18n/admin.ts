@@ -135,6 +135,13 @@ const tr = {
       "Kapak fotoğrafının üzerinde sessiz ve döngüsel oynar. Kapak fotoğrafını da yüklü bırak: video hazır olana kadar o görünür. 20 MB'ı geçmemesi önerilir.",
     bride_photo_url: "Gelin Fotoğrafı",
     groom_photo_url: "Damat Fotoğrafı",
+    ceremony_photo_url: "Nikah Kartı Fotoğrafı",
+    reception_photo_url: "Düğün Kartı Fotoğrafı",
+    event_photo_hint:
+      "Etkinlik kartının üstünde görünür. Boş bırakırsan kart fotoğrafsız, sade haliyle çıkar.",
+    countdown_bg_url: "Geri Sayım Arka Planı",
+    countdown_bg_hint:
+      "Rakamların arkasında soluk bir katmanın altında durur. Boş bırakırsan düz zemin kullanılır.",
     quote_bg_url: "Alıntı Bölümü Arka Planı",
     quote_bg_hint: "Boş bırakırsan düz zeytin yeşili kullanılır.",
     closing_bg_url: "Kapanış Bölümü Arka Planı",
@@ -344,6 +351,13 @@ const it: AdminDict = {
       "Scorre muto e in loop sopra la foto di copertina. Lascia caricata anche la foto: viene mostrata finché il video non è pronto. Meglio non superare i 20 MB.",
     bride_photo_url: "Foto della Sposa",
     groom_photo_url: "Foto dello Sposo",
+    ceremony_photo_url: "Foto della Scheda Cerimonia",
+    reception_photo_url: "Foto della Scheda Ricevimento",
+    event_photo_hint:
+      "Appare in cima alla scheda dell'evento. Se la lasci vuota la scheda resta senza foto.",
+    countdown_bg_url: "Sfondo del Conto alla Rovescia",
+    countdown_bg_hint:
+      "Sta dietro ai numeri, sotto un velo chiaro. Se lo lasci vuoto viene usato uno sfondo pieno.",
     quote_bg_url: "Sfondo della Sezione Citazione",
     quote_bg_hint: "Se lo lasci vuoto viene usato il verde oliva pieno.",
     closing_bg_url: "Sfondo della Sezione di Chiusura",

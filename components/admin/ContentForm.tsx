@@ -62,6 +62,9 @@ type UploadKey =
   | "cover_video_url"
   | "bride_photo_url"
   | "groom_photo_url"
+  | "ceremony_photo_url"
+  | "reception_photo_url"
+  | "countdown_bg_url"
   | "quote_bg_url"
   | "closing_bg_url"
   | "video_url"
@@ -97,6 +100,27 @@ const UPLOADS: {
   {
     key: "groom_photo_url",
     labelKey: "groom_photo_url",
+    accept: "image/*",
+    preview: "image",
+  },
+  {
+    key: "ceremony_photo_url",
+    labelKey: "ceremony_photo_url",
+    hintKey: "event_photo_hint",
+    accept: "image/*",
+    preview: "image",
+  },
+  {
+    key: "reception_photo_url",
+    labelKey: "reception_photo_url",
+    hintKey: "event_photo_hint",
+    accept: "image/*",
+    preview: "image",
+  },
+  {
+    key: "countdown_bg_url",
+    labelKey: "countdown_bg_url",
+    hintKey: "countdown_bg_hint",
     accept: "image/*",
     preview: "image",
   },

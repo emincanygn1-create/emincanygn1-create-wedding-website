@@ -66,6 +66,9 @@ export type SiteContent = Translations & {
   groom_photo_url: string | null;
   video_url: string | null;
   cover_photo_url: string | null;
+  ceremony_photo_url: string | null;
+  reception_photo_url: string | null;
+  countdown_bg_url: string | null;
   cover_video_url: string | null;
   quote_bg_url: string | null;
   closing_bg_url: string | null;

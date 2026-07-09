@@ -143,7 +143,7 @@ export default async function Home({
         weddingDate={content?.wedding_date || new Date().toISOString()}
         calendarTitle={`${brideName} & ${groomName}`}
         calendarLocation={[receptionVenue, receptionAddress].filter(Boolean).join(", ")}
-        backgroundUrl={photos[2]?.url || null}
+        backgroundUrl={content?.countdown_bg_url || null}
         d={d}
       />
     ),
@@ -155,7 +155,7 @@ export default async function Home({
           timeText: lz(content, "ceremony_time_text", locale),
           address: lz(content, "ceremony_address", locale),
           mapUrl: content?.ceremony_map_url || "",
-          photoUrl: photos[0]?.url || null,
+          photoUrl: content?.ceremony_photo_url || null,
         }}
         reception={{
           venue: receptionVenue,
@@ -163,7 +163,7 @@ export default async function Home({
           timeText: lz(content, "reception_time_text", locale),
           address: receptionAddress,
           mapUrl: content?.reception_map_url || "",
-          photoUrl: photos[1]?.url || null,
+          photoUrl: content?.reception_photo_url || null,
         }}
         singleEvent={content?.single_event ?? false}
         d={d}
