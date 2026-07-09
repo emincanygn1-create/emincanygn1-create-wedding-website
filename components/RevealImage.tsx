@@ -1,16 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
  * Görseli aşağıdan yukarı açılan bir perdeyle gösterir.
  *
- * Katmanlar ayrı: perde (clip-path), parallax (translate), görsel (scale).
- * Üçü aynı elemana yazılırsa biri diğerinin transform'unu ezer.
- *
- * Perde bir şekilde açılmazsa güvenlik zamanlayıcısı devreye girer —
- * animasyon kaçar ama fotoğraf asla kaybolmaz.
+ * Kararlılık notları:
+ *  - Gözlemciye tek başına güvenilmez; ekrandalık ayrıca yoklanır.
+ *    Yazı tipleri geç yüklendiğinde ilk ölçüm yanlış çıkabiliyor.
+ *  - Parallax mobilde kapalı. Android Chrome'da clip-path ile dönüşüm
+ *    aynı katmanda çakışıp görseli boyanmaz hale getirebiliyor.
+ *  - Ne olursa olsun 1,2 saniye içinde görsel açılır.
  */
 export default function RevealImage({
   src,
@@ -39,58 +40,62 @@ export default function RevealImage({
   const [forced, setForced] = useState(false);
   const [failed, setFailed] = useState(false);
 
+  const show = useCallback(() => setVisible(true), []);
+
   useEffect(() => {
     const node = wrapRef.current;
     if (!node) return;
-
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    let observer: IntersectionObserver | undefined;
-
-    const show = () => {
-      timer = setTimeout(() => setVisible(true), delay);
-    };
-
-    const rect = node.getBoundingClientRect();
-    if (rect.top < window.innerHeight && rect.bottom > 0) {
-      show();
-    } else {
-      observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            show();
-            observer?.disconnect();
-          }
-        },
-        { threshold: 0.12 }
-      );
-      observer.observe(node);
-    }
-
-    return () => {
-      if (timer) clearTimeout(timer);
-      observer?.disconnect();
-    };
-  }, [delay]);
-
-  // Görsel ekranda olmasına rağmen perde açılmadıysa kilidi kaldır.
-  useEffect(() => {
     if (visible) return;
 
-    const guard = setTimeout(() => {
-      const node = wrapRef.current;
-      if (!node) return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let guard: ReturnType<typeof setTimeout> | undefined;
 
+    const onScreen = () => {
       const rect = node.getBoundingClientRect();
-      const onScreen = rect.top < window.innerHeight && rect.bottom > 0;
-      if (onScreen) setForced(true);
-    }, 2500);
+      return rect.top < window.innerHeight && rect.bottom > 0;
+    };
 
-    return () => clearTimeout(guard);
-  }, [visible]);
+    const trigger = () => {
+      if (timer) return;
+      timer = setTimeout(show, delay);
+
+      // Perde bir sebeple açılmazsa kilidi kaldır.
+      guard = setTimeout(() => setForced(true), delay + 1200);
+    };
+
+    if (onScreen()) trigger();
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          trigger();
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.08 }
+    );
+    observer.observe(node);
+
+    // Gözlemci ateşlemezse (kaydırma kilidi, geç yerleşim) yedek yoklama.
+    const poll = setInterval(() => {
+      if (onScreen()) {
+        trigger();
+        clearInterval(poll);
+      }
+    }, 400);
+
+    return () => {
+      observer.disconnect();
+      clearInterval(poll);
+      if (timer) clearTimeout(timer);
+      if (guard) clearTimeout(guard);
+    };
+  }, [delay, show, visible]);
 
   useEffect(() => {
     if (!parallax) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.innerWidth < 768) return;
 
     let frame = 0;
     const onScroll = () => {
@@ -128,8 +133,6 @@ export default function RevealImage({
     >
       <div ref={layerRef} className="img-parallax">
         {failed ? (
-          // Görsel optimizasyonu bir sebeple başarısız olursa
-          // dosyayı doğrudan servis et; boş kutu gösterme.
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={src}

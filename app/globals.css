@@ -284,8 +284,15 @@ body {
 }
 
 .img-wipe.has-parallax .img-parallax {
-  inset: -7% 0;
-  will-change: transform;
+  inset: 0;
+}
+
+/* Kaydırma payı sadece parallax'ın gerçekten çalıştığı geniş ekranda. */
+@media (min-width: 768px) {
+  .img-wipe.has-parallax .img-parallax {
+    inset: -7% 0;
+    will-change: transform;
+  }
 }
 
 .img-wipe img {
@@ -298,8 +305,10 @@ body {
 }
 
 /* Kaydırma sırasında kenar boşluğu açılmasın diye hafif yakın durur. */
-.img-wipe.has-parallax.is-visible img {
-  transform: scale(1.06);
+@media (min-width: 768px) {
+  .img-wipe.has-parallax.is-visible img {
+    transform: scale(1.06);
+  }
 }
 
 /* ---------------------------------------------
