@@ -19,16 +19,16 @@ export default function CountdownSection({
   d: Dict;
 }) {
   return (
-    <section className="relative overflow-hidden px-6 py-28">
+    <section className="relative overflow-hidden bg-inherit px-6 py-28">
       {backgroundUrl && (
         <>
           <div
             className="absolute inset-0 bg-parallax"
             style={{ backgroundImage: `url(${backgroundUrl})` }}
           />
-          {/* Fotoğrafın üstündeki soluk katman; altındaki bölüm rengini
-              tamamen kapatmaz, sadece yumuşatır. */}
-          <div className="absolute inset-0 bg-cream/85" />
+          {/* Kaplama bölümün kendi rengini miras alır (bg-inherit),
+              böylece geri sayım nereye taşınırsa taşınsın uyum sağlar. */}
+          <div className="absolute inset-0 bg-inherit opacity-[0.88]" />
         </>
       )}
 

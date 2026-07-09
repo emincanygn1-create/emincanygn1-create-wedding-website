@@ -303,11 +303,25 @@ export default async function Home({
         locale={locale}
       />
 
-      {visibleSections.map((section, i) => (
-        <div key={section.key} className={toneClass(tones[i])}>
-          {blocks[section.key]}
-        </div>
-      ))}
+      {visibleSections.map((section, i) => {
+        const previous = i > 0 ? tones[i - 1] : null;
+
+        // Açık iki ton arasında ince bir ayırıcı çizgi.
+        // Koyu bölümlerin kenarına gerek yok, kontrast zaten var.
+        const divider =
+          previous && previous !== "dark" && tones[i] !== "dark"
+            ? "border-t border-olive-200/70"
+            : "";
+
+        return (
+          <div
+            key={section.key}
+            className={`${toneClass(tones[i])} ${divider}`}
+          >
+            {blocks[section.key]}
+          </div>
+        );
+      })}
 
       <Footer />
     </main>

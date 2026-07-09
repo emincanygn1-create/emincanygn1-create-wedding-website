@@ -1,48 +1,48 @@
-# Renk Sistemi — Bölüm Sırasına Göre
+# Renk — Çözüldü
 
-Sadece dosyaları yükle. SQL yok, silinecek dosya yok.
+14 dosyayı yükle. SQL yok, silinecek dosya yok. Bir önceki renk paketini yüklediysen
+bunlar onun üstüne yazar; yüklemediysen de sorun yok, hepsi burada.
 
 ---
 
-## Sorun neydi
+## Asıl sebep
 
-Arka plan rengi bölümün içine gömülüydü. `CoupleInfo` her zaman krem, `Gallery` her
-zaman açık yeşil, `GiftInfo` her zaman açık yeşil. Bu, bölümlerin benim yazdığım sırada
-duracağı varsayımına dayanıyordu — krem, yeşil, krem, yeşil...
+Sıralama zaten çalışıyordu. Sorun rengin kendisiydi.
 
-Sırayı panelden değiştirince varsayım çöküyor. İki krem bölüm yan yana geliyor, aradaki
-sınır kayboluyor ve o bölge tek bir büyük beyazlık gibi duruyor. Bir bölümü gizleyince de
-aynı şey.
+`bg-olive-100/60` yazmışım. Yani `#E8ECDF` rengini **%60 opaklıkla** krem zeminin
+üstüne koyuyordum. Karışım `#EFF0E4` ediyor — kremden (`#FAF6EC`) ayırt edilemeyecek
+kadar yakın. Ekranda "açık yeşil bölüm" diye bir şey yoktu, hepsi kremdi.
 
-## Ne yaptım
+Opaklığı kaldırdım. Artık tam `#E8ECDF` kullanılıyor.
 
-Rengi bileşenlerden söktüm. Artık **bölüm sıradaki yerinden rengini alıyor.**
+## Üç değişiklik
 
-Ana sayfa, görünen bölümleri sırayla geziyor ve renkleri dağıtıyor: krem, açık yeşil,
-krem, açık yeşil... Sırayı nasıl değiştirirsen değiştir, iki aynı renk asla yan yana
-gelmiyor. Bir bölümü gizlersen kalanlar renklerini kendiliğinden yeniden düzenliyor.
+**1. Tam renk.** `light` = krem `#FAF6EC`, `muted` = açık zeytin `#E8ECDF`.
+Hiçbirinde opaklık yok. `lib/sections.ts` içine bunu neden yapmaman gerektiğini
+yorum olarak yazdım.
 
-**Koyu bölümler sıraya karışmıyor.** Alıntı, Anı Duvarı bağlantısı ve Kapanış kendi
-arka plan fotoğrafları ve açık renkli yazılarıyla geliyor; onlar nereye taşınırsa
-taşınsın koyu kalıyor. Aradan geçiyorlar, sayacı bozmuyorlar.
+**2. Sınır çizgisi.** İki açık ton arasında ince bir `border-t` var. Renkler artık
+yeterince farklı ama çizgi geçişi keskinleştiriyor. Koyu bölümlerin kenarına
+koymuyorum — kontrast zaten yeterli.
 
-Kartlar da düzeltildi. Etkinlik kartı, SSS kutuları, hediye kartı, dilek kartları,
-sayaç rakamları — hepsi krem yerine beyaz oldu. Krem kart, krem zeminde görünmüyordu;
-beyaz her iki zeminde de duruyor.
+**3. Geri sayım kaplaması.** Arka plan fotoğrafının üstündeki soluk katman `bg-cream/85`
+sabitiydi; geri sayım açık yeşil bir sıraya düşünce kremleşiyordu. Artık `bg-inherit`,
+yani bulunduğu bölümün rengini miras alıyor. Sayacı nereye taşırsan taşı uyum sağlıyor.
 
-## Bir tuzak daha
+## Sistem nasıl çalışıyor
 
-Video, alıntı ve hediye bölümleri içerik boşsa hiç render edilmiyor (bileşen `null`
-dönüyor). Ama sarmalayıcı yine de renkli bir şerit bırakıyor ve **renk sırasından bir
-adım yiyordu**. Yani hediye IBAN'ını silsen, aşağıdaki bütün bölümlerin rengi kayardı.
+Ana sayfa görünen bölümleri sırayla geziyor:
 
-Artık boş bölümler sıraya hiç girmiyor.
+- Koyu bölüm mü (Alıntı, Anı Duvarı, Kapanış)? Kendi arka planıyla geçer, sayacı bozmaz.
+- Değilse sıradaki rengi alır: krem, açık yeşil, krem, açık yeşil...
 
-## Sonuç
+İçeriği olmayan bölümler (video yüklenmemişse, alıntı boşsa, IBAN girilmemişse) sıraya
+hiç girmez — yoksa boş bir renk şeridi bırakıp sırayı kaydırırlardı.
 
-Panelde bölümleri istediğin gibi taşı, gizle, geri aç — renkler kendini toparlıyor.
-Zeytin yeşili, krem, altın, kiremit; palet aynı, sadece dağıtımı artık dinamik.
+Kartlar beyaz. Krem kart krem zeminde kayboluyordu; beyaz her iki zeminde de duruyor.
 
-Yeni bir bölüm eklemek istersen `lib/sections.ts` içindeki `SECTION_KEYS` listesine
-anahtarını ekle. Koyu olmasını istiyorsan `DARK_SECTIONS` kümesine de yaz, gerisini
-sistem halleder.
+## İleride
+
+Yeni bölüm eklersen `lib/sections.ts` içindeki `SECTION_KEYS` listesine anahtarını yaz.
+Koyu olacaksa `DARK_SECTIONS` kümesine de ekle. Arka plan rengini bileşenin içine
+**yazma** — sistem halleder, sen yazarsan sıralama yine bozulur.

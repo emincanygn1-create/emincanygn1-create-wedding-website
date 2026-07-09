@@ -70,9 +70,14 @@ export const DARK_SECTIONS = new Set<SectionKey>(["quote", "moments", "closing"]
 
 export type SectionTone = "light" | "muted" | "dark";
 
+/**
+ * Krem #FAF6EC, açık zeytin #E8ECDF.
+ * Opaklık KULLANMA: %60 açık zeytin, kremin üstünde #EFF0E4 ediyor
+ * ve iki renk birbirinden ayırt edilemiyor.
+ */
 const TONE_CLASS: Record<SectionTone, string> = {
   light: "bg-cream",
-  muted: "bg-olive-100/60",
+  muted: "bg-olive-100",
   dark: "",
 };
 
