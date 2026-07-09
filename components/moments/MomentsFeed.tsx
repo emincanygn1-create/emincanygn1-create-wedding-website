@@ -1,6 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
+import Spinner from "@/components/Spinner";
 import Link from "next/link";
 import Lightbox from "@/components/Lightbox";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -101,7 +103,16 @@ export default function MomentsFeed({
     setError("");
   };
 
+  const uploadInFlight = useRef(false);
+
   const handleUpload = async () => {
+    if (uploadInFlight.current) return;
+
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      setError(d.moments.offline);
+      return;
+    }
+
     if (!name.trim()) {
       setError(d.moments.needName);
       return;
@@ -111,6 +122,7 @@ export default function MomentsFeed({
       return;
     }
 
+    uploadInFlight.current = true;
     setUploading(true);
     setError("");
 
@@ -122,6 +134,7 @@ export default function MomentsFeed({
       .upload(path, file, { cacheControl: "3600", upsert: false });
 
     if (uploadError) {
+      uploadInFlight.current = false;
       setUploading(false);
       setError(d.moments.error);
       return;
@@ -140,6 +153,7 @@ export default function MomentsFeed({
       .select()
       .single();
 
+    uploadInFlight.current = false;
     setUploading(false);
 
     if (insertError || !inserted) {
@@ -219,12 +233,12 @@ export default function MomentsFeed({
                   onClick={() => setOpenIndex(i)}
                   className="group relative block w-full aspect-square rounded-xl overflow-hidden bg-olive-100 border border-olive-200"
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image
                     src={photo.url}
                     alt={photo.caption || ""}
-                    loading="lazy"
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    fill
+                    sizes="(max-width: 640px) 50vw, 300px"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-olive-900/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="absolute bottom-0 left-0 right-0 p-3 text-left opacity-0 group-hover:opacity-100 transition-opacity">
@@ -247,7 +261,7 @@ export default function MomentsFeed({
       {/* Yükleme butonu */}
       <button
         onClick={() => setDialogOpen(true)}
-        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 bg-olive-700 text-cream rounded-full px-7 py-4 text-sm tracking-widest uppercase shadow-xl hover:bg-olive-800 transition-colors"
+        className="safe-offset-bottom fixed left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 bg-olive-700 text-cream rounded-full px-7 py-4 text-sm tracking-widest uppercase shadow-xl hover:bg-olive-800 transition-colors"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
           <path
@@ -322,7 +336,9 @@ export default function MomentsFeed({
                 className={`${inputClass} resize-none`}
               />
 
-              {error && <p className="text-rust text-sm font-body">{error}</p>}
+              <div aria-live="polite">
+                {error && <p className="font-body text-sm text-rust">{error}</p>}
+              </div>
 
               <div className="flex gap-3 pt-2">
                 <button
@@ -335,8 +351,10 @@ export default function MomentsFeed({
                 <button
                   onClick={handleUpload}
                   disabled={uploading}
-                  className="flex-1 bg-olive-700 text-cream rounded-full py-3 text-sm tracking-wide hover:bg-olive-800 transition-colors disabled:opacity-50"
+                  aria-busy={uploading}
+                  className="flex flex-1 items-center justify-center gap-2.5 rounded-full bg-olive-700 py-3 text-sm tracking-wide text-cream transition-colors hover:bg-olive-800 disabled:cursor-not-allowed disabled:opacity-50"
                 >
+                  {uploading && <Spinner />}
                   {uploading ? d.moments.uploading : d.moments.share}
                 </button>
               </div>
@@ -361,7 +379,7 @@ export default function MomentsFeed({
           />
           <button
             onClick={() => handleLike(current)}
-            className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-[80] flex items-center gap-2 rounded-full px-6 py-3 text-sm font-body transition-colors ${
+            className={`safe-offset-bottom fixed left-1/2 z-[80] flex -translate-x-1/2 items-center gap-2 rounded-full px-6 py-3 font-body text-sm transition-colors ${
               liked.includes(current.id)
                 ? "bg-rust text-cream"
                 : "bg-cream/90 text-olive-800 hover:bg-cream"

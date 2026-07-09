@@ -1,13 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 /**
  * Görseli aşağıdan yukarı açılan bir perdeyle gösterir.
  *
- * Önemli: parallax kaydırması ayrı bir katmana (.img-parallax) uygulanır.
- * Görselin kendi `transform`'u perde animasyonuna aittir; ikisi aynı
- * elemana yazılırsa biri diğerini ezer ve animasyon hiç görünmez.
+ * Katmanlar ayrı: perde (clip-path), parallax (translate), görsel (scale).
+ * Üçü aynı elemana yazılırsa biri diğerinin transform'unu ezer.
  */
 export default function RevealImage({
   src,
@@ -17,6 +17,8 @@ export default function RevealImage({
   delay = 0,
   parallax = false,
   strength = 20,
+  sizes = "(max-width: 640px) 50vw, 33vw",
+  priority = false,
 }: {
   src: string;
   alt?: string;
@@ -25,6 +27,9 @@ export default function RevealImage({
   delay?: number;
   parallax?: boolean;
   strength?: number;
+  sizes?: string;
+  /** Ekranın üstünde görünen görseller için: erken yükle. */
+  priority?: boolean;
 }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);
@@ -102,12 +107,14 @@ export default function RevealImage({
       } ${className}`}
     >
       <div ref={layerRef} className="img-parallax">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={src}
           alt={alt}
-          loading="lazy"
-          className={`h-full w-full object-cover ${imgClassName}`}
+          fill
+          sizes={sizes}
+          priority={priority}
+          loading={priority ? undefined : "lazy"}
+          className={`object-cover ${imgClassName}`}
         />
       </div>
     </div>

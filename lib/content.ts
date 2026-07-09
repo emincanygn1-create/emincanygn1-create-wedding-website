@@ -60,13 +60,17 @@ export async function getWishCount(): Promise<number> {
   return count ?? 0;
 }
 
-export async function getGuestPhotos(): Promise<GuestPhoto[]> {
+export async function getGuestPhotos(limit?: number): Promise<GuestPhoto[]> {
   const supabase = await createClient();
-  const { data } = await supabase
+
+  let query = supabase
     .from("guest_photos")
     .select("*")
     .order("created_at", { ascending: false });
 
+  if (limit) query = query.limit(limit);
+
+  const { data } = await query;
   return (data as GuestPhoto[]) ?? [];
 }
 

@@ -79,6 +79,7 @@ export default function Gallery({
                   <RevealImage
                     src={photo.url}
                     delay={Math.min(i, 6) * 90}
+                    sizes="(max-width: 640px) 50vw, 300px"
                     className="h-full w-full"
                     imgClassName="transition-transform duration-700 group-hover:scale-110"
                   />

@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import Reveal from "./Reveal";
+import Spinner from "./Spinner";
 import RevealText from "./RevealText";
 import WishCard from "./WishCard";
 import LanguageSwitcher from "./LanguageSwitcher";
@@ -40,6 +41,8 @@ export default function WishesBoard({
   const [sending, setSending] = useState(false);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
+  const [canRetry, setCanRetry] = useState(false);
+  const inFlight = useRef(false);
 
   useEffect(() => setLiked(readLiked(WISH_LIKES_KEY)), []);
 
@@ -55,43 +58,64 @@ export default function WishesBoard({
     return copy;
   }, [wishes, sort]);
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (honeypot) return;
+  const submit = async () => {
+    if (inFlight.current) return;
 
     if (!name.trim() || !message.trim()) {
       setError(d.wishes.required);
+      setCanRetry(false);
       return;
     }
 
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      setError(d.wishes.offline);
+      setCanRetry(true);
+      return;
+    }
+
+    inFlight.current = true;
     setSending(true);
     setError("");
     setNotice("");
 
-    const supabase = createClient();
-    const { data, error: insertError } = await supabase
-      .from("wishes")
-      .insert({
-        name: name.trim().slice(0, 60),
-        message: message.trim().slice(0, 800),
-        locale,
-      })
-      .select()
-      .single();
+    try {
+      const supabase = createClient();
+      const { data, error: insertError } = await supabase
+        .from("wishes")
+        .insert({
+          name: name.trim().slice(0, 60),
+          message: message.trim().slice(0, 800),
+          locale,
+        })
+        .select()
+        .single();
 
-    setSending(false);
+      if (insertError || !data) {
+        setError(d.wishes.error);
+        setCanRetry(true);
+        return;
+      }
 
-    if (insertError || !data) {
+      setWishes((prev) => [data as Wish, ...prev]);
+      setSort("new");
+      setName("");
+      setMessage("");
+      setCanRetry(false);
+      setNotice(d.wishes.success);
+      setTimeout(() => setNotice(""), 4000);
+    } catch {
       setError(d.wishes.error);
-      return;
+      setCanRetry(true);
+    } finally {
+      inFlight.current = false;
+      setSending(false);
     }
+  };
 
-    setWishes((prev) => [data as Wish, ...prev]);
-    setSort("new");
-    setName("");
-    setMessage("");
-    setNotice(d.wishes.success);
-    setTimeout(() => setNotice(""), 4000);
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (honeypot) return;
+    void submit();
   };
 
   const handleLike = async (wish: Wish) => {
@@ -189,14 +213,31 @@ export default function WishesBoard({
                 className={`${inputClass} resize-none`}
               />
 
-              {error && <p className="font-body text-sm text-rust">{error}</p>}
-              {notice && <p className="font-body text-sm text-olive-600">{notice}</p>}
+              <div aria-live="polite" className="min-h-[1.25rem]">
+                {error && (
+                  <p className="flex flex-wrap items-center gap-2 font-body text-sm text-rust">
+                    <span>{error}</span>
+                    {canRetry && (
+                      <button
+                        type="button"
+                        onClick={() => void submit()}
+                        className="underline underline-offset-2"
+                      >
+                        {d.wishes.retry}
+                      </button>
+                    )}
+                  </p>
+                )}
+                {notice && <p className="font-body text-sm text-olive-600">{notice}</p>}
+              </div>
 
               <button
                 type="submit"
                 disabled={sending}
-                className="w-full rounded-full bg-olive-700 py-3.5 text-sm uppercase tracking-widest text-cream transition-colors hover:bg-olive-800 disabled:opacity-50"
+                aria-busy={sending}
+                className="flex w-full items-center justify-center gap-2.5 rounded-full bg-olive-700 py-3.5 text-sm uppercase tracking-widest text-cream transition-colors hover:bg-olive-800 disabled:cursor-not-allowed disabled:opacity-50"
               >
+                {sending && <Spinner />}
                 {sending ? d.wishes.submitting : d.wishes.submit}
               </button>
             </form>

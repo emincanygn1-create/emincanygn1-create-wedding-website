@@ -50,7 +50,7 @@ export default function MusicPlayer({
       <button
         onClick={toggle}
         aria-label={playing ? d.music.pause : d.music.play}
-        className="fixed bottom-5 left-5 z-40 w-12 h-12 rounded-full bg-olive-700/90 text-cream shadow-lg backdrop-blur flex items-center justify-center hover:bg-olive-800 transition-colors"
+        className="safe-offset-bottom fixed left-5 z-40 h-12 w-12 rounded-full bg-olive-700/90 text-cream shadow-lg backdrop-blur flex items-center justify-center hover:bg-olive-800 transition-colors"
       >
         <svg
           width="20"

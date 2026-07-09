@@ -28,6 +28,7 @@ export default function PhotoFrame({
             delay={delay}
             parallax
             strength={16}
+            sizes="(max-width: 640px) 208px, 256px"
             className="h-full w-full"
           />
         ) : (

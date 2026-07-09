@@ -9,6 +9,28 @@ html {
 body {
   background-color: #faf6ec;
   color: #2c3823;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+/* iOS, 16px'ten küçük yazılı bir alana odaklanınca sayfayı zorla yakınlaştırır.
+   Formlarda bunu istemiyoruz. */
+@media (max-width: 767px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+/* Telefonun alt çubuğu / ana ekran çizgisi butonların üstüne binmesin. */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.safe-offset-bottom {
+  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
 }
 
 ::selection {
@@ -176,9 +198,14 @@ body {
 /* ---------------------------------------------
    Davetiye kapısı
    --------------------------------------------- */
+/* iOS Safari body üzerinde overflow:hidden'ı yok sayar.
+   Bu yüzden sayfayı sabitleyip kaydırma konumunu JS ile koruyoruz. */
 .gate-locked {
+  position: fixed;
+  inset: 0;
+  width: 100%;
   overflow: hidden;
-  height: 100vh;
+  overscroll-behavior: none;
 }
 
 /* ---------------------------------------------
@@ -439,4 +466,63 @@ body {
   position: absolute;
   top: 0;
   animation: celebrationFall ease-in forwards;
+}
+
+/* ---------------------------------------------
+   Küçük dokunuşlar: basınca hafif çöken butonlar
+   --------------------------------------------- */
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:not(:disabled):active,
+a.press:active {
+  transform: scale(0.985);
+}
+
+button,
+a.press {
+  transition:
+    transform 0.12s ease-out,
+    background-color 0.25s ease-out,
+    color 0.25s ease-out,
+    border-color 0.25s ease-out,
+    opacity 0.2s ease-out;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #c9a227;
+  outline-offset: 2px;
+}
+
+/* Yükleniyor göstergesi */
+@keyframes spinnerSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spinnerSpin 0.7s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button:not(:disabled):active,
+  a.press:active {
+    transform: none;
+  }
+  .spinner {
+    animation-duration: 2s;
+  }
 }

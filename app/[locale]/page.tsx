@@ -33,6 +33,7 @@ import { lz } from "@/lib/localize";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { defaultLocale, isLocale } from "@/lib/i18n/config";
 import { normalizeSections, type SectionKey } from "@/lib/sections";
+import { locales } from "@/lib/i18n/config";
 
 export const dynamic = "force-dynamic";
 
@@ -57,9 +58,17 @@ export async function generateMetadata({
     customDescription || [dateText, city].filter(Boolean).join(" · ");
   const image = content?.cover_photo_url ?? undefined;
 
+  const languages = Object.fromEntries(
+    locales.map((code) => [code, `/${code}`])
+  );
+
   return {
     title,
     description,
+    alternates: {
+      canonical: `/${locale}`,
+      languages,
+    },
     openGraph: {
       title,
       description,
@@ -91,7 +100,7 @@ export default async function Home({
     getGalleryPhotos(),
     getTopWishes(3),
     getWishCount(),
-    getGuestPhotos(),
+    getGuestPhotos(4),
   ]);
 
   const dateText = formatDate(content?.wedding_date, locale);
@@ -156,6 +165,7 @@ export default async function Home({
           mapUrl: content?.reception_map_url || "",
           photoUrl: photos[1]?.url || null,
         }}
+        singleEvent={content?.single_event ?? false}
         d={d}
       />
     ),

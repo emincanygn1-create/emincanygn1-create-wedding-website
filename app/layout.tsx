@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Jost, Great_Vibes } from "next/font/google";
 import { headers, cookies } from "next/headers";
 import { defaultLocale, isLocale } from "@/lib/i18n/config";
+import { getSiteUrl } from "@/lib/siteUrl";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -27,8 +28,19 @@ const greatVibes = Great_Vibes({
 });
 
 export const metadata: Metadata = {
-  title: "İsim & İsim | Düğünümüz",
-  description: "Düğünümüze davetlisiniz.",
+  metadataBase: new URL(getSiteUrl()),
+  title: "Wedding",
+  description: "",
+  robots: { index: true, follow: true },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#3F4E32",
+  width: "device-width",
+  initialScale: 1,
+  // iOS'ta form alanına dokununca sayfa yakınlaşmasın, ama
+  // kullanıcı isterse yine de yakınlaştırabilsin.
+  maximumScale: 5,
 };
 
 export default async function RootLayout({

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import Reveal from "./Reveal";
+import Spinner from "./Spinner";
 import RevealText from "./RevealText";
 import { OrnamentDivider } from "./Ornament";
 import { createClient } from "@/lib/supabase/client";
@@ -37,6 +38,10 @@ export default function Rsvp({
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
+  const [canRetry, setCanRetry] = useState(false);
+
+  // Çift tıklama, Enter'a basılı tutma veya yavaş ağda ikinci gönderimi engeller.
+  const inFlight = useRef(false);
 
   const reset = () => {
     setName("");
@@ -48,40 +53,67 @@ export default function Rsvp({
     setMessage("");
     setSent(false);
     setError("");
+    setCanRetry(false);
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (honeypot) return; // bot tuzağı
+  const submit = async () => {
+    if (inFlight.current) return;
 
     if (!name.trim()) {
       setError(d.rsvp.required);
+      setCanRetry(false);
       return;
     }
 
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      setError(d.rsvp.offline);
+      setCanRetry(true);
+      return;
+    }
+
+    inFlight.current = true;
     setSending(true);
     setError("");
+    setCanRetry(false);
 
-    const supabase = createClient();
-    const { error: insertError } = await supabase.from("rsvps").insert({
-      name: name.trim().slice(0, 80),
-      email: email.trim(),
-      phone: phone.trim(),
-      attending,
-      guest_count: attending ? guestCount : 1,
-      side,
-      message: message.trim().slice(0, 1000),
-      locale,
-    });
+    try {
+      const supabase = createClient();
+      const { error: insertError } = await supabase.from("rsvps").insert({
+        name: name.trim().slice(0, 80),
+        email: email.trim(),
+        phone: phone.trim(),
+        attending,
+        guest_count: attending ? guestCount : 1,
+        side,
+        message: message.trim().slice(0, 1000),
+        locale,
+      });
 
-    setSending(false);
+      if (insertError) {
+        // Veritabanı kuralı reddettiyse form bu arada kapatılmış demektir.
+        const closed =
+          insertError.code === "42501" ||
+          insertError.message.toLowerCase().includes("row-level security");
 
-    if (insertError) {
+        setError(closed ? d.rsvp.closedNow : d.rsvp.error);
+        setCanRetry(!closed);
+        return;
+      }
+
+      setSent(true);
+    } catch {
       setError(d.rsvp.error);
-      return;
+      setCanRetry(true);
+    } finally {
+      inFlight.current = false;
+      setSending(false);
     }
+  };
 
-    setSent(true);
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (honeypot) return; // bot tuzağı
+    void submit();
   };
 
   return (
@@ -259,13 +291,30 @@ export default function Rsvp({
                 className={`${inputClass} resize-none`}
               />
 
-              {error && <p className="text-rust text-sm font-body">{error}</p>}
+              <div aria-live="polite" className="min-h-[1.25rem]">
+                {error && (
+                  <p className="flex flex-wrap items-center gap-2 font-body text-sm text-rust">
+                    <span>{error}</span>
+                    {canRetry && (
+                      <button
+                        type="button"
+                        onClick={() => void submit()}
+                        className="underline underline-offset-2"
+                      >
+                        {d.rsvp.retry}
+                      </button>
+                    )}
+                  </p>
+                )}
+              </div>
 
               <button
                 type="submit"
                 disabled={sending}
-                className="w-full bg-olive-700 text-cream rounded-full py-3.5 text-sm tracking-widest uppercase hover:bg-olive-800 transition-colors disabled:opacity-50"
+                aria-busy={sending}
+                className="flex w-full items-center justify-center gap-2.5 rounded-full bg-olive-700 py-3.5 text-sm uppercase tracking-widest text-cream transition-colors hover:bg-olive-800 disabled:cursor-not-allowed disabled:opacity-50"
               >
+                {sending && <Spinner />}
                 {sending ? d.rsvp.submitting : d.rsvp.submit}
               </button>
             </form>

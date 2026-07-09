@@ -55,6 +55,7 @@ export type SiteContent = Translations & {
   site_description: string;
   cover_eyebrow: string;
   gate_enabled: boolean;
+  single_event: boolean;
   section_config: unknown;
   rsvp_enabled: boolean;
   rsvp_deadline: string | null;

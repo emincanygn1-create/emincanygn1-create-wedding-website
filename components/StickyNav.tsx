@@ -75,7 +75,7 @@ export default function StickyNav({
 
   return (
     <nav
-      className={`sticky-nav fixed bottom-4 left-1/2 -translate-x-1/2 z-40 transition-all duration-500 ${
+      className={`sticky-nav safe-offset-bottom fixed left-1/2 z-40 -translate-x-1/2 transition-all duration-500 ${
         show ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6 pointer-events-none"
       }`}
     >

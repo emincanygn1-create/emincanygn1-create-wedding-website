@@ -40,6 +40,7 @@ export default function MomentsCta({
               key={photo.id}
               src={photo.url}
               delay={i * 110}
+              sizes="(max-width: 640px) 25vw, 180px"
               className="aspect-square overflow-hidden rounded-lg border border-cream/20"
             />
           ))}

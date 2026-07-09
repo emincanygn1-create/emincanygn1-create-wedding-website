@@ -42,6 +42,7 @@ const tr = {
     title: "Etkinlik Detayları",
     ceremony: "Nikah Töreni",
     reception: "Düğün Resepsiyonu",
+    combined: "Nikah ve Düğün",
     map: "Haritada Gör",
   },
   gallery: {
@@ -78,6 +79,9 @@ const tr = {
     again: "Yeni bir cevap gönder",
     error: "Bir hata oluştu, lütfen tekrar deneyin.",
     required: "Lütfen adınızı yazın.",
+    offline: "İnternet bağlantın yok gibi görünüyor. Bağlanınca tekrar dene.",
+    retry: "Tekrar dene",
+    closedNow: "Katılım formu az önce kapatıldı. Cevabın kaydedilemedi.",
     closedTitle: "Katılım Formu Kapandı",
     closedDefault:
       "Katılım bildirimi süresi doldu. Yine de bize ulaşmak isterseniz aşağıya bir dilek bırakabilirsiniz.",
@@ -108,6 +112,8 @@ const tr = {
     sortNew: "En yeni",
     sortTop: "En beğenilen",
     noneYet: "Henüz dilek yok. İlk yazan siz olun.",
+    offline: "İnternet bağlantın yok gibi görünüyor. Bağlanınca tekrar dene.",
+    retry: "Tekrar dene",
   },
   moments: {
     ctaEyebrow: "Siz de Katılın",
@@ -133,6 +139,8 @@ const tr = {
     needName: "Lütfen adınızı yazın.",
     needPhoto: "Lütfen bir fotoğraf seçin.",
     likes: "beğeni",
+    offline: "İnternet bağlantın yok gibi görünüyor. Bağlanınca tekrar dene.",
+    retry: "Tekrar dene",
     close: "Kapat",
     photoCount: "{n} fotoğraf",
   },
@@ -157,6 +165,11 @@ const tr = {
   },
   footer: {
     thanks: "Bizimle bu özel günü paylaştığınız için teşekkür ederiz.",
+  },
+  notFound: {
+    title: "Sayfa Bulunamadı",
+    text: "Aradığınız sayfa taşınmış veya hiç var olmamış olabilir.",
+    home: "Ana sayfaya dön",
   },
   common: {
     language: "Dil",
@@ -207,6 +220,7 @@ const en: Dict = {
     title: "Event Details",
     ceremony: "The Ceremony",
     reception: "The Reception",
+    combined: "Ceremony & Reception",
     map: "View on Map",
   },
   gallery: {
@@ -242,6 +256,9 @@ const en: Dict = {
     again: "Send another response",
     error: "Something went wrong, please try again.",
     required: "Please enter your name.",
+    offline: "You appear to be offline. Please try again once you reconnect.",
+    retry: "Try again",
+    closedNow: "The RSVP form has just been closed. Your answer was not saved.",
     closedTitle: "RSVP Is Now Closed",
     closedDefault:
       "The RSVP period has ended. If you would still like to reach us, please leave a wish below.",
@@ -272,6 +289,8 @@ const en: Dict = {
     sortNew: "Newest",
     sortTop: "Most loved",
     noneYet: "No wishes yet. Be the first to write one.",
+    offline: "You appear to be offline. Please try again once you reconnect.",
+    retry: "Try again",
   },
   moments: {
     ctaEyebrow: "Join In",
@@ -297,6 +316,8 @@ const en: Dict = {
     needName: "Please enter your name.",
     needPhoto: "Please choose a photo.",
     likes: "likes",
+    offline: "You appear to be offline. Please try again once you reconnect.",
+    retry: "Try again",
     close: "Close",
     photoCount: "{n} photos",
   },
@@ -321,6 +342,11 @@ const en: Dict = {
   },
   footer: {
     thanks: "Thank you for sharing this special day with us.",
+  },
+  notFound: {
+    title: "Page Not Found",
+    text: "The page you are looking for may have moved, or may never have existed.",
+    home: "Back to home",
   },
   common: {
     language: "Language",
@@ -369,6 +395,7 @@ const it: Dict = {
     title: "Dettagli dell'Evento",
     ceremony: "La Cerimonia",
     reception: "Il Ricevimento",
+    combined: "Cerimonia e Ricevimento",
     map: "Vedi sulla Mappa",
   },
   gallery: {
@@ -405,6 +432,9 @@ const it: Dict = {
     again: "Invia un'altra risposta",
     error: "Si è verificato un errore, riprovate.",
     required: "Inserite il vostro nome.",
+    offline: "Sembra che tu sia offline. Riprova quando torni online.",
+    retry: "Riprova",
+    closedNow: "Il modulo è stato appena chiuso. La tua risposta non è stata salvata.",
     closedTitle: "Le Conferme Sono Chiuse",
     closedDefault:
       "Il periodo per confermare la presenza è terminato. Se desiderate comunque scriverci, lasciate un augurio qui sotto.",
@@ -435,6 +465,8 @@ const it: Dict = {
     sortNew: "Più recenti",
     sortTop: "Più amati",
     noneYet: "Ancora nessun augurio. Scrivete il primo.",
+    offline: "Sembra che tu sia offline. Riprova quando torni online.",
+    retry: "Riprova",
   },
   moments: {
     ctaEyebrow: "Partecipate Anche Voi",
@@ -460,6 +492,8 @@ const it: Dict = {
     needName: "Inserite il vostro nome.",
     needPhoto: "Scegliete una foto.",
     likes: "mi piace",
+    offline: "Sembra che tu sia offline. Riprova quando torni online.",
+    retry: "Riprova",
     close: "Chiudi",
     photoCount: "{n} foto",
   },
@@ -484,6 +518,11 @@ const it: Dict = {
   },
   footer: {
     thanks: "Grazie per aver condiviso con noi questo giorno speciale.",
+  },
+  notFound: {
+    title: "Pagina Non Trovata",
+    text: "La pagina che cercate potrebbe essere stata spostata o non essere mai esistita.",
+    home: "Torna alla home",
   },
   common: {
     language: "Lingua",

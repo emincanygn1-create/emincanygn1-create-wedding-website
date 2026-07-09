@@ -9,6 +9,7 @@ import LanguageSwitcher from "./LanguageSwitcher";
 import type { Dict } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
 import { GATE_EVENT, GATE_SESSION_KEY } from "@/lib/gate";
+import { lockScroll, unlockScroll } from "@/lib/scrollLock";
 
 export default function InvitationGate({
   brideName,
@@ -47,16 +48,16 @@ export default function InvitationGate({
     }
 
     setHidden(false);
-    document.body.classList.add("gate-locked");
     window.scrollTo(0, 0);
+    lockScroll();
 
-    return () => document.body.classList.remove("gate-locked");
+    return () => unlockScroll(false);
   }, []);
 
   const handleOpen = () => {
     setClosing(true);
     window.sessionStorage.setItem(GATE_SESSION_KEY, "1");
-    document.body.classList.remove("gate-locked");
+    unlockScroll(false);
     window.dispatchEvent(new CustomEvent(GATE_EVENT));
     setTimeout(() => setHidden(true), 1100);
   };
@@ -81,7 +82,7 @@ export default function InvitationGate({
         <LanguageSwitcher current={locale} tone="light" />
       </div>
 
-      <div className="relative h-full flex flex-col items-center justify-center px-6 text-center text-cream">
+      <div className="relative flex h-full flex-col items-center justify-center px-6 text-center text-cream">
         {eyebrow && (
           <p className="eyebrow mb-6 animate-fadeIn text-gold-light">{eyebrow}</p>
         )}

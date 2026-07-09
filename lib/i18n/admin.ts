@@ -55,6 +55,11 @@ const tr = {
     gateHint:
       "Açıkken site tam ekran bir kapakla karşılar ve ziyaretçi \"Davetiyeyi Aç\" butonuna basana kadar sayfa kaydırılamaz; müzik de o an başlar. Kapalıyken site doğrudan açılır. Düğüne yaklaşınca açman yeterli.",
 
+    event: "Etkinlik",
+    singleEvent: "Nikah ve düğün aynı yerde",
+    singleEventHint:
+      "Açarsan iki ayrı kart yerine tek kart gösterilir. Mekân, tarih, adres ve harita bağlantısı nikah alanlarından alınır; iki saat de kartın içinde alt alta listelenir. Düğün mekânı alanlarını doldurmana gerek kalmaz.",
+
     rsvp: "Katılım Formu (RSVP)",
     rsvpEnabled: "Katılım formu açık",
     rsvpEnabledHint:
@@ -258,6 +263,11 @@ const it: AdminDict = {
     gateEnabled: "Porta dell'invito attiva",
     gateHint:
       "Quando è attiva, il sito accoglie con una copertina a schermo intero e la pagina non scorre finché non si preme \"Apri l'invito\"; in quel momento parte anche la musica. Quando è disattivata, il sito si apre direttamente. Attivala quando il matrimonio si avvicina.",
+
+    event: "Evento",
+    singleEvent: "Cerimonia e ricevimento nello stesso luogo",
+    singleEventHint:
+      "Se lo attivi viene mostrata una sola scheda invece di due. Luogo, data, indirizzo e link alla mappa vengono presi dai campi della cerimonia; i due orari sono elencati uno sotto l'altro nella scheda. Non serve compilare i campi del ricevimento.",
 
     rsvp: "Modulo di Conferma (RSVP)",
     rsvpEnabled: "Modulo di conferma attivo",

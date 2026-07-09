@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { GATE_EVENT, isGateOpen } from "@/lib/gate";
 
@@ -66,11 +67,19 @@ export default function BackgroundVideo({
     <div className={`absolute inset-0 overflow-hidden bg-olive-800 ${className}`}>
       {posterUrl && (
         <div
-          className={`absolute inset-0 bg-parallax animate-slowZoom transition-opacity duration-1000 ${
+          className={`absolute inset-0 animate-slowZoom transition-opacity duration-1000 ${
             posterVisible ? "opacity-100" : "opacity-0"
           }`}
-          style={{ backgroundImage: `url(${posterUrl})` }}
-        />
+        >
+          <Image
+            src={posterUrl}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+        </div>
       )}
 
       {showVideo && (
@@ -82,7 +91,7 @@ export default function BackgroundVideo({
           loop
           playsInline
           autoPlay={!waiting}
-          preload={waiting ? "metadata" : "auto"}
+          preload="metadata"
           onCanPlay={() => setReady(true)}
           onError={() => setFailed(true)}
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${

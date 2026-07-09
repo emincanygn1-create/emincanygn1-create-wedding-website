@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useCallback, useRef } from "react";
+import { lockScroll, unlockScroll } from "@/lib/scrollLock";
 
 export type LightboxItem = {
   url: string;
@@ -36,10 +37,10 @@ export default function Lightbox({
       if (e.key === "ArrowLeft") go(-1);
     };
     document.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
+    lockScroll();
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
+      unlockScroll();
     };
   }, [go, onClose]);
 
@@ -59,7 +60,7 @@ export default function Lightbox({
 
   return (
     <div
-      className="fixed inset-0 z-[70] bg-olive-900/95 flex items-center justify-center p-4"
+      className="fixed inset-0 z-[70] flex items-center justify-center bg-olive-900/95 p-4"
       onClick={onClose}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
@@ -105,7 +106,8 @@ export default function Lightbox({
         <img
           src={item.url}
           alt={item.caption || ""}
-          className="w-full max-h-[78vh] object-contain rounded-xl"
+          decoding="async"
+          className="max-h-[78svh] w-full rounded-xl object-contain"
         />
         {(item.caption || item.author) && (
           <figcaption className="mt-4 text-center">
