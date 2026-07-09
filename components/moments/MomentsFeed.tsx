@@ -35,10 +35,13 @@ function readLiked(): string[] {
 
 export default function MomentsFeed({
   initialPhotos,
+  uploadsEnabled,
   d,
   locale,
 }: {
   initialPhotos: GuestPhoto[];
+  /** Panelden kapatıldıysa yükleme butonu görünmez. */
+  uploadsEnabled: boolean;
   d: Dict;
   locale: Locale;
 }) {
@@ -61,15 +64,40 @@ export default function MomentsFeed({
     if (savedName) setName(savedName);
   }, []);
 
-  // Düğün sırasında yeni fotoğrafları sessizce çeker.
+  /**
+   * Düğün sırasında yeni fotoğrafları sessizce çeker.
+   * Bütün listeyi değil, sadece en sonuncudan yenilerini ister —
+   * 300 fotoğrafta her 25 saniyede koca bir JSON indirmemek için.
+   */
+  const newestAt = useRef<string | null>(null);
+
   const refresh = useCallback(async () => {
     const supabase = createClient();
-    const { data } = await supabase
+
+    let query = supabase
       .from("guest_photos")
       .select("*")
-      .order("created_at", { ascending: false });
-    if (data) setPhotos(data as GuestPhoto[]);
+      .order("created_at", { ascending: false })
+      .limit(60);
+
+    if (newestAt.current) query = query.gt("created_at", newestAt.current);
+
+    const { data } = await query;
+    if (!data || data.length === 0) return;
+
+    const fresh = data as GuestPhoto[];
+    newestAt.current = fresh[0].created_at;
+
+    setPhotos((prev) => {
+      const seen = new Set(prev.map((p) => p.id));
+      const added = fresh.filter((p) => !seen.has(p.id));
+      return added.length ? [...added, ...prev] : prev;
+    });
   }, []);
+
+  useEffect(() => {
+    if (initialPhotos.length > 0) newestAt.current = initialPhotos[0].created_at;
+  }, [initialPhotos]);
 
   useEffect(() => {
     const timer = setInterval(refresh, 25000);
@@ -258,7 +286,14 @@ export default function MomentsFeed({
         )}
       </div>
 
-      {/* Yükleme butonu */}
+      {/* Yükleme butonu — sadece yükleme açıkken */}
+      {!uploadsEnabled && (
+        <div className="safe-offset-bottom fixed left-1/2 z-40 w-[min(92vw,26rem)] -translate-x-1/2 rounded-full border border-olive-300 bg-cream/95 px-6 py-3.5 text-center font-body text-xs leading-relaxed text-olive-600 shadow-lg backdrop-blur">
+          {d.moments.uploadsClosed}
+        </div>
+      )}
+
+      {uploadsEnabled && (
       <button
         onClick={() => setDialogOpen(true)}
         className="safe-offset-bottom fixed left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 bg-olive-700 text-cream rounded-full px-7 py-4 text-sm tracking-widest uppercase shadow-xl hover:bg-olive-800 transition-colors"
@@ -274,6 +309,7 @@ export default function MomentsFeed({
         </svg>
         {d.moments.upload}
       </button>
+      )}
 
       {/* Yükleme penceresi */}
       {dialogOpen && (

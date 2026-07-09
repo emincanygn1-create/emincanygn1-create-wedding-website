@@ -4,7 +4,7 @@ import RevealText from "@/components/RevealText";
 import StoryEntry from "@/components/StoryEntry";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { OrnamentDivider } from "@/components/Ornament";
-import { getStoryPosts } from "@/lib/content";
+import { getPublicStoryPosts } from "@/lib/publicContent";
 import { lzRow } from "@/lib/localize";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { defaultLocale, isLocale } from "@/lib/i18n/config";
@@ -18,7 +18,7 @@ export default async function StoryPage({
 }) {
   const locale = isLocale(params.locale) ? params.locale : defaultLocale;
   const d = getDictionary(locale);
-  const posts = await getStoryPosts();
+  const posts = await getPublicStoryPosts();
 
   return (
     <div className="min-h-screen bg-cream">

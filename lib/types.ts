@@ -56,6 +56,7 @@ export type SiteContent = Translations & {
   cover_eyebrow: string;
   gate_enabled: boolean;
   single_event: boolean;
+  uploads_enabled: boolean;
   section_config: unknown;
   rsvp_enabled: boolean;
   rsvp_deadline: string | null;
@@ -92,6 +93,7 @@ export type Rsvp = {
   attending: boolean;
   guest_count: number;
   side: string;
+  diet: string;
   message: string;
   locale: string;
   created_at: string;

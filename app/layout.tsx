@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Jost, Great_Vibes } from "next/font/google";
 import { headers, cookies } from "next/headers";
 import { defaultLocale, isLocale } from "@/lib/i18n/config";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { getSiteUrl } from "@/lib/siteUrl";
 import "./globals.css";
 
@@ -64,6 +66,8 @@ export default async function RootLayout({
     <html lang={lang}>
       <body className={`${fraunces.variable} ${jost.variable} ${greatVibes.variable} font-body`}>
         {children}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

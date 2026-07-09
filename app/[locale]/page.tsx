@@ -23,15 +23,13 @@ import ScrollProgress from "@/components/ScrollProgress";
 import StickyNav from "@/components/StickyNav";
 import MusicPlayer from "@/components/MusicPlayer";
 
+import { getTopWishes, getWishCount, getGuestPhotos } from "@/lib/content";
 import {
-  getSiteContent,
-  getGalleryPhotos,
-  getTopWishes,
-  getWishCount,
-  getGuestPhotos,
-  getStoryPosts,
-  getFaqs,
-} from "@/lib/content";
+  getPublicSiteContent,
+  getPublicGalleryPhotos,
+  getPublicStoryPosts,
+  getPublicFaqs,
+} from "@/lib/publicContent";
 import { formatDate } from "@/lib/formatDate";
 import { lz } from "@/lib/localize";
 import { getDictionary } from "@/lib/i18n/dictionaries";
@@ -53,7 +51,7 @@ export async function generateMetadata({
   params: { locale: string };
 }): Promise<Metadata> {
   const locale = isLocale(params.locale) ? params.locale : defaultLocale;
-  const content = await getSiteContent();
+  const content = await getPublicSiteContent();
 
   const names = `${content?.bride_name ?? ""} & ${content?.groom_name ?? ""}`.trim();
   const customTitle = lz(content, "site_title", locale);
@@ -106,13 +104,13 @@ export default async function Home({
 
   const [content, photos, topWishes, wishCount, guestPhotos, storyPosts, faqs] =
     await Promise.all([
-      getSiteContent(),
-      getGalleryPhotos(),
+      getPublicSiteContent(),
+      getPublicGalleryPhotos(),
       getTopWishes(3),
       getWishCount(),
       getGuestPhotos(4),
-      getStoryPosts(),
-      getFaqs(),
+      getPublicStoryPosts(),
+      getPublicFaqs(),
     ]);
 
   const dateText = formatDate(content?.wedding_date, locale);

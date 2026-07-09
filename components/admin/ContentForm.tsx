@@ -268,6 +268,29 @@ export default function ContentForm({
         </label>
       </section>
 
+      {/* --- Misafir yükleme --- */}
+      <section className="space-y-4 rounded-2xl border border-olive-200 bg-white p-6">
+        <h2 className="eyebrow">{t.content.uploads}</h2>
+        <label className="flex cursor-pointer items-start gap-3">
+          <input
+            type="checkbox"
+            checked={form.uploads_enabled ?? false}
+            onChange={(e) =>
+              setForm((prev) => ({ ...prev, uploads_enabled: e.target.checked }))
+            }
+            className="mt-1 h-4 w-4 accent-[#3F4E32]"
+          />
+          <span>
+            <span className="block font-body text-sm text-olive-800">
+              {t.content.uploadsEnabled}
+            </span>
+            <span className="mt-1 block font-body text-xs leading-relaxed text-olive-400">
+              {t.content.uploadsHint}
+            </span>
+          </span>
+        </label>
+      </section>
+
       {/* --- Etkinlik --- */}
       <section className="space-y-4 rounded-2xl border border-olive-200 bg-white p-6">
         <h2 className="eyebrow">{t.content.event}</h2>

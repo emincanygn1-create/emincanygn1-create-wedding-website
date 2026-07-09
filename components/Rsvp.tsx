@@ -32,6 +32,7 @@ export default function Rsvp({
   const [attending, setAttending] = useState(true);
   const [guestCount, setGuestCount] = useState(1);
   const [side, setSide] = useState("");
+  const [diet, setDiet] = useState("");
   const [message, setMessage] = useState("");
   const [honeypot, setHoneypot] = useState("");
 
@@ -39,6 +40,7 @@ export default function Rsvp({
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
   const [canRetry, setCanRetry] = useState(false);
+  const [duplicateWarning, setDuplicateWarning] = useState(false);
 
   // Çift tıklama, Enter'a basılı tutma veya yavaş ağda ikinci gönderimi engeller.
   const inFlight = useRef(false);
@@ -50,13 +52,15 @@ export default function Rsvp({
     setAttending(true);
     setGuestCount(1);
     setSide("");
+    setDiet("");
     setMessage("");
     setSent(false);
+    setDuplicateWarning(false);
     setError("");
     setCanRetry(false);
   };
 
-  const submit = async () => {
+  const submit = async (force = false) => {
     if (inFlight.current) return;
 
     if (!name.trim()) {
@@ -78,6 +82,23 @@ export default function Rsvp({
 
     try {
       const supabase = createClient();
+
+      // Aynı isimle daha önce cevap gönderilmiş mi?
+      // Sadece uyarıyoruz — engellemek yanlış olur, aynı isimde iki kişi olabilir.
+      if (!force) {
+        const { count } = await supabase
+          .from("rsvps")
+          .select("id", { count: "exact", head: true })
+          .ilike("name", name.trim());
+
+        if (count && count > 0) {
+          setDuplicateWarning(true);
+          inFlight.current = false;
+          setSending(false);
+          return;
+        }
+      }
+
       const { error: insertError } = await supabase.from("rsvps").insert({
         name: name.trim().slice(0, 80),
         email: email.trim(),
@@ -85,6 +106,7 @@ export default function Rsvp({
         attending,
         guest_count: attending ? guestCount : 1,
         side,
+        diet: diet.trim().slice(0, 300),
         message: message.trim().slice(0, 1000),
         locale,
       });
@@ -101,6 +123,7 @@ export default function Rsvp({
       }
 
       setSent(true);
+      setDuplicateWarning(false);
     } catch {
       setError(d.rsvp.error);
       setCanRetry(true);
@@ -282,6 +305,22 @@ export default function Rsvp({
                 </div>
               )}
 
+              {attending && (
+                <div>
+                  <input
+                    type="text"
+                    value={diet}
+                    onChange={(e) => setDiet(e.target.value)}
+                    placeholder={d.rsvp.diet}
+                    maxLength={300}
+                    className={inputClass}
+                  />
+                  <p className="mt-1.5 font-body text-[11px] text-olive-400">
+                    {d.rsvp.dietHint}
+                  </p>
+                </div>
+              )}
+
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
@@ -290,6 +329,21 @@ export default function Rsvp({
                 maxLength={1000}
                 className={`${inputClass} resize-none`}
               />
+
+              {duplicateWarning && (
+                <div className="rounded-lg border border-gold/50 bg-gold/5 p-4">
+                  <p className="mb-3 font-body text-sm text-olive-700">
+                    {d.rsvp.duplicate}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => void submit(true)}
+                    className="rounded-full bg-olive-700 px-5 py-2 text-xs tracking-wide text-cream transition-colors hover:bg-olive-800"
+                  >
+                    {d.rsvp.duplicateConfirm}
+                  </button>
+                </div>
+              )}
 
               <div aria-live="polite" className="min-h-[1.25rem]">
                 {error && (

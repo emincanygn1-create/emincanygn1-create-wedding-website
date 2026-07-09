@@ -41,6 +41,16 @@ export default function RsvpTable({
     };
   }, [rsvps]);
 
+  // Aynı isim birden fazla kez geçiyorsa işaretle.
+  const duplicates = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const r of rsvps) {
+      const key = r.name.trim().toLowerCase();
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    }
+    return counts;
+  }, [rsvps]);
+
   const rows = useMemo(() => {
     if (filter === "yes") return rsvps.filter((r) => r.attending);
     if (filter === "no") return rsvps.filter((r) => !r.attending);
@@ -63,6 +73,7 @@ export default function RsvpTable({
       t.rsvps.status,
       t.rsvps.people,
       t.rsvps.side,
+      t.rsvps.diet,
       t.rsvps.note,
       "Dil / Lingua",
     ];
@@ -78,6 +89,7 @@ export default function RsvpTable({
         r.attending ? t.rsvps.attending : t.rsvps.declined,
         r.attending ? String(r.guest_count) : "0",
         SIDE_LABEL[r.side] ?? r.side,
+        r.diet,
         r.message,
         (LOCALE_LABEL[r.locale] ?? r.locale) || "",
       ]
@@ -155,6 +167,7 @@ export default function RsvpTable({
                 <th className="px-4 py-3">{t.rsvps.status}</th>
                 <th className="px-4 py-3">{t.rsvps.people}</th>
                 <th className="px-4 py-3">{t.rsvps.side}</th>
+                <th className="px-4 py-3">{t.rsvps.diet}</th>
                 <th className="px-4 py-3">{t.rsvps.note}</th>
                 <th className="px-4 py-3">{t.rsvps.date}</th>
                 <th className="px-4 py-3" />
@@ -168,6 +181,11 @@ export default function RsvpTable({
                     <span className="ml-2 text-[10px] text-olive-400">
                       {LOCALE_LABEL[r.locale] ?? ""}
                     </span>
+                    {(duplicates.get(r.name.trim().toLowerCase()) ?? 0) > 1 && (
+                      <span className="ml-2 rounded-full bg-gold/15 px-2 py-0.5 text-[10px] text-gold-dark">
+                        {t.rsvps.duplicate}
+                      </span>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-olive-600">
                     {r.email && <div>{r.email}</div>}
@@ -190,6 +208,9 @@ export default function RsvpTable({
                   </td>
                   <td className="px-4 py-3 text-olive-600">
                     {SIDE_LABEL[r.side] ?? r.side}
+                  </td>
+                  <td className="max-w-[10rem] px-4 py-3 text-olive-600">
+                    {r.diet || "—"}
                   </td>
                   <td className="px-4 py-3 text-olive-600 max-w-xs whitespace-pre-line">
                     {r.message || "—"}

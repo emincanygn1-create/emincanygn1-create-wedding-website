@@ -27,9 +27,11 @@ export default async function AdminLayout({
     { href: "/admin/story", label: t.nav.story },
     { href: "/admin/faq", label: t.nav.faq },
     { href: "/admin/invite", label: t.nav.invite },
+    { href: "/admin/qr", label: t.nav.qr },
     { href: "/admin/rsvps", label: t.nav.rsvps },
     { href: "/admin/wishes", label: t.nav.wishes },
     { href: "/admin/moments", label: t.nav.moments },
+    { href: "/admin/backup", label: t.nav.backup },
   ];
 
   return (

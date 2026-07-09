@@ -1,5 +1,5 @@
 import MomentsFeed from "@/components/moments/MomentsFeed";
-import { getGuestPhotos } from "@/lib/content";
+import { getGuestPhotos, getSiteContent } from "@/lib/content";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { defaultLocale, isLocale } from "@/lib/i18n/config";
 
@@ -12,7 +12,15 @@ export default async function MomentsPage({
 }) {
   const locale = isLocale(params.locale) ? params.locale : defaultLocale;
   const d = getDictionary(locale);
-  const photos = await getGuestPhotos();
 
-  return <MomentsFeed initialPhotos={photos} d={d} locale={locale} />;
+  const [photos, content] = await Promise.all([getGuestPhotos(), getSiteContent()]);
+
+  return (
+    <MomentsFeed
+      initialPhotos={photos}
+      uploadsEnabled={content?.uploads_enabled ?? false}
+      d={d}
+      locale={locale}
+    />
+  );
 }

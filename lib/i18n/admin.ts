@@ -14,6 +14,8 @@ const tr = {
     content: "Site İçeriği",
     gallery: "Galeri",
     invite: "Davetiye Linki",
+    qr: "QR Kod",
+    backup: "Yedekleme",
     story: "Hikayemiz",
     faq: "Sıkça Sorulan Sorular",
     rsvps: "Katılımlar",
@@ -56,6 +58,11 @@ const tr = {
     gateEnabled: "Davetiye kapısı açık",
     gateHint:
       "Açıkken site tam ekran bir kapakla karşılar ve ziyaretçi \"Davetiyeyi Aç\" butonuna basana kadar sayfa kaydırılamaz; müzik de o an başlar. Kapalıyken site doğrudan açılır. Düğüne yaklaşınca açman yeterli.",
+
+    uploads: "Misafir Fotoğraf Yükleme",
+    uploadsEnabled: "Misafirler fotoğraf yükleyebilir",
+    uploadsHint:
+      "Kapalıyken Anı Duvarı sayfası görünür ama yükleme butonu çalışmaz ve veritabanı yeni fotoğraf kabul etmez. Düğün sabahı aç, düğünden birkaç gün sonra kapat.",
 
     event: "Etkinlik",
     singleEvent: "Nikah ve düğün aynı yerde",
@@ -209,6 +216,33 @@ const tr = {
     whatsapp: "WhatsApp'ta gönder",
     preview: "Mesaj önizlemesi",
   },
+  qr: {
+    title: "QR Kod",
+    intro:
+      "Masalara koyacağın kartlar için. Misafir kamerayı tutar, Anı Duvarı açılır — adres yazmasına gerek kalmaz.",
+    target: "Hangi sayfa?",
+    home: "Ana sayfa",
+    moments: "Anı Duvarı",
+    wishes: "Dilekler",
+    size: "Boyut",
+    download: "PNG indir",
+    print: "Yazdır",
+  },
+  backup: {
+    title: "Yedekleme",
+    intro:
+      "Ücretsiz planda otomatik yedek yok. Düğünden sonra buradan her şeyi indir ve bir yere kopyala.",
+    rsvps: "Katılım cevapları",
+    wishes: "Dilekler",
+    photos: "Misafir fotoğrafı adresleri",
+    story: "Hikayemiz",
+    faqs: "Sıkça sorulan sorular",
+    downloadAll: "Hepsini JSON olarak indir",
+    photoList: "Fotoğraf adreslerini indir (.txt)",
+    photoNote:
+      "Fotoğrafların kendisi Supabase'de duruyor. Adres listesini indirdikten sonra bir indirme aracıyla (örn. wget -i liste.txt) hepsini tek seferde çekebilirsin.",
+    records: "kayıt",
+  },
   rsvps: {
     title: "Katılım Cevapları",
     intro:
@@ -226,9 +260,11 @@ const tr = {
     status: "Durum",
     people: "Kişi",
     side: "Taraf",
+    diet: "Yemek",
     note: "Not",
     date: "Tarih",
     empty: "Henüz cevap yok.",
+    duplicate: "mükerrer",
   },
   wishes: {
     title: "Dilekler",
@@ -256,6 +292,8 @@ const it: AdminDict = {
     content: "Contenuti del Sito",
     gallery: "Galleria",
     invite: "Link dell'Invito",
+    qr: "Codice QR",
+    backup: "Backup",
     story: "La Nostra Storia",
     faq: "Domande Frequenti",
     rsvps: "Conferme",
@@ -298,6 +336,11 @@ const it: AdminDict = {
     gateEnabled: "Porta dell'invito attiva",
     gateHint:
       "Quando è attiva, il sito accoglie con una copertina a schermo intero e la pagina non scorre finché non si preme \"Apri l'invito\"; in quel momento parte anche la musica. Quando è disattivata, il sito si apre direttamente. Attivala quando il matrimonio si avvicina.",
+
+    uploads: "Caricamento Foto degli Ospiti",
+    uploadsEnabled: "Gli ospiti possono caricare foto",
+    uploadsHint:
+      "Quando è disattivato la pagina Muro dei Ricordi resta visibile, ma il pulsante di caricamento non funziona e il database non accetta nuove foto. Attivalo la mattina del matrimonio.",
 
     event: "Evento",
     singleEvent: "Cerimonia e ricevimento nello stesso luogo",
@@ -452,6 +495,33 @@ const it: AdminDict = {
     whatsapp: "Invia su WhatsApp",
     preview: "Anteprima del messaggio",
   },
+  qr: {
+    title: "Codice QR",
+    intro:
+      "Per i cartoncini sui tavoli. L'ospite inquadra con la fotocamera e si apre il Muro dei Ricordi, senza digitare l'indirizzo.",
+    target: "Quale pagina?",
+    home: "Home page",
+    moments: "Muro dei Ricordi",
+    wishes: "Auguri",
+    size: "Dimensione",
+    download: "Scarica PNG",
+    print: "Stampa",
+  },
+  backup: {
+    title: "Backup",
+    intro:
+      "Il piano gratuito non prevede backup automatici. Dopo il matrimonio scarica tutto da qui e mettilo al sicuro.",
+    rsvps: "Conferme di partecipazione",
+    wishes: "Auguri",
+    photos: "Indirizzi delle foto degli ospiti",
+    story: "La nostra storia",
+    faqs: "Domande frequenti",
+    downloadAll: "Scarica tutto in JSON",
+    photoList: "Scarica gli indirizzi delle foto (.txt)",
+    photoNote:
+      "Le foto restano su Supabase. Scaricato l'elenco, puoi prenderle tutte in una volta con uno strumento come wget -i elenco.txt.",
+    records: "record",
+  },
   rsvps: {
     title: "Conferme di Partecipazione",
     intro:
@@ -469,9 +539,11 @@ const it: AdminDict = {
     status: "Stato",
     people: "Persone",
     side: "Parte",
+    diet: "Dieta",
     note: "Nota",
     date: "Data",
     empty: "Ancora nessuna risposta.",
+    duplicate: "duplicato",
   },
   wishes: {
     title: "Auguri",

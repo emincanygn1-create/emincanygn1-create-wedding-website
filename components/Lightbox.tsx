@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useCallback, useRef } from "react";
 import { lockScroll, unlockScroll } from "@/lib/scrollLock";
 
@@ -102,13 +103,18 @@ export default function Lightbox({
         className="max-w-4xl w-full animate-lightboxIn"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={item.url}
-          alt={item.caption || ""}
-          decoding="async"
-          className="max-h-[78svh] w-full rounded-xl object-contain"
-        />
+        {/* Ham dosya yerine optimize edilmiş görsel: düğün gecesi
+            yüzlerce misafir aynı fotoğrafa tıklayınca bant genişliği yanmasın. */}
+        <div className="relative h-[70svh] w-full">
+          <Image
+            src={item.url}
+            alt={item.caption || ""}
+            fill
+            sizes="100vw"
+            quality={80}
+            className="rounded-xl object-contain"
+          />
+        </div>
         {(item.caption || item.author) && (
           <figcaption className="mt-4 text-center">
             {item.caption && (
