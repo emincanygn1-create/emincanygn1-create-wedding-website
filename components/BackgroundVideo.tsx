@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { GATE_EVENT, isGateOpen } from "@/lib/gate";
 
 type Connection = { saveData?: boolean };
@@ -29,8 +29,7 @@ export default function BackgroundVideo({
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
 
-  // Kapı bu oturumda zaten açıldıysa (sayfa yenilendi, geri gelindi)
-  // beklenecek bir olay yok — hemen oynat.
+  // Kapı bu oturumda zaten açıldıysa beklenecek bir olay yok.
   const [waiting, setWaiting] = useState(playOnOpen);
 
   useEffect(() => {
@@ -55,10 +54,26 @@ export default function BackgroundVideo({
 
   useEffect(() => {
     if (waiting || !allowed) return;
-    videoRef.current?.play().catch(() => {
-      // Otomatik oynatma engellendiyse poster görünmeye devam eder.
+
+    const video = videoRef.current;
+    if (!video) return;
+
+    // React `muted` özelliğini DOM'a güvenilir şekilde yansıtmıyor.
+    // Elemanı elle sessize almazsak tarayıcı otomatik oynatmayı reddeder.
+    video.muted = true;
+    video.defaultMuted = true;
+    video.volume = 0;
+
+    video.play().catch(() => {
+      // Oynatma yine de engellendiyse videoyu gizleme:
+      // hareketsiz ilk kare, boş ekrandan iyidir.
+      setReady(true);
     });
   }, [waiting, allowed]);
+
+  // readyState 2 (ilk kare hazır) videoyu göstermek için yeterli.
+  // `canplay` beklemek bazı tarayıcılarda hiç gelmiyor.
+  const reveal = useCallback(() => setReady(true), []);
 
   const showVideo = Boolean(src) && allowed && !failed;
   const posterVisible = !showVideo || !ready;
@@ -91,8 +106,10 @@ export default function BackgroundVideo({
           loop
           playsInline
           autoPlay={!waiting}
-          preload="metadata"
-          onCanPlay={() => setReady(true)}
+          preload={waiting ? "metadata" : "auto"}
+          onLoadedData={reveal}
+          onCanPlay={reveal}
+          onPlaying={reveal}
           onError={() => setFailed(true)}
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
             ready ? "opacity-100" : "opacity-0"
