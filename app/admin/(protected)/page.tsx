@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { getAdminLocaleAndDict } from "@/lib/i18n/admin-server";
 
 export const dynamic = "force-dynamic";
 
@@ -48,21 +49,26 @@ function Stat({
 }
 
 export default async function AdminHome() {
-  const stats = await getStats();
+  const [stats, { t }] = await Promise.all([getStats(), getAdminLocaleAndDict()]);
 
   return (
     <div>
-      <h1 className="font-display text-3xl text-olive-800 mb-2">Hoş geldin 👋</h1>
-      <p className="font-body text-olive-500 text-sm max-w-lg mb-10">
-        Sol menüden site metinlerini (üç dilde), galeriyi, katılım cevaplarını,
-        dilekleri ve misafirlerin yüklediği fotoğrafları yönetebilirsin.
+      <h1 className="mb-2 font-display text-3xl text-olive-800">
+        {t.dashboard.welcome}
+      </h1>
+      <p className="mb-10 max-w-lg font-body text-sm text-olive-500">
+        {t.dashboard.intro}
       </p>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-3xl">
-        <Stat label="Cevap" value={stats.rsvpCount} href="/admin/rsvps" />
-        <Stat label="Gelecek Kişi" value={stats.totalGuests} href="/admin/rsvps" />
-        <Stat label="Dilek" value={stats.wishCount} href="/admin/wishes" />
-        <Stat label="Misafir Fotoğrafı" value={stats.photoCount} href="/admin/moments" />
+      <div className="grid max-w-3xl grid-cols-2 gap-4 lg:grid-cols-4">
+        <Stat label={t.dashboard.responses} value={stats.rsvpCount} href="/admin/rsvps" />
+        <Stat label={t.dashboard.guests} value={stats.totalGuests} href="/admin/rsvps" />
+        <Stat label={t.dashboard.wishes} value={stats.wishCount} href="/admin/wishes" />
+        <Stat
+          label={t.dashboard.guestPhotos}
+          value={stats.photoCount}
+          href="/admin/moments"
+        />
       </div>
     </div>
   );

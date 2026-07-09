@@ -7,13 +7,19 @@ import type { Dict } from "@/lib/i18n/dictionaries";
 export default function Closing({
   brideName,
   groomName,
+  eyebrow,
+  title,
   text,
+  seeYou,
   backgroundUrl,
   d,
 }: {
   brideName: string;
   groomName: string;
+  eyebrow: string;
+  title: string;
   text: string;
+  seeYou: string;
   backgroundUrl: string | null;
   d: Dict;
 }) {
@@ -35,9 +41,9 @@ export default function Closing({
 
       <div className="relative max-w-xl mx-auto text-center">
         <Reveal>
-          <p className="eyebrow text-gold-light mb-3">{d.closing.eyebrow}</p>
+          <p className="eyebrow mb-3 text-gold-light">{eyebrow || d.closing.eyebrow}</p>
           <RevealText
-            text={d.closing.title}
+            text={title || d.closing.title}
             as="h2"
             className="mb-6 font-display text-3xl leading-snug sm:text-4xl"
           />
@@ -48,7 +54,7 @@ export default function Closing({
         </Reveal>
 
         <Reveal variant="zoom" delay={150}>
-          <p className="eyebrow text-cream/60 mb-4">{d.closing.seeYou}</p>
+          <p className="eyebrow mb-4 text-cream/60">{seeYou || d.closing.seeYou}</p>
           <p className="font-script text-5xl leading-tight text-cream sm:text-6xl">
             <RevealText text={brideName} as="span" step={70} />
             <span className="text-gold-light"> & </span>

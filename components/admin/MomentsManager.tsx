@@ -4,11 +4,14 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { formatDateTime } from "@/lib/formatDate";
 import type { GuestPhoto } from "@/lib/types";
+import type { AdminDict } from "@/lib/i18n/admin";
 
 export default function MomentsManager({
   initialPhotos,
+  t,
 }: {
   initialPhotos: GuestPhoto[];
+  t: AdminDict;
 }) {
   const [photos, setPhotos] = useState<GuestPhoto[]>(initialPhotos);
 
@@ -27,8 +30,7 @@ export default function MomentsManager({
   };
 
   const remove = async (photo: GuestPhoto) => {
-    if (!window.confirm("Bu fotoğrafı kalıcı olarak silmek istediğine emin misin?"))
-      return;
+    if (!window.confirm(t.common.confirmDelete)) return;
 
     const supabase = createClient();
     await supabase.from("guest_photos").delete().eq("id", photo.id);
@@ -40,9 +42,7 @@ export default function MomentsManager({
 
   if (photos.length === 0) {
     return (
-      <p className="font-body text-olive-500 text-sm">
-        Misafirler henüz fotoğraf yüklemedi.
-      </p>
+      <p className="font-body text-olive-500 text-sm">{t.moments.empty}</p>
     );
   }
 
@@ -67,7 +67,7 @@ export default function MomentsManager({
             />
             {!photo.is_visible && (
               <span className="absolute top-3 left-3 bg-rust text-cream text-[10px] tracking-wider uppercase rounded-full px-3 py-1">
-                Gizli
+                {t.moments.hidden}
               </span>
             )}
           </div>
@@ -79,7 +79,7 @@ export default function MomentsManager({
               </p>
             )}
             <p className="text-xs text-olive-400 font-body">
-              {photo.uploader_name || "İsimsiz"} · ♥ {photo.likes} ·{" "}
+              {photo.uploader_name || t.moments.anonymous} · ♥ {photo.likes} ·{" "}
               {formatDateTime(photo.created_at)}
             </p>
 
@@ -88,13 +88,13 @@ export default function MomentsManager({
                 onClick={() => toggleVisible(photo)}
                 className="border border-olive-300 text-olive-600 rounded-full px-4 py-1.5 text-xs hover:bg-olive-100 transition-colors"
               >
-                {photo.is_visible ? "Gizle" : "Göster"}
+                {photo.is_visible ? t.common.hide : t.common.show}
               </button>
               <button
                 onClick={() => remove(photo)}
                 className="text-rust text-xs hover:underline ml-auto"
               >
-                Sil
+                {t.common.delete}
               </button>
             </div>
           </div>

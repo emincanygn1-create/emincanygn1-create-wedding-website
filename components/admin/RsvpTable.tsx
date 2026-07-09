@@ -4,13 +4,7 @@ import { useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { formatDateTime } from "@/lib/formatDate";
 import type { Rsvp } from "@/lib/types";
-
-const SIDE_LABEL: Record<string, string> = {
-  bride: "Gelin",
-  groom: "Damat",
-  both: "İkisi de",
-  "": "—",
-};
+import type { AdminDict } from "@/lib/i18n/admin";
 
 const LOCALE_LABEL: Record<string, string> = {
   tr: "TR",
@@ -20,7 +14,20 @@ const LOCALE_LABEL: Record<string, string> = {
 
 type Filter = "all" | "yes" | "no";
 
-export default function RsvpTable({ initialRsvps }: { initialRsvps: Rsvp[] }) {
+export default function RsvpTable({
+  initialRsvps,
+  t,
+}: {
+  initialRsvps: Rsvp[];
+  t: AdminDict;
+}) {
+  const SIDE_LABEL: Record<string, string> = {
+    bride: t.rsvps.attending === "Partecipa" ? "Sposa" : "Gelin",
+    groom: t.rsvps.attending === "Partecipa" ? "Sposo" : "Damat",
+    both: t.rsvps.attending === "Partecipa" ? "Entrambi" : "İkisi de",
+    "": "—",
+  };
+
   const [rsvps, setRsvps] = useState<Rsvp[]>(initialRsvps);
   const [filter, setFilter] = useState<Filter>("all");
 
@@ -41,7 +48,7 @@ export default function RsvpTable({ initialRsvps }: { initialRsvps: Rsvp[] }) {
   }, [rsvps, filter]);
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Bu cevabı silmek istediğine emin misin?")) return;
+    if (!window.confirm(t.common.confirmDelete)) return;
     const supabase = createClient();
     await supabase.from("rsvps").delete().eq("id", id);
     setRsvps((prev) => prev.filter((r) => r.id !== id));
@@ -49,15 +56,15 @@ export default function RsvpTable({ initialRsvps }: { initialRsvps: Rsvp[] }) {
 
   const downloadCsv = () => {
     const header = [
-      "Tarih",
-      "Ad Soyad",
-      "E-posta",
-      "Telefon",
-      "Katılıyor",
-      "Kişi Sayısı",
-      "Taraf",
-      "Not",
-      "Dil",
+      t.rsvps.date,
+      t.rsvps.name,
+      "E-mail",
+      t.rsvps.contact,
+      t.rsvps.status,
+      t.rsvps.people,
+      t.rsvps.side,
+      t.rsvps.note,
+      "Dil / Lingua",
     ];
 
     const escape = (value: string) => `"${String(value ?? "").replace(/"/g, '""')}"`;
@@ -68,7 +75,7 @@ export default function RsvpTable({ initialRsvps }: { initialRsvps: Rsvp[] }) {
         r.name,
         r.email,
         r.phone,
-        r.attending ? "Evet" : "Hayır",
+        r.attending ? t.rsvps.attending : t.rsvps.declined,
         r.attending ? String(r.guest_count) : "0",
         SIDE_LABEL[r.side] ?? r.side,
         r.message,
@@ -106,10 +113,10 @@ export default function RsvpTable({ initialRsvps }: { initialRsvps: Rsvp[] }) {
     <div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8 max-w-2xl">
         {[
-          { label: "Toplam Cevap", value: stats.total },
-          { label: "Katılıyor", value: stats.attending },
-          { label: "Katılmıyor", value: stats.declined },
-          { label: "Toplam Kişi", value: stats.guests },
+          { label: t.rsvps.total, value: stats.total },
+          { label: t.rsvps.attending, value: stats.attending },
+          { label: t.rsvps.declined, value: stats.declined },
+          { label: t.rsvps.totalGuests, value: stats.guests },
         ].map((item) => (
           <div
             key={item.label}
@@ -124,32 +131,32 @@ export default function RsvpTable({ initialRsvps }: { initialRsvps: Rsvp[] }) {
       </div>
 
       <div className="flex flex-wrap items-center gap-2 mb-6">
-        {filterButton("all", "Hepsi")}
-        {filterButton("yes", "Katılanlar")}
-        {filterButton("no", "Katılmayanlar")}
+        {filterButton("all", t.rsvps.all)}
+        {filterButton("yes", t.rsvps.yes)}
+        {filterButton("no", t.rsvps.no)}
         <button
           onClick={downloadCsv}
           disabled={rsvps.length === 0}
           className="ml-auto bg-olive-700 text-cream rounded-full px-5 py-2 text-xs tracking-wide hover:bg-olive-800 transition-colors disabled:opacity-40"
         >
-          CSV indir
+          {t.rsvps.downloadCsv}
         </button>
       </div>
 
       {rows.length === 0 ? (
-        <p className="font-body text-olive-500 text-sm">Henüz cevap yok.</p>
+        <p className="font-body text-olive-500 text-sm">{t.rsvps.empty}</p>
       ) : (
         <div className="overflow-x-auto border border-olive-200 rounded-xl bg-white">
           <table className="w-full text-sm font-body">
             <thead>
               <tr className="bg-olive-50 text-olive-500 text-left text-xs uppercase tracking-wider">
-                <th className="px-4 py-3">Ad Soyad</th>
-                <th className="px-4 py-3">İletişim</th>
-                <th className="px-4 py-3">Durum</th>
-                <th className="px-4 py-3">Kişi</th>
-                <th className="px-4 py-3">Taraf</th>
-                <th className="px-4 py-3">Not</th>
-                <th className="px-4 py-3">Tarih</th>
+                <th className="px-4 py-3">{t.rsvps.name}</th>
+                <th className="px-4 py-3">{t.rsvps.contact}</th>
+                <th className="px-4 py-3">{t.rsvps.status}</th>
+                <th className="px-4 py-3">{t.rsvps.people}</th>
+                <th className="px-4 py-3">{t.rsvps.side}</th>
+                <th className="px-4 py-3">{t.rsvps.note}</th>
+                <th className="px-4 py-3">{t.rsvps.date}</th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
@@ -175,7 +182,7 @@ export default function RsvpTable({ initialRsvps }: { initialRsvps: Rsvp[] }) {
                           : "bg-rust/10 text-rust"
                       }`}
                     >
-                      {r.attending ? "Katılıyor" : "Katılmıyor"}
+                      {r.attending ? t.rsvps.attending : t.rsvps.declined}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-olive-700">
@@ -195,7 +202,7 @@ export default function RsvpTable({ initialRsvps }: { initialRsvps: Rsvp[] }) {
                       onClick={() => handleDelete(r.id)}
                       className="text-rust text-xs hover:underline"
                     >
-                      Sil
+                      {t.common.delete}
                     </button>
                   </td>
                 </tr>

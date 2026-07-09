@@ -4,11 +4,14 @@ import { useState, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { GalleryPhoto } from "@/lib/types";
+import type { AdminDict } from "@/lib/i18n/admin";
 
 export default function GalleryManager({
   initialPhotos,
+  t,
 }: {
   initialPhotos: GalleryPhoto[];
+  t: AdminDict;
 }) {
   const [photos, setPhotos] = useState<GalleryPhoto[]>(initialPhotos);
   const [uploading, setUploading] = useState(false);
@@ -52,7 +55,7 @@ export default function GalleryManager({
   return (
     <div>
       <label className="inline-block bg-olive-700 text-cream rounded-full px-6 py-3 text-sm cursor-pointer hover:bg-olive-800 transition-colors">
-        {uploading ? "Yükleniyor..." : "Fotoğraf Ekle"}
+        {uploading ? t.common.saving : `+ ${t.gallery.title}`}
         <input
           type="file"
           accept="image/*"

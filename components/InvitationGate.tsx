@@ -17,6 +17,7 @@ export default function InvitationGate({
   guestName,
   coverPhotoUrl,
   coverVideoUrl,
+  eyebrow,
   d,
   locale,
 }: {
@@ -26,6 +27,7 @@ export default function InvitationGate({
   guestName: string;
   coverPhotoUrl: string | null;
   coverVideoUrl: string | null;
+  eyebrow: string;
   d: Dict;
   locale: Locale;
 }) {
@@ -80,9 +82,9 @@ export default function InvitationGate({
       </div>
 
       <div className="relative h-full flex flex-col items-center justify-center px-6 text-center text-cream">
-        <p className="eyebrow text-gold-light mb-6 animate-fadeIn">
-          {d.cover.theWeddingOf}
-        </p>
+        {eyebrow && (
+          <p className="eyebrow mb-6 animate-fadeIn text-gold-light">{eyebrow}</p>
+        )}
 
         <h1 className="font-script text-6xl sm:text-7xl md:text-8xl leading-tight text-cream">
           <RevealText text={brideName} as="span" delay={150} step={70} />

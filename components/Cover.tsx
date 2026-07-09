@@ -16,6 +16,8 @@ export default function Cover({
   city,
   coverPhotoUrl,
   coverVideoUrl,
+  eyebrow,
+  gateEnabled,
   d,
   locale,
 }: {
@@ -25,6 +27,9 @@ export default function Cover({
   city: string;
   coverPhotoUrl: string | null;
   coverVideoUrl: string | null;
+  /** Boşsa isimlerin üstünde hiçbir yazı görünmez. */
+  eyebrow: string;
+  gateEnabled: boolean;
   d: Dict;
   locale: Locale;
 }) {
@@ -54,7 +59,7 @@ export default function Cover({
       <BackgroundVideo
         src={coverVideoUrl}
         posterUrl={coverPhotoUrl}
-        playOnOpen
+        playOnOpen={gateEnabled}
       />
 
       <div
@@ -78,20 +83,22 @@ export default function Cover({
         className="relative z-10"
         style={{ transform: `translateY(${offset * 0.22}px)`, opacity: fade }}
       >
-        <RevealText
-          text={d.cover.theWeddingOf}
-          as="p"
-          className="eyebrow text-gold-light mb-6"
-          step={40}
-          waitForGate
-        />
+        {eyebrow && (
+          <RevealText
+            text={eyebrow}
+            as="p"
+            className="eyebrow mb-6 text-gold-light"
+            step={40}
+            waitForGate={gateEnabled}
+          />
+        )}
 
         <h1 className="font-script text-6xl sm:text-7xl md:text-8xl leading-[1.15]">
-          <RevealText text={brideName} as="span" delay={120} step={70} waitForGate />
+          <RevealText text={brideName} as="span" delay={120} step={70} waitForGate={gateEnabled} />
           <span className="block text-4xl sm:text-5xl text-gold-light my-1">
-            <RevealText text="&" as="span" delay={420} waitForGate />
+            <RevealText text="&" as="span" delay={420} waitForGate={gateEnabled} />
           </span>
-          <RevealText text={groomName} as="span" delay={520} step={70} waitForGate />
+          <RevealText text={groomName} as="span" delay={520} step={70} waitForGate={gateEnabled} />
         </h1>
 
         <OrnamentDivider className="w-40 h-8 text-gold-light/70 mx-auto my-7" />
@@ -102,7 +109,7 @@ export default function Cover({
           className="font-body tracking-[0.22em] text-xs sm:text-sm uppercase text-cream/90"
           delay={800}
           step={35}
-          waitForGate
+          waitForGate={gateEnabled}
         />
 
         <div className="mt-16 flex flex-col items-center gap-2 text-cream/70">

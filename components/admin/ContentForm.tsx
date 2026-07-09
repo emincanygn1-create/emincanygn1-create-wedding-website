@@ -3,56 +3,65 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import SectionOrderEditor from "./SectionOrderEditor";
 import type { SiteContent, TranslatableField } from "@/lib/types";
 import { locales, localeNames, type Locale } from "@/lib/i18n/config";
+import type { AdminDict } from "@/lib/i18n/admin";
+import { normalizeSections, type SectionSetting } from "@/lib/sections";
+
+type BaseField = keyof AdminDict["fields"] & keyof SiteContent;
 
 /** Dile göre değişmeyen alanlar. */
-const BASE_FIELDS: { name: keyof SiteContent; label: string }[] = [
-  { name: "bride_name", label: "Gelin Adı Soyadı" },
-  { name: "groom_name", label: "Damat Adı Soyadı" },
-  { name: "ceremony_map_url", label: "Nikah Google Maps Linki" },
-  { name: "reception_map_url", label: "Düğün Google Maps Linki" },
-  { name: "gift_account_name", label: "Hediye Hesap Sahibi Adı" },
-  { name: "gift_iban", label: "IBAN" },
-  { name: "bride_instagram", label: "Gelin Instagram kullanıcı adı (@ olmadan)" },
-  { name: "groom_instagram", label: "Damat Instagram kullanıcı adı (@ olmadan)" },
+const BASE_FIELDS: BaseField[] = [
+  "bride_name",
+  "groom_name",
+  "ceremony_map_url",
+  "reception_map_url",
+  "gift_account_name",
+  "gift_iban",
+  "bride_instagram",
+  "groom_instagram",
 ];
 
 /** Her dil için ayrı yazılabilen alanlar. */
-const TRANSLATED_FIELDS: {
-  name: TranslatableField;
-  label: string;
-  multiline?: boolean;
-}[] = [
-  { name: "bride_parents", label: "Gelin Aile Bilgisi (örn: Ayşe & Ali'nin kızı)" },
-  { name: "groom_parents", label: "Damat Aile Bilgisi" },
-  { name: "wedding_city", label: "Düğün Şehri" },
-  { name: "ceremony_venue", label: "Nikah Salonu Adı" },
-  { name: "ceremony_date_text", label: "Nikah Tarihi (yazı olarak)" },
-  { name: "ceremony_time_text", label: "Nikah Saati" },
-  { name: "ceremony_address", label: "Nikah Adresi" },
-  { name: "reception_venue", label: "Düğün Salonu Adı" },
-  { name: "reception_date_text", label: "Düğün Tarihi (yazı olarak)" },
-  { name: "reception_time_text", label: "Düğün Saati" },
-  { name: "reception_address", label: "Düğün Adresi" },
-  { name: "quote_text", label: "Alıntı / Söz", multiline: true },
-  { name: "closing_text", label: "Kapanış Metni (teşekkür bölümü)", multiline: true },
-  {
-    name: "rsvp_closed_message",
-    label: "Katılım Formu Kapalıyken Gösterilecek Mesaj",
-    multiline: true,
-  },
+const TRANSLATED_FIELDS: { name: TranslatableField; multiline?: boolean }[] = [
+  { name: "site_title" },
+  { name: "site_description" },
+  { name: "cover_eyebrow" },
+  { name: "bride_parents" },
+  { name: "groom_parents" },
+  { name: "wedding_city" },
+  { name: "ceremony_venue" },
+  { name: "ceremony_date_text" },
+  { name: "ceremony_time_text" },
+  { name: "ceremony_address" },
+  { name: "reception_venue" },
+  { name: "reception_date_text" },
+  { name: "reception_time_text" },
+  { name: "reception_address" },
+  { name: "quote_text", multiline: true },
+  { name: "closing_eyebrow" },
+  { name: "closing_title" },
+  { name: "closing_text", multiline: true },
+  { name: "closing_seeyou" },
+  { name: "rsvp_closed_message", multiline: true },
 ];
+
+const HINTED_FIELDS = new Set<TranslatableField>([
+  "site_title",
+  "cover_eyebrow",
+  "closing_eyebrow",
+]);
 
 function fieldKey(name: TranslatableField, lang: Locale): keyof SiteContent {
   return (lang === "tr" ? name : `${name}_${lang}`) as keyof SiteContent;
 }
 
 type UploadKey =
-  | "bride_photo_url"
-  | "groom_photo_url"
   | "cover_photo_url"
   | "cover_video_url"
+  | "bride_photo_url"
+  | "groom_photo_url"
   | "quote_bg_url"
   | "closing_bg_url"
   | "video_url"
@@ -60,59 +69,81 @@ type UploadKey =
 
 const UPLOADS: {
   key: UploadKey;
-  label: string;
-  hint?: string;
+  labelKey: keyof AdminDict["uploads"];
+  hintKey?: keyof AdminDict["uploads"];
   accept: string;
   preview: "image" | "none";
 }[] = [
   {
     key: "cover_photo_url",
-    label: "Kapak Fotoğrafı",
-    hint: "Davetiye kapısında ve açılış ekranında tam sayfa görünür. Dikey (portre) fotoğraf en iyi sonucu verir.",
+    labelKey: "cover_photo_url",
+    hintKey: "cover_photo_hint",
     accept: "image/*",
     preview: "image",
   },
   {
     key: "cover_video_url",
-    label: "Kapak Videosu",
-    hint: "Kapak fotoğrafının üzerinde sessiz ve döngüsel oynar. Kapak fotoğrafını da yüklü bırak: video hazır olana kadar o görünür, veri tasarrufu açık telefonlarda video hiç indirilmez. 20 MB'ı geçmemesi önerilir.",
-    accept: "video/mp4,video/webm,video/quicktime",
+    labelKey: "cover_video_url",
+    hintKey: "cover_video_hint",
+    accept: "video/mp4,video/webm",
     preview: "none",
   },
-  { key: "bride_photo_url", label: "Gelin Fotoğrafı", accept: "image/*", preview: "image" },
-  { key: "groom_photo_url", label: "Damat Fotoğrafı", accept: "image/*", preview: "image" },
+  {
+    key: "bride_photo_url",
+    labelKey: "bride_photo_url",
+    accept: "image/*",
+    preview: "image",
+  },
+  {
+    key: "groom_photo_url",
+    labelKey: "groom_photo_url",
+    accept: "image/*",
+    preview: "image",
+  },
   {
     key: "quote_bg_url",
-    label: "Alıntı Bölümü Arka Planı",
-    hint: "Boş bırakırsan düz zeytin yeşili kullanılır.",
+    labelKey: "quote_bg_url",
+    hintKey: "quote_bg_hint",
     accept: "image/*",
     preview: "image",
   },
   {
     key: "closing_bg_url",
-    label: "Kapanış Bölümü Arka Planı",
-    hint: "Boş bırakırsan düz zeytin yeşili kullanılır.",
+    labelKey: "closing_bg_url",
+    hintKey: "closing_bg_hint",
     accept: "image/*",
     preview: "image",
   },
   {
     key: "video_url",
-    label: "Hikaye Videosu",
-    hint: "Galerinin altındaki \"Bizim Hikayemiz\" bölümünde, oynat butonuyla izlenir. Kapak videosuyla karıştırma.",
+    labelKey: "video_url",
+    hintKey: "video_hint",
     accept: "video/*",
     preview: "none",
   },
   {
     key: "music_url",
-    label: "Arka Plan Müziği",
-    hint: "Misafir davetiyeyi açtığı anda çalmaya başlar, sol alttaki butondan susturulabilir. MP3 önerilir.",
+    labelKey: "music_url",
+    hintKey: "music_hint",
     accept: "audio/*",
     preview: "none",
   },
 ];
 
-export default function ContentForm({ initial }: { initial: SiteContent }) {
+const inputClass =
+  "w-full rounded-lg border border-olive-200 px-4 py-2 font-body text-sm";
+
+export default function ContentForm({
+  initial,
+  t,
+}: {
+  initial: SiteContent;
+  t: AdminDict;
+}) {
   const [form, setForm] = useState<SiteContent>(initial);
+  const [sections, setSections] = useState<SectionSetting[]>(
+    normalizeSections(initial.section_config)
+  );
   const [lang, setLang] = useState<Locale>("tr");
   const [weddingDateLocal, setWeddingDateLocal] = useState(
     initial.wedding_date
@@ -135,6 +166,8 @@ export default function ContentForm({ initial }: { initial: SiteContent }) {
 
     const updates: Record<string, unknown> = { ...form };
     delete updates.id;
+
+    updates.section_config = sections;
 
     if (weddingDateLocal) {
       updates.wedding_date = new Date(weddingDateLocal).toISOString();
@@ -161,12 +194,12 @@ export default function ContentForm({ initial }: { initial: SiteContent }) {
         .eq("id", 1);
       if (updateError) throw updateError;
 
-      setMessage("Kaydedildi ✓");
+      setMessage(t.common.saved);
       setFiles({});
       setForm((prev) => ({ ...prev, ...(updates as Partial<SiteContent>) }));
       router.refresh();
     } catch {
-      setMessage("Bir hata oluştu, tekrar dene.");
+      setMessage(t.common.error);
     } finally {
       setSaving(false);
     }
@@ -174,22 +207,46 @@ export default function ContentForm({ initial }: { initial: SiteContent }) {
 
   return (
     <div className="max-w-2xl space-y-10 pb-16">
+      {/* --- Tarih --- */}
       <section>
-        <h2 className="eyebrow mb-4">Düğün Tarihi ve Saati</h2>
+        <h2 className="eyebrow mb-4">{t.content.weddingDate}</h2>
         <input
           type="datetime-local"
           value={weddingDateLocal}
           onChange={(e) => setWeddingDateLocal(e.target.value)}
-          className="border border-olive-200 rounded-lg px-4 py-2 font-body text-sm"
+          className="rounded-lg border border-olive-200 px-4 py-2 font-body text-sm"
         />
-        <p className="text-xs text-olive-400 font-body mt-2">
-          Geri sayımda ve kapak sayfasında kullanılır. Tarih her dilde otomatik olarak
-          doğru biçimde yazılır.
+        <p className="mt-2 font-body text-xs text-olive-400">
+          {t.content.weddingDateHint}
         </p>
       </section>
 
+      {/* --- Davetiye kapısı --- */}
+      <section className="space-y-4 rounded-2xl border border-olive-200 bg-white p-6">
+        <h2 className="eyebrow">{t.content.gate}</h2>
+        <label className="flex cursor-pointer items-start gap-3">
+          <input
+            type="checkbox"
+            checked={form.gate_enabled ?? false}
+            onChange={(e) =>
+              setForm((prev) => ({ ...prev, gate_enabled: e.target.checked }))
+            }
+            className="mt-1 h-4 w-4 accent-[#3F4E32]"
+          />
+          <span>
+            <span className="block font-body text-sm text-olive-800">
+              {t.content.gateEnabled}
+            </span>
+            <span className="mt-1 block font-body text-xs leading-relaxed text-olive-400">
+              {t.content.gateHint}
+            </span>
+          </span>
+        </label>
+      </section>
+
+      {/* --- RSVP --- */}
       <section className="space-y-5 rounded-2xl border border-olive-200 bg-white p-6">
-        <h2 className="eyebrow">Katılım Formu (RSVP)</h2>
+        <h2 className="eyebrow">{t.content.rsvp}</h2>
 
         <label className="flex cursor-pointer items-start gap-3">
           <input
@@ -202,18 +259,17 @@ export default function ContentForm({ initial }: { initial: SiteContent }) {
           />
           <span>
             <span className="block font-body text-sm text-olive-800">
-              Katılım formu açık
+              {t.content.rsvpEnabled}
             </span>
             <span className="block font-body text-xs text-olive-400">
-              Kapatırsan sitede formun yerine aşağıda yazdığın mesaj görünür ve
-              yeni cevap kabul edilmez.
+              {t.content.rsvpEnabledHint}
             </span>
           </span>
         </label>
 
         <div>
           <label className="mb-1 block font-body text-xs text-olive-500">
-            Son katılım bildirim tarihi (isteğe bağlı)
+            {t.content.rsvpDeadline} ({t.common.optional})
           </label>
           <input
             type="datetime-local"
@@ -233,8 +289,7 @@ export default function ContentForm({ initial }: { initial: SiteContent }) {
             className="rounded-lg border border-olive-200 px-4 py-2 font-body text-sm"
           />
           <p className="mt-2 font-body text-xs text-olive-400">
-            Bu tarih geçince form kendiliğinden kapanır. Boş bırakırsan sadece
-            yukarıdaki anahtar geçerli olur.
+            {t.content.rsvpDeadlineHint}
           </p>
           {form.rsvp_deadline && (
             <button
@@ -242,36 +297,44 @@ export default function ContentForm({ initial }: { initial: SiteContent }) {
               onClick={() => setForm((prev) => ({ ...prev, rsvp_deadline: null }))}
               className="mt-2 font-body text-xs text-rust hover:underline"
             >
-              Tarihi temizle
+              {t.common.clear}
             </button>
           )}
         </div>
 
-        <p className="font-body text-xs text-olive-400">
-          Formun kapalıyken göstereceği mesajı aşağıdaki{" "}
-          <strong>Çevrilebilir Metinler</strong> bölümünden üç dilde yazabilirsin.
-        </p>
+        <p className="font-body text-xs text-olive-400">{t.content.rsvpClosedNote}</p>
       </section>
 
+      {/* --- Bölüm sırası --- */}
       <section className="space-y-4">
-        <h2 className="eyebrow">Dilden Bağımsız Bilgiler</h2>
+        <h2 className="eyebrow">{t.content.sections}</h2>
+        <p className="max-w-lg font-body text-xs leading-relaxed text-olive-400">
+          {t.content.sectionsHint}
+        </p>
+        <SectionOrderEditor sections={sections} onChange={setSections} t={t} />
+      </section>
+
+      {/* --- Dilden bağımsız --- */}
+      <section className="space-y-4">
+        <h2 className="eyebrow">{t.content.baseFields}</h2>
         {BASE_FIELDS.map((field) => (
-          <div key={String(field.name)}>
-            <label className="block text-xs text-olive-500 mb-1 font-body">
-              {field.label}
+          <div key={field}>
+            <label className="mb-1 block font-body text-xs text-olive-500">
+              {t.fields[field]}
             </label>
             <input
               type="text"
-              value={(form[field.name] as string) || ""}
-              onChange={(e) => handleChange(field.name, e.target.value)}
-              className="w-full border border-olive-200 rounded-lg px-4 py-2 font-body text-sm"
+              value={(form[field] as string) || ""}
+              onChange={(e) => handleChange(field, e.target.value)}
+              className={inputClass}
             />
           </div>
         ))}
       </section>
 
+      {/* --- Çevrilebilir --- */}
       <section className="space-y-4">
-        <h2 className="eyebrow">Çevrilebilir Metinler</h2>
+        <h2 className="eyebrow">{t.content.translatedFields}</h2>
 
         <div className="flex gap-2">
           {locales.map((code) => (
@@ -290,27 +353,34 @@ export default function ContentForm({ initial }: { initial: SiteContent }) {
           ))}
         </div>
 
-        <p className="text-xs text-olive-400 font-body">
-          {lang === "tr"
-            ? "Türkçe alanlar zorunludur. İngilizce ve İtalyanca boş bırakılırsa site otomatik olarak Türkçesini gösterir."
-            : "Boş bıraktığın alanlarda site otomatik olarak Türkçe metni gösterir."}
+        <p className="font-body text-xs text-olive-400">
+          {lang === "tr" ? t.content.trRequired : t.content.fallbackNote}
         </p>
 
         {TRANSLATED_FIELDS.map((field) => {
           const key = fieldKey(field.name, lang);
           const fallback = (form[field.name] as string) || "";
+          const hint = HINTED_FIELDS.has(field.name)
+            ? t.hints[field.name as keyof AdminDict["hints"]]
+            : undefined;
+
           return (
             <div key={String(key)}>
-              <label className="block text-xs text-olive-500 mb-1 font-body">
-                {field.label}
+              <label className="mb-1 block font-body text-xs text-olive-500">
+                {t.fields[field.name]}
               </label>
+              {hint && (
+                <p className="mb-2 font-body text-[11px] leading-relaxed text-olive-400">
+                  {hint}
+                </p>
+              )}
               {field.multiline ? (
                 <textarea
                   value={(form[key] as string) || ""}
                   onChange={(e) => handleChange(key, e.target.value)}
                   rows={3}
                   placeholder={lang === "tr" ? "" : fallback}
-                  className="w-full border border-olive-200 rounded-lg px-4 py-2 font-body text-sm"
+                  className={inputClass}
                 />
               ) : (
                 <input
@@ -318,7 +388,7 @@ export default function ContentForm({ initial }: { initial: SiteContent }) {
                   value={(form[key] as string) || ""}
                   onChange={(e) => handleChange(key, e.target.value)}
                   placeholder={lang === "tr" ? "" : fallback}
-                  className="w-full border border-olive-200 rounded-lg px-4 py-2 font-body text-sm"
+                  className={inputClass}
                 />
               )}
             </div>
@@ -326,8 +396,9 @@ export default function ContentForm({ initial }: { initial: SiteContent }) {
         })}
       </section>
 
+      {/* --- Dosyalar --- */}
       <section className="space-y-8">
-        <h2 className="eyebrow">Fotoğraflar, Video ve Müzik</h2>
+        <h2 className="eyebrow">{t.content.media}</h2>
 
         {UPLOADS.map((upload) => {
           const currentUrl = form[upload.key] as string | null;
@@ -335,12 +406,12 @@ export default function ContentForm({ initial }: { initial: SiteContent }) {
 
           return (
             <div key={upload.key}>
-              <label className="block text-xs text-olive-500 mb-1 font-body">
-                {upload.label}
+              <label className="mb-1 block font-body text-xs text-olive-500">
+                {t.uploads[upload.labelKey]}
               </label>
-              {upload.hint && (
-                <p className="text-[11px] text-olive-400 font-body mb-3 max-w-md leading-relaxed">
-                  {upload.hint}
+              {upload.hintKey && (
+                <p className="mb-3 max-w-md font-body text-[11px] leading-relaxed text-olive-400">
+                  {t.uploads[upload.hintKey]}
                 </p>
               )}
 
@@ -349,13 +420,13 @@ export default function ContentForm({ initial }: { initial: SiteContent }) {
                 <img
                   src={currentUrl}
                   alt=""
-                  className="w-24 h-24 rounded-lg object-cover mb-3 border border-olive-200"
+                  className="mb-3 h-24 w-24 rounded-lg border border-olive-200 object-cover"
                 />
               )}
 
               {upload.preview === "none" && currentUrl && (
-                <p className="text-xs text-olive-500 mb-2 font-body">
-                  Yüklü bir dosya var.
+                <p className="mb-2 font-body text-xs text-olive-500">
+                  {t.content.fileExists}
                 </p>
               )}
 
@@ -366,12 +437,12 @@ export default function ContentForm({ initial }: { initial: SiteContent }) {
                   const file = e.target.files?.[0];
                   setFiles((prev) => ({ ...prev, [upload.key]: file ?? undefined }));
                 }}
-                className="text-sm font-body"
+                className="font-body text-sm"
               />
 
               {selected && (
-                <p className="text-[11px] text-olive-500 font-body mt-2">
-                  Seçildi: {selected.name} — kaydedince yüklenecek.
+                <p className="mt-2 font-body text-[11px] text-olive-500">
+                  {t.content.fileChosen}: {selected.name} — {t.content.fileChosenNote}
                 </p>
               )}
             </div>
@@ -383,11 +454,11 @@ export default function ContentForm({ initial }: { initial: SiteContent }) {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="bg-olive-700 text-cream rounded-full px-8 py-3 text-sm tracking-wide hover:bg-olive-800 transition-colors disabled:opacity-50"
+          className="rounded-full bg-olive-700 px-8 py-3 text-sm tracking-wide text-cream transition-colors hover:bg-olive-800 disabled:opacity-50"
         >
-          {saving ? "Kaydediliyor..." : "Kaydet"}
+          {saving ? t.common.saving : t.common.save}
         </button>
-        {message && <p className="text-sm font-body text-olive-600">{message}</p>}
+        {message && <p className="font-body text-sm text-olive-600">{message}</p>}
       </div>
     </div>
   );

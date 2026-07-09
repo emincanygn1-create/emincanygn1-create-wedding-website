@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
+
 import Preloader from "@/components/Preloader";
 import Celebration from "@/components/Celebration";
 import InvitationGate from "@/components/InvitationGate";
@@ -30,10 +32,11 @@ import { formatDate } from "@/lib/formatDate";
 import { lz } from "@/lib/localize";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { defaultLocale, isLocale } from "@/lib/i18n/config";
+import { normalizeSections, type SectionKey } from "@/lib/sections";
 
 export const dynamic = "force-dynamic";
 
-/** WhatsApp veya Instagram'da link paylaşılınca çıkan önizleme. */
+/** Tarayıcı sekmesi ve link paylaşım önizlemesi. */
 export async function generateMetadata({
   params,
 }: {
@@ -43,12 +46,15 @@ export async function generateMetadata({
   const content = await getSiteContent();
 
   const names = `${content?.bride_name ?? ""} & ${content?.groom_name ?? ""}`.trim();
+  const customTitle = lz(content, "site_title", locale);
+  const customDescription = lz(content, "site_description", locale);
+
   const dateText = formatDate(content?.wedding_date, locale);
   const city = lz(content, "wedding_city", locale);
-  const d = getDictionary(locale);
 
-  const title = names.length > 3 ? `${names} | ${d.cover.theWeddingOf}` : d.cover.theWeddingOf;
-  const description = [dateText, city].filter(Boolean).join(" · ");
+  const title = customTitle || (names.length > 3 ? names : "Wedding");
+  const description =
+    customDescription || [dateText, city].filter(Boolean).join(" · ");
   const image = content?.cover_photo_url ?? undefined;
 
   return {
@@ -92,50 +98,25 @@ export default async function Home({
   const city = lz(content, "wedding_city", locale);
   const brideName = content?.bride_name || "İsim";
   const groomName = content?.groom_name || "İsim";
+  const coverEyebrow = lz(content, "cover_eyebrow", locale);
+  const gateEnabled = content?.gate_enabled ?? false;
 
-  // Davetiyeye ?to=Ahmet%20Bey şeklinde misafir adı eklenebilir.
   const guestName = (searchParams?.to ?? "").toString().slice(0, 60);
 
   const receptionVenue = lz(content, "reception_venue", locale);
   const receptionAddress = lz(content, "reception_address", locale);
 
-  // Katılım formu: panelden kapatılmış olabilir ya da son tarihi geçmiş olabilir.
+  // Katılım formu: panelden kapatılmış veya son tarihi geçmiş olabilir.
   const deadline = content?.rsvp_deadline ? new Date(content.rsvp_deadline) : null;
   const deadlinePassed = deadline ? Date.now() > deadline.getTime() : false;
   const rsvpOpen = (content?.rsvp_enabled ?? true) && !deadlinePassed;
   const deadlineText = deadline ? formatDate(content?.rsvp_deadline, locale) : "";
 
-  return (
-    <main>
-      <Preloader brideName={brideName} groomName={groomName} />
-      <Celebration />
+  // Panelden ayarlanan bölüm sırası ve görünürlüğü.
+  const sections = normalizeSections(content?.section_config);
 
-      <InvitationGate
-        brideName={brideName}
-        groomName={groomName}
-        dateText={dateText}
-        guestName={guestName}
-        coverPhotoUrl={content?.cover_photo_url || null}
-        coverVideoUrl={content?.cover_video_url || null}
-        d={d}
-        locale={locale}
-      />
-
-      <MusicPlayer src={content?.music_url || null} d={d} />
-      <ScrollProgress />
-      <StickyNav d={d} locale={locale} />
-
-      <Cover
-        brideName={brideName}
-        groomName={groomName}
-        dateText={dateText}
-        city={city}
-        coverPhotoUrl={content?.cover_photo_url || null}
-        coverVideoUrl={content?.cover_video_url || null}
-        d={d}
-        locale={locale}
-      />
-
+  const blocks: Record<SectionKey, ReactNode> = {
+    couple: (
       <CoupleInfo
         brideName={brideName}
         groomName={groomName}
@@ -147,7 +128,8 @@ export default async function Home({
         groomInstagram={content?.groom_instagram || ""}
         d={d}
       />
-
+    ),
+    countdown: (
       <CountdownSection
         weddingDate={content?.wedding_date || new Date().toISOString()}
         calendarTitle={`${brideName} & ${groomName}`}
@@ -155,7 +137,8 @@ export default async function Home({
         backgroundUrl={photos[2]?.url || null}
         d={d}
       />
-
+    ),
+    event: (
       <EventDetails
         ceremony={{
           venue: lz(content, "ceremony_venue", locale),
@@ -175,18 +158,17 @@ export default async function Home({
         }}
         d={d}
       />
-
-      <Gallery photos={photos} d={d} />
-
-      <VideoSection videoUrl={content?.video_url || null} d={d} />
-
+    ),
+    gallery: <Gallery photos={photos} d={d} />,
+    video: <VideoSection videoUrl={content?.video_url || null} d={d} />,
+    quote: (
       <Quote
         text={lz(content, "quote_text", locale)}
         backgroundUrl={content?.quote_bg_url || null}
       />
-
-      <MomentsCta d={d} locale={locale} previewPhotos={guestPhotos} />
-
+    ),
+    moments: <MomentsCta d={d} locale={locale} previewPhotos={guestPhotos} />,
+    rsvp: (
       <Rsvp
         d={d}
         locale={locale}
@@ -194,27 +176,79 @@ export default async function Home({
         closedMessage={lz(content, "rsvp_closed_message", locale)}
         deadlineText={deadlineText}
       />
-
+    ),
+    wishes: (
       <WishesHighlight
         topWishes={topWishes}
         totalCount={wishCount}
         d={d}
         locale={locale}
       />
-
+    ),
+    gift: (
       <GiftInfo
         accountName={content?.gift_account_name || ""}
         iban={content?.gift_iban || ""}
         d={d}
       />
-
+    ),
+    closing: (
       <Closing
         brideName={brideName}
         groomName={groomName}
+        eyebrow={lz(content, "closing_eyebrow", locale)}
+        title={lz(content, "closing_title", locale)}
         text={lz(content, "closing_text", locale)}
+        seeYou={lz(content, "closing_seeyou", locale)}
         backgroundUrl={content?.closing_bg_url || null}
         d={d}
       />
+    ),
+  };
+
+  return (
+    <main>
+      <Preloader brideName={brideName} groomName={groomName} />
+
+      {gateEnabled && (
+        <>
+          <Celebration />
+          <InvitationGate
+            brideName={brideName}
+            groomName={groomName}
+            dateText={dateText}
+            guestName={guestName}
+            coverPhotoUrl={content?.cover_photo_url || null}
+            coverVideoUrl={content?.cover_video_url || null}
+            eyebrow={coverEyebrow}
+            d={d}
+            locale={locale}
+          />
+        </>
+      )}
+
+      <MusicPlayer src={content?.music_url || null} d={d} />
+      <ScrollProgress />
+      <StickyNav d={d} locale={locale} />
+
+      <Cover
+        brideName={brideName}
+        groomName={groomName}
+        dateText={dateText}
+        city={city}
+        coverPhotoUrl={content?.cover_photo_url || null}
+        coverVideoUrl={content?.cover_video_url || null}
+        eyebrow={coverEyebrow}
+        gateEnabled={gateEnabled}
+        d={d}
+        locale={locale}
+      />
+
+      {sections
+        .filter((section) => section.visible)
+        .map((section) => (
+          <div key={section.key}>{blocks[section.key]}</div>
+        ))}
 
       <Footer />
     </main>

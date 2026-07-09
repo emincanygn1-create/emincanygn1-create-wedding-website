@@ -14,6 +14,12 @@ export const TRANSLATABLE_FIELDS = [
   "quote_text",
   "closing_text",
   "rsvp_closed_message",
+  "site_title",
+  "site_description",
+  "cover_eyebrow",
+  "closing_eyebrow",
+  "closing_title",
+  "closing_seeyou",
 ] as const;
 
 export type TranslatableField = (typeof TRANSLATABLE_FIELDS)[number];
@@ -42,6 +48,14 @@ export type SiteContent = Translations & {
   reception_map_url: string;
   quote_text: string;
   closing_text: string;
+  closing_eyebrow: string;
+  closing_title: string;
+  closing_seeyou: string;
+  site_title: string;
+  site_description: string;
+  cover_eyebrow: string;
+  gate_enabled: boolean;
+  section_config: unknown;
   rsvp_enabled: boolean;
   rsvp_deadline: string | null;
   rsvp_closed_message: string;
@@ -63,6 +77,7 @@ export type GalleryPhoto = {
   id: string;
   url: string;
   sort_order: number;
+  likes: number;
 };
 
 export type Rsvp = {

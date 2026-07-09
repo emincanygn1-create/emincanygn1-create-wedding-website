@@ -4,11 +4,14 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { formatDateTime } from "@/lib/formatDate";
 import type { Wish } from "@/lib/types";
+import type { AdminDict } from "@/lib/i18n/admin";
 
 export default function WishesManager({
   initialWishes,
+  t,
 }: {
   initialWishes: Wish[];
+  t: AdminDict;
 }) {
   const [wishes, setWishes] = useState<Wish[]>(initialWishes);
 
@@ -27,14 +30,14 @@ export default function WishesManager({
   };
 
   const remove = async (wish: Wish) => {
-    if (!window.confirm("Bu dileği kalıcı olarak silmek istediğine emin misin?")) return;
+    if (!window.confirm(t.common.confirmDelete)) return;
     const supabase = createClient();
     await supabase.from("wishes").delete().eq("id", wish.id);
     setWishes((prev) => prev.filter((w) => w.id !== wish.id));
   };
 
   if (wishes.length === 0) {
-    return <p className="font-body text-olive-500 text-sm">Henüz dilek yok.</p>;
+    return <p className="font-body text-olive-500 text-sm">{t.wishes.empty}</p>;
   }
 
   return (
@@ -55,7 +58,7 @@ export default function WishesManager({
                 {wish.name} · ♥ {wish.likes} · {formatDateTime(wish.created_at)} ·{" "}
                 {wish.locale.toUpperCase()}
                 {!wish.is_visible && (
-                  <span className="text-rust"> · sitede gizli</span>
+                  <span className="text-rust"> · {t.wishes.hiddenLabel}</span>
                 )}
               </p>
             </div>
@@ -65,13 +68,13 @@ export default function WishesManager({
                 onClick={() => toggleVisible(wish)}
                 className="border border-olive-300 text-olive-600 rounded-full px-4 py-1.5 text-xs hover:bg-olive-100 transition-colors whitespace-nowrap"
               >
-                {wish.is_visible ? "Gizle" : "Göster"}
+                {wish.is_visible ? t.common.hide : t.common.show}
               </button>
               <button
                 onClick={() => remove(wish)}
                 className="text-rust text-xs hover:underline"
               >
-                Sil
+                {t.common.delete}
               </button>
             </div>
           </div>

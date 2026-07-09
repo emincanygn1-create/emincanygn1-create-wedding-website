@@ -19,3 +19,4 @@ export function saveLiked(storageKey: string, ids: string[]) {
 
 export const WISH_LIKES_KEY = "wedding_liked_wishes";
 export const PHOTO_LIKES_KEY = "wedding_liked_photos";
+export const GALLERY_LIKES_KEY = "wedding_liked_gallery";
