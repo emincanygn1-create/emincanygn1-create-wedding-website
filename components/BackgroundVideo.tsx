@@ -9,8 +9,10 @@ type Connection = { saveData?: boolean };
 /**
  * Kapak arka planı için sessiz, döngüsel video.
  *
- * Video hazır olana kadar poster görseli görünür.
- * Sadece telefonda "veri tasarrufu" açıkken video hiç indirilmez.
+ * ÖNEMLİ: Video asla gizlenmez. WebKit görünmeyen bir videoyu
+ * (opacity: 0, display: none, ekran dışı) oynatmayı reddeder —
+ * gizlersek asla hazır olmaz, hazır olmadığı için gizli kalır.
+ * Bunun yerine poster videonun ÜSTÜNDE durur ve hazır olunca solar.
  */
 export default function BackgroundVideo({
   src,
@@ -29,7 +31,6 @@ export default function BackgroundVideo({
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
 
-  // Kapı bu oturumda zaten açıldıysa beklenecek bir olay yok.
   const [waiting, setWaiting] = useState(playOnOpen);
 
   useEffect(() => {
@@ -52,51 +53,50 @@ export default function BackgroundVideo({
     return () => window.removeEventListener(GATE_EVENT, onOpen);
   }, [playOnOpen]);
 
-  useEffect(() => {
-    if (waiting || !allowed) return;
-
+  const startPlayback = useCallback(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video) return Promise.resolve();
 
     // React `muted` özelliğini DOM'a güvenilir şekilde yansıtmıyor.
-    // Elemanı elle sessize almazsak tarayıcı otomatik oynatmayı reddeder.
+    // Elle sessize almazsak tarayıcı otomatik oynatmayı reddeder.
     video.muted = true;
     video.defaultMuted = true;
     video.volume = 0;
 
-    video.play().catch(() => {
-      // Oynatma yine de engellendiyse videoyu gizleme:
-      // hareketsiz ilk kare, boş ekrandan iyidir.
-      setReady(true);
-    });
-  }, [waiting, allowed]);
+    return video.play().catch(() => {});
+  }, []);
 
-  // readyState 2 (ilk kare hazır) videoyu göstermek için yeterli.
-  // `canplay` beklemek bazı tarayıcılarda hiç gelmiyor.
+  useEffect(() => {
+    if (waiting || !allowed) return;
+
+    void startPlayback();
+
+    // iOS'ta düşük güç modu otomatik oynatmayı tamamen engeller.
+    // İlk dokunuşta tekrar deniyoruz; kullanıcı hareketi kilidi açar.
+    const unlock = () => {
+      void startPlayback();
+    };
+
+    window.addEventListener("touchstart", unlock, { once: true, passive: true });
+    window.addEventListener("click", unlock, { once: true });
+    window.addEventListener("scroll", unlock, { once: true, passive: true });
+
+    return () => {
+      window.removeEventListener("touchstart", unlock);
+      window.removeEventListener("click", unlock);
+      window.removeEventListener("scroll", unlock);
+    };
+  }, [waiting, allowed, startPlayback]);
+
   const reveal = useCallback(() => setReady(true), []);
 
   const showVideo = Boolean(src) && allowed && !failed;
+
+  // Poster, video ilk karesini boyayana kadar üstte durur.
   const posterVisible = !showVideo || !ready;
 
   return (
     <div className={`absolute inset-0 overflow-hidden bg-olive-800 ${className}`}>
-      {posterUrl && (
-        <div
-          className={`absolute inset-0 animate-slowZoom transition-opacity duration-1000 ${
-            posterVisible ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          <Image
-            src={posterUrl}
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-          />
-        </div>
-      )}
-
       {showVideo && (
         <video
           ref={videoRef}
@@ -111,10 +111,25 @@ export default function BackgroundVideo({
           onCanPlay={reveal}
           onPlaying={reveal}
           onError={() => setFailed(true)}
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
-            ready ? "opacity-100" : "opacity-0"
-          }`}
+          className="absolute inset-0 h-full w-full object-cover"
         />
+      )}
+
+      {posterUrl && (
+        <div
+          className={`pointer-events-none absolute inset-0 animate-slowZoom transition-opacity duration-1000 ${
+            posterVisible ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <Image
+            src={posterUrl}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+        </div>
       )}
     </div>
   );
