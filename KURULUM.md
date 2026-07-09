@@ -1,87 +1,65 @@
-# Adım 8 — Geçiş Hatası, RSVP Kontrolü ve Eklemeler
+# Adım 9 — Kapak Videosu Düzeltmesi + Dilekler Sayfası
 
 ## Kurulum
 
-1. `supabase-step8.sql`'i çalıştır.
-2. Dosyaları GitHub'a yükle.
+1. `supabase-step9.sql`'i çalıştır.
+2. Dosyaları GitHub'a yükle — **reponun kök sayfasından**
+   (`.../upload/main`, altında bir klasör adı olmasın).
+3. **`components/Wishes.tsx` dosyasını sil.** Yerini `WishesBoard.tsx` ve
+   `WishesHighlight.tsx` aldı. Kalırsa zararı yok ama gereksiz duruyor.
 
-Silinecek dosya yok. `Preloader.tsx`, `Celebration.tsx`, `InviteLinkBuilder.tsx` ve
-`app/admin/(protected)/invite/page.tsx` yeni, gerisi mevcutların üzerine yazar.
-
----
-
-## 1. Geçişler neden hiç görünmüyordu
-
-Sebep büyük ihtimalle bilgisayarının ayarı: **hareket azaltma**.
-
-Windows'ta *Ayarlar → Erişilebilirlik → Görsel efektler → Animasyon efektleri* kapalıysa,
-macOS'ta *Sistem Ayarları → Erişilebilirlik → Ekran → Hareketi azalt* açıksa, tarayıcı
-her siteye "bu kullanıcı animasyon istemiyor" diye haber verir. Tarayıcı konsoluna
-şunu yazarsan görürsün:
-
-```js
-matchMedia('(prefers-reduced-motion: reduce)').matches
-```
-
-`true` çıkıyorsa sebep bu.
-
-Ama asıl hata bendeydi. Bu sinyali alınca **her şeyi** kapatıyordum: solmalar, perdeler,
-kaymalar, hepsi. Doğrusu bu değil. Hareket azaltma isteyen kişi, ekranda büyük hareket
-ve kayma istemez — yumuşak bir solmadan rahatsız olmaz. Şimdi öyle:
-
-- Hareket azaltma **kapalıysa**: her şey tam çalışır (perde, parallax, kelime kelime yükselme).
-- Hareket azaltma **açıksa**: yazılar ve fotoğraflar yine yumuşakça solarak gelir, sadece
-  kayma / ölçek / parallax devre dışı kalır.
-
-Yani ayarını değiştirmesen de artık geçişleri göreceksin. Tam halini görmek istersen
-ayarı açman yeterli.
+Yeni dosyalar: `lib/likes.ts`, `components/WishCard.tsx`, `components/WishesBoard.tsx`,
+`components/WishesHighlight.tsx`, `app/[locale]/wishes/page.tsx`.
 
 ---
 
-## 2. RSVP açma / kapatma
+## 1. Kapak videosu neden oynatmıyordu
 
-Panelde **Site İçeriği** sayfasının en üstünde yeni bir kutu var:
+İki hata birden vardı. İkisi de bende.
 
-- **Katılım formu açık** anahtarı. Kapatınca sitede formun yerine senin yazdığın mesaj çıkar.
-- **Son katılım bildirim tarihi** (isteğe bağlı). Bu tarih geçince form kendiliğinden kapanır.
-  Form açıkken misafir başlığın altında "Son katılım bildirimi: 1 Haziran 2027" yazısını görür.
-- Kapalıyken gösterilecek **mesaj**, aşağıdaki *Çevrilebilir Metinler* bölümünde — üç dilde
-  ayrı ayrı. Boş bırakırsan hazır bir metin kullanılır.
+**Hareket azaltma videoyu da kapatıyordu.** Geçen adımda CSS'teki aşırılığı düzelttim
+ama `BackgroundVideo` bileşeninin içinde aynı kontrol duruyordu: kullanıcı "animasyonları
+azalt" demişse video hiç yüklenmiyordu. Kaldırdım. Arka plan videosu sessiz ve döngüsel;
+hareket azaltma tercihi bunun için değil. Artık sadece telefonda **veri tasarrufu** açıksa
+video indirilmiyor — o kısıt yerinde duruyor, mobil veri yakmak istemeyiz.
 
-Önemli kısım: kapatma işlemi sadece görsel değil. `supabase-step8.sql` veritabanı kuralını
-da güncelliyor, form kapalıyken sunucu yeni cevabı **reddediyor**. Yoksa tarayıcı
-konsolunu bilen biri kapalı formdan kayıt gönderebilirdi.
+**Kapı bir kez açıldıysa video sonsuza kadar bekliyordu.** Kapak bölümündeki video
+"Davetiyeyi Aç"a basılmasını bekliyordu. Ama aynı sekmede sayfayı yenilediğinde kapı
+artık çıkmıyor (bir kez açıldı sayılıyor), dolayısıyla o sinyal hiç gelmiyordu. Video
+öylece bekliyor, sen sadece posteri görüyordun. Şimdi bileşen "kapı zaten açılmış mı"
+diye bakıyor, açılmışsa doğrudan oynatıyor.
 
----
+Bir de videonun yüklenemediği durumda (bozuk dosya, desteklenmeyen kodek) sessizce
+poster fotoğrafına düşüyor, siyah ekran kalmıyor.
 
-## 3. Eklediklerim
-
-Beğenmezsen hepsi tek dosya silmekle geri alınır, söyle yeter.
-
-**Açılış ekranı.** Site açılırken koyu bir ekranda isimler ve ince bir altın ilerleme
-çizgisi görünüyor, sayfa hazır olunca yumuşakça kayboluyor ve davetiye kapısı çıkıyor.
-Fontlar ve kapak videosu yüklenirken misafirin yarım yamalak bir sayfa görmesini engelliyor.
-Ağ çok yavaşsa 5 saniyede kendini kapatıyor, kimse ekranda kalmıyor.
-
-**Kalp yağmuru.** "Davetiyeyi Aç"a basıldığı anda dört saniyeliğine altın ve krem
-kalpler düşüyor. Perde kalkışıyla aynı anda oluyor, güzel duruyor.
-
-**Davetiye linki üretici.** Panelde yeni bir sayfa: **Davetiye Linki**. Misafirin adını
-yazıyorsun, dili seçiyorsun; sana hem linki hem de altına hazır bir davet mesajı veriyor.
-"WhatsApp'ta gönder" butonu doğrudan paylaşım ekranını açıyor. `?to=` parametresini elle
-yazma derdi bitti.
-
-**Link önizlemesi.** Davetiyeyi WhatsApp veya Instagram'da paylaşınca artık çıplak bir
-adres değil; kapak fotoğrafı, isimler, tarih ve şehir görünüyor. (Kapak fotoğrafı yüklü
-olmalı.)
-
-**Galeride kaydırma.** Telefonda büyütülmüş fotoğrafta sağa sola kaydırarak
-gezinebiliyorsun. Bilgisayarda ok tuşları zaten çalışıyordu.
+**Hâlâ oynatmazsa** kodek sorunudur. Tarayıcılar `.mov` içindeki HEVC/H.265 videoyu
+oynatmaz. `ffprobe kapak.mp4` çıktısında `h264` yazmalı. Bizim komut zaten `libx264`
+kullanıyordu, ama telefondan çıkmış ham dosyayı doğrudan yüklediysen bu başına gelir.
 
 ---
 
-## Öneri
+## 2. Dilekler artık ayrı sayfa
 
-Kapak fotoğrafını mutlaka yükle. Üç ayrı yerde çalışıyor: video yüklenene kadar poster
-olarak, veri tasarrufu açık telefonlarda videonun yerine, ve link paylaşıldığında
-önizleme görseli olarak.
+**`/tr/wishes`** (ve `/en/wishes`, `/it/wishes`) adresinde tam sayfa dilek duvarı:
+üstte form, altında ızgara halinde bütün dilekler. Sağ üstte **En yeni / En beğenilen**
+sıralama düğmeleri. Dokuzar dokuzar yükleniyor.
+
+**Ana sayfada** artık formun tamamı değil, **en çok beğenilen üç dilek** görünüyor.
+Altında iki buton: "Dilek bırak" ve "Tüm dilekleri gör (24 dilek)". Alt sabit menüye de
+dilekler için ayrı bir kısayol ekledim.
+
+**Beğeni butonu.** Her dileğin sağ altında kalp ve sayı. Tıklayınca kalp kırmızıya
+dönüyor ve sayı artıyor. Aynı kişi aynı dileği iki kez beğenemiyor — beğeniler
+tarayıcıda saklanıyor. Sayaç veritabanında `security definer` bir fonksiyonla artıyor,
+yani misafir dilek satırını başka şekilde değiştiremiyor; sadece beğeni sayısını
+bir artırabiliyor.
+
+Panelde **Dilekler** sayfasında her mesajın yanında beğeni sayısı da görünüyor.
+
+---
+
+## Küçük bir uyarı
+
+Beğeniler tarayıcıda tutulduğu için teknik olarak sıfırlanabilir (gizli sekme, tarayıcı
+temizliği). Düğün sitesi için doğru denge bu: misafire hesap açtırmadan makul bir koruma.
+Birileri sayıyı şişirmeye kalkarsa panelden görürsün.

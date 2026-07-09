@@ -83,6 +83,7 @@ export type Wish = {
   name: string;
   message: string;
   locale: string;
+  likes: number;
   is_visible: boolean;
   created_at: string;
 };

@@ -52,7 +52,7 @@ export default function WishesManager({
                 {wish.message}
               </p>
               <p className="text-xs text-olive-400 mt-3 font-body">
-                {wish.name} · {formatDateTime(wish.created_at)} ·{" "}
+                {wish.name} · ♥ {wish.likes} · {formatDateTime(wish.created_at)} ·{" "}
                 {wish.locale.toUpperCase()}
                 {!wish.is_visible && (
                   <span className="text-rust"> · sitede gizli</span>

@@ -10,7 +10,7 @@ import Gallery from "@/components/Gallery";
 import VideoSection from "@/components/VideoSection";
 import Quote from "@/components/Quote";
 import Rsvp from "@/components/Rsvp";
-import Wishes from "@/components/Wishes";
+import WishesHighlight from "@/components/WishesHighlight";
 import MomentsCta from "@/components/MomentsCta";
 import GiftInfo from "@/components/GiftInfo";
 import Closing from "@/components/Closing";
@@ -22,7 +22,8 @@ import MusicPlayer from "@/components/MusicPlayer";
 import {
   getSiteContent,
   getGalleryPhotos,
-  getWishes,
+  getTopWishes,
+  getWishCount,
   getGuestPhotos,
 } from "@/lib/content";
 import { formatDate } from "@/lib/formatDate";
@@ -79,10 +80,11 @@ export default async function Home({
   const locale = isLocale(params.locale) ? params.locale : defaultLocale;
   const d = getDictionary(locale);
 
-  const [content, photos, wishes, guestPhotos] = await Promise.all([
+  const [content, photos, topWishes, wishCount, guestPhotos] = await Promise.all([
     getSiteContent(),
     getGalleryPhotos(),
-    getWishes(),
+    getTopWishes(3),
+    getWishCount(),
     getGuestPhotos(),
   ]);
 
@@ -193,7 +195,12 @@ export default async function Home({
         deadlineText={deadlineText}
       />
 
-      <Wishes initialWishes={wishes} d={d} locale={locale} />
+      <WishesHighlight
+        topWishes={topWishes}
+        totalCount={wishCount}
+        d={d}
+        locale={locale}
+      />
 
       <GiftInfo
         accountName={content?.gift_account_name || ""}

@@ -38,6 +38,28 @@ export async function getWishes(): Promise<Wish[]> {
   return (data as Wish[]) ?? [];
 }
 
+/** Ana sayfada gösterilen, en çok beğenilen dilekler. */
+export async function getTopWishes(limit = 3): Promise<Wish[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("wishes")
+    .select("*")
+    .order("likes", { ascending: false })
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  return (data as Wish[]) ?? [];
+}
+
+export async function getWishCount(): Promise<number> {
+  const supabase = await createClient();
+  const { count } = await supabase
+    .from("wishes")
+    .select("id", { count: "exact", head: true });
+
+  return count ?? 0;
+}
+
 export async function getGuestPhotos(): Promise<GuestPhoto[]> {
   const supabase = await createClient();
   const { data } = await supabase

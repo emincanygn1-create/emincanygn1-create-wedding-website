@@ -71,7 +71,6 @@ export default function StickyNav({
     { key: "event", label: d.nav.event, href: "#event" },
     { key: "gallery", label: d.nav.gallery, href: "#gallery" },
     { key: "rsvp", label: d.nav.rsvp, href: "#rsvp" },
-    { key: "wishes", label: d.nav.wishes, href: "#wishes" },
   ];
 
   return (
@@ -98,6 +97,19 @@ export default function StickyNav({
         ))}
 
         <span className="w-px h-8 bg-olive-200 mx-1" />
+
+        <Link
+          href={`/${locale}/wishes`}
+          aria-label={d.nav.wishes}
+          className="flex flex-col items-center rounded-full px-3 py-1.5 text-olive-600 hover:text-olive-800 hover:bg-olive-100 transition-colors"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            {ICONS.wishes}
+          </svg>
+          <span className="text-[9px] tracking-wider uppercase mt-0.5 hidden sm:block">
+            {d.nav.wishes}
+          </span>
+        </Link>
 
         <Link
           href={`/${locale}/moments`}
