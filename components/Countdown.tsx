@@ -57,7 +57,7 @@ export default function Countdown({
     <div className="flex justify-center gap-3 sm:gap-5">
       {units.map((unit) => (
         <div key={unit.label} className="flex flex-col items-center">
-          <div className="frame-digit flex h-[78px] w-[72px] items-center justify-center border border-olive-300 bg-cream/90 shadow-sm backdrop-blur sm:h-24 sm:w-24">
+          <div className="frame-digit flex h-[78px] w-[72px] items-center justify-center border border-olive-300 bg-white/85 shadow-sm backdrop-blur sm:h-24 sm:w-24">
             <Digits value={unit.value} pad={unit.pad} />
           </div>
           <span className="eyebrow mt-3 text-[10px] text-olive-500">{unit.label}</span>

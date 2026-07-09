@@ -36,7 +36,12 @@ import { formatDate } from "@/lib/formatDate";
 import { lz } from "@/lib/localize";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { defaultLocale, isLocale } from "@/lib/i18n/config";
-import { normalizeSections, type SectionKey } from "@/lib/sections";
+import {
+  assignTones,
+  normalizeSections,
+  toneClass,
+  type SectionKey,
+} from "@/lib/sections";
 import { locales } from "@/lib/i18n/config";
 
 export const dynamic = "force-dynamic";
@@ -130,6 +135,34 @@ export default async function Home({
 
   // Panelden ayarlanan bölüm sırası ve görünürlüğü.
   const sections = normalizeSections(content?.section_config);
+
+  /**
+   * İçeriği olmayan bölümler hiç render edilmiyor (bileşen null dönüyor).
+   * Bunları sıradan da çıkarmak gerekiyor, yoksa boş bir renk şeridi
+   * bırakıyor ve renk sırasını kaydırıyorlar.
+   */
+  const rendersSomething: Record<SectionKey, boolean> = {
+    couple: true,
+    story: true,
+    countdown: true,
+    event: true,
+    gallery: true,
+    video: Boolean(content?.video_url),
+    quote: Boolean(lz(content, "quote_text", locale)),
+    moments: true,
+    rsvp: true,
+    wishes: true,
+    faq: true,
+    gift: Boolean(content?.gift_iban),
+    closing: true,
+  };
+
+  const visibleSections = sections.filter(
+    (section) => section.visible && rendersSomething[section.key]
+  );
+
+  // Arka plan renkleri bölümün kendisinden değil, sıradaki yerinden gelir.
+  const tones = assignTones(visibleSections);
 
   const blocks: Record<SectionKey, ReactNode> = {
     couple: (
@@ -270,11 +303,11 @@ export default async function Home({
         locale={locale}
       />
 
-      {sections
-        .filter((section) => section.visible)
-        .map((section) => (
-          <div key={section.key}>{blocks[section.key]}</div>
-        ))}
+      {visibleSections.map((section, i) => (
+        <div key={section.key} className={toneClass(tones[i])}>
+          {blocks[section.key]}
+        </div>
+      ))}
 
       <Footer />
     </main>

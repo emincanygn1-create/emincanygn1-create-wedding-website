@@ -1,69 +1,48 @@
-# Adım 13 — Hikayemiz ve Sıkça Sorulan Sorular
+# Renk Sistemi — Bölüm Sırasına Göre
 
-## Kurulum
-
-1. `supabase-step13.sql`'i çalıştır. İki yeni tablo kuruyor (`story_posts`, `faqs`),
-   mevcut verilerine dokunmuyor.
-2. Dosyaları reponun kök sayfasından yükle.
-
-Yeni dosyalar: `components/Faq.tsx`, `components/StoryEntry.tsx`,
-`components/StorySection.tsx`, `components/admin/ItemToolbar.tsx`,
-`components/admin/StoryManager.tsx`, `components/admin/FaqManager.tsx`,
-`app/[locale]/story/page.tsx`, `app/admin/(protected)/story/page.tsx`,
-`app/admin/(protected)/faq/page.tsx`.
+Sadece dosyaları yükle. SQL yok, silinecek dosya yok.
 
 ---
 
-## Hikayemiz
+## Sorun neydi
 
-Sol menüde yeni bir sayfa: **Hikayemiz**. "Yeni Bölüm Ekle" dediğin anda boş bir kart
-açılıyor. Her kartta:
+Arka plan rengi bölümün içine gömülüydü. `CoupleInfo` her zaman krem, `Gallery` her
+zaman açık yeşil, `GiftInfo` her zaman açık yeşil. Bu, bölümlerin benim yazdığım sırada
+duracağı varsayımına dayanıyordu — krem, yeşil, krem, yeşil...
 
-- **Fotoğraf** — seçtiğin anda yükleniyor, ayrıca kaydetmene gerek yok.
-- **Türkçe / English / Italiano** sekmeleri — üç alan da (tarih, başlık, metin) her dilde
-  ayrı yazılıyor. İngilizce veya İtalyanca boş bırakırsan site Türkçesini gösteriyor,
-  her yerde olduğu gibi.
-- **Tarih** yazı olarak, takvim değil: "Bahar 2019", "Bir Salı Akşamı" ne istersen.
-- **Metin** uzun olabilir, satır aralarını koruyor.
+Sırayı panelden değiştirince varsayım çöküyor. İki krem bölüm yan yana geliyor, aradaki
+sınır kayboluyor ve o bölge tek bir büyük beyazlık gibi duruyor. Bir bölümü gizleyince de
+aynı şey.
 
-Kartların sırasını ok tuşlarıyla değiştiriyorsun; sıra anında kaydediliyor. Gizle
-düğmesiyle bir bölümü siteden kaldırıp veriyi tutabiliyorsun.
+## Ne yaptım
 
-**Sitede nasıl görünüyor:** ana sayfada bir zaman çizgisi — ortada ince bir çizgi, her
-durakta altın bir düğüm, fotoğraf bir sağda bir solda. Metinler beş satırda kesiliyor.
-İlk üç bölüm gösteriliyor; daha fazlası varsa altta **"Hikayenin tamamını oku"** butonu
-çıkıyor ve `/tr/story` sayfasına götürüyor. Orada bütün bölümler, metinler kesilmeden.
+Rengi bileşenlerden söktüm. Artık **bölüm sıradaki yerinden rengini alıyor.**
 
-Fotoğraflar zaman çizgisinde de hafifçe kayıyor (parallax), sitenin geri kalanıyla aynı
-dil.
+Ana sayfa, görünen bölümleri sırayla geziyor ve renkleri dağıtıyor: krem, açık yeşil,
+krem, açık yeşil... Sırayı nasıl değiştirirsen değiştir, iki aynı renk asla yan yana
+gelmiyor. Bir bölümü gizlersen kalanlar renklerini kendiliğinden yeniden düzenliyor.
 
----
+**Koyu bölümler sıraya karışmıyor.** Alıntı, Anı Duvarı bağlantısı ve Kapanış kendi
+arka plan fotoğrafları ve açık renkli yazılarıyla geliyor; onlar nereye taşınırsa
+taşınsın koyu kalıyor. Aradan geçiyorlar, sayacı bozmuyorlar.
 
-## Sıkça Sorulan Sorular
+Kartlar da düzeltildi. Etkinlik kartı, SSS kutuları, hediye kartı, dilek kartları,
+sayaç rakamları — hepsi krem yerine beyaz oldu. Krem kart, krem zeminde görünmüyordu;
+beyaz her iki zeminde de duruyor.
 
-Sol menüde **Sıkça Sorulan Sorular**. Aynı mantık: ekle, üç dilde yaz, sırala, gizle, sil.
-Fotoğraf yok, sadece soru ve cevap.
+## Bir tuzak daha
 
-Sitede bir akordeon: sorular alt alta, tıklayınca cevap yumuşakça açılıyor, sağdaki artı
-işareti dönüp çarpıya dönüşüyor. Aynı anda tek soru açık kalıyor. Açık olan kartın
-çerçevesi altına dönüyor.
+Video, alıntı ve hediye bölümleri içerik boşsa hiç render edilmiyor (bileşen `null`
+dönüyor). Ama sarmalayıcı yine de renkli bir şerit bırakıyor ve **renk sırasından bir
+adım yiyordu**. Yani hediye IBAN'ını silsen, aşağıdaki bütün bölümlerin rengi kayardı.
 
-Ne yazacağını bilemezsen misafirlerin en çok sorduğu şeyler şunlar: kıyafet kuralı
-(nasıl giyinelim), ulaşım ve park yeri, çocuk getirebilir miyiz, tören kaçta başlıyor
-ve ne zaman orada olmalıyız, konaklama önerisi, hediye konusu.
+Artık boş bölümler sıraya hiç girmiyor.
 
----
+## Sonuç
 
-## Bölüm sırası
+Panelde bölümleri istediğin gibi taşı, gizle, geri aç — renkler kendini toparlıyor.
+Zeytin yeşili, krem, altın, kiremit; palet aynı, sadece dağıtımı artık dinamik.
 
-İki yeni bölüm **Site İçeriği → Bölüm Sırası ve Görünürlüğü** listesine kendiliğinden
-eklendi. Daha önce sırayı elle ayarladıysan yeni bölümler listenin **sonuna** ekleniyor —
-oradan yukarı taşımayı unutma. Doğal yerleri:
-
-- **Hikayemiz** → Gelin & Damat'ın hemen ardında
-- **Sıkça Sorulan Sorular** → Dilekler ile Hediye arasında
-
-Hiç dokunmadıysan zaten bu sıraya geliyorlar.
-
-İkisi de başta boş; bir şey eklemezsen sitede "yakında" tarzı kısa bir satır görünür.
-Görmek istemiyorsan bölümü gizle.
+Yeni bir bölüm eklemek istersen `lib/sections.ts` içindeki `SECTION_KEYS` listesine
+anahtarını ekle. Koyu olmasını istiyorsan `DARK_SECTIONS` kümesine de yaz, gerisini
+sistem halleder.

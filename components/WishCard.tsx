@@ -33,7 +33,7 @@ export default function WishCard({
       className={`flex h-full gap-4 rounded-xl border p-5 ${
         dark
           ? "border-cream/15 bg-cream/5"
-          : "border-olive-100 bg-olive-50"
+          : "border-olive-200 bg-white"
       }`}
     >
       <div

@@ -84,12 +84,7 @@ export default function CoupleInfo({
   d: Dict;
 }) {
   return (
-    <section
-      id="couple"
-      className="relative py-28 px-6 bg-cream scroll-mt-8 overflow-hidden"
-    >
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-olive-100/70 to-transparent" />
-
+    <section id="couple" className="relative overflow-hidden px-6 py-28 scroll-mt-8">
       <Reveal>
         <p className="eyebrow text-center mb-3">{d.couple.eyebrow}</p>
         <RevealText

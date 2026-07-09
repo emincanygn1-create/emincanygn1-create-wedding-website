@@ -48,7 +48,7 @@ function CardShell({
 }) {
   return (
     <div
-      className={`group relative w-full overflow-hidden rounded-2xl border border-olive-200 bg-cream shadow-sm transition-transform duration-500 hover:-translate-y-1.5 ${
+      className={`group relative w-full overflow-hidden rounded-2xl border border-olive-200 bg-white shadow-sm transition-transform duration-500 hover:-translate-y-1.5 ${
         wide ? "max-w-xl" : "max-w-sm"
       }`}
     >
@@ -182,7 +182,7 @@ export default function EventDetails({
   d: Dict;
 }) {
   return (
-    <section id="event" className="relative bg-cream px-6 py-28 scroll-mt-8">
+    <section id="event" className="relative px-6 py-28 scroll-mt-8">
       <Reveal>
         <p className="eyebrow mb-3 text-center">{d.events.eyebrow}</p>
         <RevealText

@@ -19,16 +19,18 @@ export default function CountdownSection({
   d: Dict;
 }) {
   return (
-    <section className="relative py-28 px-6 overflow-hidden">
-      <div
-        className="absolute inset-0 bg-olive-100 bg-parallax"
-        style={backgroundUrl ? { backgroundImage: `url(${backgroundUrl})` } : undefined}
-      />
-      <div
-        className={`absolute inset-0 ${
-          backgroundUrl ? "bg-cream/90" : "bg-olive-100/60"
-        }`}
-      />
+    <section className="relative overflow-hidden px-6 py-28">
+      {backgroundUrl && (
+        <>
+          <div
+            className="absolute inset-0 bg-parallax"
+            style={{ backgroundImage: `url(${backgroundUrl})` }}
+          />
+          {/* Fotoğrafın üstündeki soluk katman; altındaki bölüm rengini
+              tamamen kapatmaz, sadece yumuşatır. */}
+          <div className="absolute inset-0 bg-cream/85" />
+        </>
+      )}
 
       <div className="relative">
         <Reveal>

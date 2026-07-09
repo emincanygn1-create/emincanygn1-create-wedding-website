@@ -61,3 +61,40 @@ export function normalizeSections(raw: unknown): SectionSetting[] {
 
   return result;
 }
+
+/**
+ * Koyu zeminli bölümler. Bunların kendi arka planı (fotoğraf + koyu katman)
+ * ve açık renkli yazısı var, sıradan bağımsız olarak hep koyu kalırlar.
+ */
+export const DARK_SECTIONS = new Set<SectionKey>(["quote", "moments", "closing"]);
+
+export type SectionTone = "light" | "muted" | "dark";
+
+const TONE_CLASS: Record<SectionTone, string> = {
+  light: "bg-cream",
+  muted: "bg-olive-100/60",
+  dark: "",
+};
+
+export function toneClass(tone: SectionTone) {
+  return TONE_CLASS[tone];
+}
+
+/**
+ * Görünen bölümlere sırayla renk dağıtır: krem, açık yeşil, krem...
+ * Koyu bölümler sıraya karışmaz, aradan geçerler.
+ *
+ * Böylece panelden sırayı değiştirince renkler kendini yeniden düzenler;
+ * iki aynı renk asla yan yana gelmez.
+ */
+export function assignTones(visible: SectionSetting[]): SectionTone[] {
+  let light = true;
+
+  return visible.map((section) => {
+    if (DARK_SECTIONS.has(section.key)) return "dark";
+
+    const tone: SectionTone = light ? "light" : "muted";
+    light = !light;
+    return tone;
+  });
+}

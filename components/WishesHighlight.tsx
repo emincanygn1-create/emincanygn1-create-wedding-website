@@ -45,7 +45,7 @@ export default function WishesHighlight({
   };
 
   return (
-    <section id="wishes" className="scroll-mt-8 bg-cream px-6 py-28">
+    <section id="wishes" className="px-6 py-28 scroll-mt-8">
       <Reveal>
         <p className="eyebrow mb-3 text-center">{d.wishes.eyebrow}</p>
         <RevealText

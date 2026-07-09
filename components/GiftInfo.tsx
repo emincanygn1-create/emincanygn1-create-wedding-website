@@ -31,7 +31,7 @@ export default function GiftInfo({
   if (!iban) return null;
 
   return (
-    <section id="gift" className="relative py-28 px-6 bg-olive-100/60 scroll-mt-8">
+    <section id="gift" className="relative px-6 py-28 scroll-mt-8">
       <Reveal>
         <p className="eyebrow text-center mb-3">{d.gift.eyebrow}</p>
         <RevealText
@@ -43,7 +43,7 @@ export default function GiftInfo({
       </Reveal>
 
       <Reveal variant="zoom">
-        <div className="max-w-md mx-auto bg-cream border border-olive-200 rounded-2xl p-8 text-center shadow-sm">
+        <div className="mx-auto max-w-md rounded-2xl border border-olive-200 bg-white p-8 text-center shadow-sm">
           <p className="font-body text-olive-600 text-sm mb-8 leading-relaxed">
             {d.gift.text}
           </p>

@@ -11,7 +11,7 @@ export default function VideoSection({
   if (!videoUrl) return null;
 
   return (
-    <section className="py-24 px-6 bg-cream">
+    <section className="px-6 py-24">
       <Reveal>
         <p className="eyebrow text-center mb-3">{d.video.eyebrow}</p>
         <h2 className="font-display text-4xl text-center text-olive-800 mb-16">

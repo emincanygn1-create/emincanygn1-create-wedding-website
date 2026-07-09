@@ -48,7 +48,7 @@ export default function Gallery({
   };
 
   return (
-    <section id="gallery" className="relative bg-olive-100/60 px-6 py-28 scroll-mt-8">
+    <section id="gallery" className="relative px-6 py-28 scroll-mt-8">
       <Reveal>
         <p className="eyebrow mb-3 text-center">{d.gallery.eyebrow}</p>
         <RevealText

@@ -10,7 +10,7 @@ import type { Dict } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
 
 const inputClass =
-  "w-full border border-olive-200 rounded-lg px-4 py-3 bg-cream text-olive-800 font-body text-sm placeholder:text-olive-400 focus:outline-none focus:border-olive-400 transition-colors";
+  "w-full border border-olive-200 rounded-lg px-4 py-3 bg-white text-olive-800 font-body text-sm placeholder:text-olive-400 focus:outline-none focus:border-olive-400 transition-colors";
 
 export default function Rsvp({
   d,
@@ -117,7 +117,7 @@ export default function Rsvp({
   };
 
   return (
-    <section id="rsvp" className="py-24 px-6 bg-cream scroll-mt-8">
+    <section id="rsvp" className="px-6 py-24 scroll-mt-8">
       <Reveal>
         <p className="eyebrow text-center mb-3">{d.rsvp.eyebrow}</p>
         <RevealText
@@ -140,7 +140,7 @@ export default function Rsvp({
       <div className="max-w-lg mx-auto">
         {!open ? (
           <Reveal variant="zoom">
-            <div className="rounded-2xl border border-olive-200 bg-olive-50 p-10 text-center">
+            <div className="rounded-2xl border border-olive-200 bg-white p-10 text-center">
               <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full border border-olive-300 text-olive-600">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
                   <rect x="4" y="10" width="16" height="10" rx="2" stroke="currentColor" strokeWidth="1.5" />
@@ -157,7 +157,7 @@ export default function Rsvp({
           </Reveal>
         ) : sent ? (
           <Reveal variant="zoom">
-            <div className="bg-olive-50 border border-olive-200 rounded-2xl p-10 text-center">
+            <div className="rounded-2xl border border-olive-200 bg-white p-10 text-center">
               <div className="w-14 h-14 rounded-full bg-olive-700 text-cream flex items-center justify-center mx-auto mb-5 text-2xl">
                 ♥
               </div>

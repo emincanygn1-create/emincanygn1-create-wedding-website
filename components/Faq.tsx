@@ -23,7 +23,7 @@ function Item({
   return (
     <div
       className={`overflow-hidden rounded-xl border transition-colors ${
-        open ? "border-gold/50 bg-cream" : "border-olive-200 bg-cream/60"
+        open ? "border-gold/50 bg-white" : "border-olive-200 bg-white/70"
       }`}
     >
       <button
@@ -78,7 +78,7 @@ export default function Faq({
   const [openId, setOpenId] = useState<string | null>(null);
 
   return (
-    <section id="faq" className="scroll-mt-8 bg-olive-100/60 px-6 py-28">
+    <section id="faq" className="px-6 py-28 scroll-mt-8">
       <Reveal>
         <p className="eyebrow mb-3 text-center">{d.faq.eyebrow}</p>
         <RevealText
