@@ -5,6 +5,8 @@ import type {
   Wish,
   GuestPhoto,
   Rsvp,
+  StoryPost,
+  Faq,
 } from "@/lib/types";
 
 export async function getSiteContent(): Promise<SiteContent | null> {
@@ -83,4 +85,30 @@ export async function getRsvps(): Promise<Rsvp[]> {
     .order("created_at", { ascending: false });
 
   return (data as Rsvp[]) ?? [];
+}
+
+export async function getStoryPosts(limit?: number): Promise<StoryPost[]> {
+  const supabase = await createClient();
+
+  let query = supabase
+    .from("story_posts")
+    .select("*")
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  if (limit) query = query.limit(limit);
+
+  const { data } = await query;
+  return (data as StoryPost[]) ?? [];
+}
+
+export async function getFaqs(): Promise<Faq[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("faqs")
+    .select("*")
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  return (data as Faq[]) ?? [];
 }

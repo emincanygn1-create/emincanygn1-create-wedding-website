@@ -117,3 +117,33 @@ export type GuestPhoto = {
   is_visible: boolean;
   created_at: string;
 };
+
+export type StoryPost = {
+  id: string;
+  sort_order: number;
+  photo_url: string | null;
+  date_text: string;
+  date_text_en: string | null;
+  date_text_it: string | null;
+  title: string;
+  title_en: string | null;
+  title_it: string | null;
+  body: string;
+  body_en: string | null;
+  body_it: string | null;
+  is_visible: boolean;
+  created_at: string;
+};
+
+export type Faq = {
+  id: string;
+  sort_order: number;
+  question: string;
+  question_en: string | null;
+  question_it: string | null;
+  answer: string;
+  answer_en: string | null;
+  answer_it: string | null;
+  is_visible: boolean;
+  created_at: string;
+};

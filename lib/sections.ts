@@ -1,5 +1,6 @@
 export const SECTION_KEYS = [
   "couple",
+  "story",
   "countdown",
   "event",
   "gallery",
@@ -8,6 +9,7 @@ export const SECTION_KEYS = [
   "moments",
   "rsvp",
   "wishes",
+  "faq",
   "gift",
   "closing",
 ] as const;

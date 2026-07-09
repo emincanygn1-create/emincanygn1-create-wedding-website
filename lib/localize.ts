@@ -21,3 +21,19 @@ export function lz(
 
   return translated.trim() ? translated : base;
 }
+
+/**
+ * Herhangi bir satırdaki çok dilli alanı seçer.
+ * Çeviri boşsa Türkçesine düşer.
+ */
+export function lzRow<T extends Record<string, unknown>>(
+  row: T,
+  field: string & keyof T,
+  locale: Locale
+): string {
+  const base = (row[field] as string | null) ?? "";
+  if (locale === "tr") return base;
+
+  const translated = (row[`${field}_${locale}` as keyof T] as string | null) ?? "";
+  return translated.trim() ? translated : base;
+}

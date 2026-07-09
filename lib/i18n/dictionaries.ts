@@ -9,6 +9,8 @@ const tr = {
     rsvp: "Katılım",
     wishes: "Dilekler",
     moments: "Anılar",
+    story: "Hikayemiz",
+    faq: "S.S.S.",
     gift: "Hediye",
   },
   cover: {
@@ -166,6 +168,20 @@ const tr = {
   footer: {
     thanks: "Bizimle bu özel günü paylaştığınız için teşekkür ederiz.",
   },
+  story: {
+    eyebrow: "Nasıl Başladı",
+    title: "Hikayemiz",
+    subtitle: "Bugüne kadar geçen yolun birkaç durağı.",
+    readAll: "Hikayenin tamamını oku",
+    back: "Ana sayfaya dön",
+    empty: "Hikayemiz yakında burada olacak.",
+  },
+  faq: {
+    eyebrow: "Merak Ettikleriniz",
+    title: "Sıkça Sorulan Sorular",
+    subtitle: "Aklınıza takılan bir şey varsa cevabı burada olabilir.",
+    empty: "Henüz soru eklenmedi.",
+  },
   notFound: {
     title: "Sayfa Bulunamadı",
     text: "Aradığınız sayfa taşınmış veya hiç var olmamış olabilir.",
@@ -187,6 +203,8 @@ const en: Dict = {
     rsvp: "RSVP",
     wishes: "Wishes",
     moments: "Moments",
+    story: "Our Story",
+    faq: "FAQ",
     gift: "Gift",
   },
   cover: {
@@ -343,6 +361,20 @@ const en: Dict = {
   footer: {
     thanks: "Thank you for sharing this special day with us.",
   },
+  story: {
+    eyebrow: "How It Began",
+    title: "Our Story",
+    subtitle: "A few of the stops along the way here.",
+    readAll: "Read the whole story",
+    back: "Back to home",
+    empty: "Our story will be here soon.",
+  },
+  faq: {
+    eyebrow: "Good to Know",
+    title: "Frequently Asked Questions",
+    subtitle: "If something is on your mind, the answer may be here.",
+    empty: "No questions have been added yet.",
+  },
   notFound: {
     title: "Page Not Found",
     text: "The page you are looking for may have moved, or may never have existed.",
@@ -362,6 +394,8 @@ const it: Dict = {
     rsvp: "Conferma",
     wishes: "Auguri",
     moments: "Ricordi",
+    story: "La Nostra Storia",
+    faq: "FAQ",
     gift: "Regalo",
   },
   cover: {
@@ -518,6 +552,20 @@ const it: Dict = {
   },
   footer: {
     thanks: "Grazie per aver condiviso con noi questo giorno speciale.",
+  },
+  story: {
+    eyebrow: "Come È Cominciata",
+    title: "La Nostra Storia",
+    subtitle: "Alcune tappe del cammino che ci ha portati fin qui.",
+    readAll: "Leggi tutta la storia",
+    back: "Torna alla home",
+    empty: "La nostra storia arriverà presto.",
+  },
+  faq: {
+    eyebrow: "Buono a Sapersi",
+    title: "Domande Frequenti",
+    subtitle: "Se avete qualche dubbio, la risposta potrebbe essere qui.",
+    empty: "Non è ancora stata aggiunta nessuna domanda.",
   },
   notFound: {
     title: "Pagina Non Trovata",

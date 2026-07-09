@@ -1,61 +1,69 @@
-# Adım 12 — Kedi Fotoğrafı ve Birleşik Kart
+# Adım 13 — Hikayemiz ve Sıkça Sorulan Sorular
 
 ## Kurulum
 
-1. `supabase-step12.sql`'i çalıştır.
-2. Altı dosyayı yükle.
+1. `supabase-step13.sql`'i çalıştır. İki yeni tablo kuruyor (`story_posts`, `faqs`),
+   mevcut verilerine dokunmuyor.
+2. Dosyaları reponun kök sayfasından yükle.
+
+Yeni dosyalar: `components/Faq.tsx`, `components/StoryEntry.tsx`,
+`components/StorySection.tsx`, `components/admin/ItemToolbar.tsx`,
+`components/admin/StoryManager.tsx`, `components/admin/FaqManager.tsx`,
+`app/[locale]/story/page.tsx`, `app/admin/(protected)/story/page.tsx`,
+`app/admin/(protected)/faq/page.tsx`.
 
 ---
 
-## Kedi neden oradaydı
+## Hikayemiz
 
-Adım 6'da etkinlik kartlarına görsel koyarken kısa yoldan gittim: "galerinin ilk iki
-fotoğrafını otomatik kullansın" dedim. Aynı mantıkla geri sayımın arka planına da
-galerinin üçüncü fotoğrafını koydum. Yani kartların üstündeki görsel senin seçimin
-değildi, galeriye ne yüklersen o oluyordu.
+Sol menüde yeni bir sayfa: **Hikayemiz**. "Yeni Bölüm Ekle" dediğin anda boş bir kart
+açılıyor. Her kartta:
 
-Kaldırdım. Artık panelde üç ayrı alan var:
+- **Fotoğraf** — seçtiğin anda yükleniyor, ayrıca kaydetmene gerek yok.
+- **Türkçe / English / Italiano** sekmeleri — üç alan da (tarih, başlık, metin) her dilde
+  ayrı yazılıyor. İngilizce veya İtalyanca boş bırakırsan site Türkçesini gösteriyor,
+  her yerde olduğu gibi.
+- **Tarih** yazı olarak, takvim değil: "Bahar 2019", "Bir Salı Akşamı" ne istersen.
+- **Metin** uzun olabilir, satır aralarını koruyor.
 
-- **Nikah Kartı Fotoğrafı**
-- **Düğün Kartı Fotoğrafı**
-- **Geri Sayım Arka Planı**
+Kartların sırasını ok tuşlarıyla değiştiriyorsun; sıra anında kaydediliyor. Gizle
+düğmesiyle bir bölümü siteden kaldırıp veriyi tutabiliyorsun.
 
-Üçü de isteğe bağlı. Boş bırakırsan kart fotoğrafsız, sade haliyle çıkıyor; geri sayım
-da düz zeminde duruyor. Galeriye ne yüklediğinin artık bu bölümlerle hiçbir ilgisi yok.
+**Sitede nasıl görünüyor:** ana sayfada bir zaman çizgisi — ortada ince bir çizgi, her
+durakta altın bir düğüm, fotoğraf bir sağda bir solda. Metinler beş satırda kesiliyor.
+İlk üç bölüm gösteriliyor; daha fazlası varsa altta **"Hikayenin tamamını oku"** butonu
+çıkıyor ve `/tr/story` sayfasına götürüyor. Orada bütün bölümler, metinler kesilmeden.
 
----
-
-## İki kart hâlâ görünüyorsa
-
-Sırayla kontrol et:
-
-**1. `supabase-step11.sql` çalıştı mı?** Çalışmadıysa `single_event` sütunu yok demektir.
-Bu durumda paneldeki anahtarı işaretleyip Kaydet'e bastığında "Bir hata oluştu" yazısı
-çıkar ve hiçbir şey kaydedilmez. (Adım 12'nin SQL'i o sütunu da ekliyor, yani ikisini
-birden atladıysan bu adım halleder.)
-
-**2. Anahtar açık mı?** Site İçeriği → en üstte **Etkinlik** kutusu →
-"Nikah ve düğün aynı yerde" işaretli olmalı. Sonra Kaydet.
+Fotoğraflar zaman çizgisinde de hafifçe kayıyor (parallax), sitenin geri kalanıyla aynı
+dil.
 
 ---
 
-## Birleşik kartta bir hatam daha vardı
+## Sıkça Sorulan Sorular
 
-Kartı yazarken bütün bilgileri **nikah** alanlarından okuyordum. Senin ekran görüntünde
-ise nikah alanları boş, dolu olanlar düğün alanları — anahtarı açsan bomboş bir kart
-görecektin.
+Sol menüde **Sıkça Sorulan Sorular**. Aynı mantık: ekle, üç dilde yaz, sırala, gizle, sil.
+Fotoğraf yok, sadece soru ve cevap.
 
-Düzelttim: artık her alan için "hangisi doluysa o" mantığı çalışıyor. Mekân adını sadece
-düğün alanına yazdıysan oradan alıyor, sadece nikah alanına yazdıysan oradan. Saatler
-yine ikisinden ayrı ayrı okunuyor ve alt alta listeleniyor:
+Sitede bir akordeon: sorular alt alta, tıklayınca cevap yumuşakça açılıyor, sağdaki artı
+işareti dönüp çarpıya dönüşüyor. Aynı anda tek soru açık kalıyor. Açık olan kartın
+çerçevesi altına dönüyor.
 
-```
-La Cerimonia              11:00
-Il Ricevimento            15:00
-```
+Ne yazacağını bilemezsen misafirlerin en çok sorduğu şeyler şunlar: kıyafet kuralı
+(nasıl giyinelim), ulaşım ve park yeri, çocuk getirebilir miyiz, tören kaçta başlıyor
+ve ne zaman orada olmalıyız, konaklama önerisi, hediye konusu.
 
-Bir saati boş bırakırsan o satır hiç çıkmıyor. Yani şu an sende olduğu gibi tek saat
-varsa, kartta tek satır görünür.
+---
 
-Kart fotoğrafı da aynı mantıkla: önce nikah kartı fotoğrafına, o boşsa düğün kartı
-fotoğrafına bakıyor.
+## Bölüm sırası
+
+İki yeni bölüm **Site İçeriği → Bölüm Sırası ve Görünürlüğü** listesine kendiliğinden
+eklendi. Daha önce sırayı elle ayarladıysan yeni bölümler listenin **sonuna** ekleniyor —
+oradan yukarı taşımayı unutma. Doğal yerleri:
+
+- **Hikayemiz** → Gelin & Damat'ın hemen ardında
+- **Sıkça Sorulan Sorular** → Dilekler ile Hediye arasında
+
+Hiç dokunmadıysan zaten bu sıraya geliyorlar.
+
+İkisi de başta boş; bir şey eklemezsen sitede "yakında" tarzı kısa bir satır görünür.
+Görmek istemiyorsan bölümü gizle.

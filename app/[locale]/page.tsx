@@ -15,6 +15,8 @@ import Rsvp from "@/components/Rsvp";
 import WishesHighlight from "@/components/WishesHighlight";
 import MomentsCta from "@/components/MomentsCta";
 import GiftInfo from "@/components/GiftInfo";
+import StorySection from "@/components/StorySection";
+import Faq from "@/components/Faq";
 import Closing from "@/components/Closing";
 import Footer from "@/components/Footer";
 import ScrollProgress from "@/components/ScrollProgress";
@@ -27,6 +29,8 @@ import {
   getTopWishes,
   getWishCount,
   getGuestPhotos,
+  getStoryPosts,
+  getFaqs,
 } from "@/lib/content";
 import { formatDate } from "@/lib/formatDate";
 import { lz } from "@/lib/localize";
@@ -95,13 +99,16 @@ export default async function Home({
   const locale = isLocale(params.locale) ? params.locale : defaultLocale;
   const d = getDictionary(locale);
 
-  const [content, photos, topWishes, wishCount, guestPhotos] = await Promise.all([
-    getSiteContent(),
-    getGalleryPhotos(),
-    getTopWishes(3),
-    getWishCount(),
-    getGuestPhotos(4),
-  ]);
+  const [content, photos, topWishes, wishCount, guestPhotos, storyPosts, faqs] =
+    await Promise.all([
+      getSiteContent(),
+      getGalleryPhotos(),
+      getTopWishes(3),
+      getWishCount(),
+      getGuestPhotos(4),
+      getStoryPosts(),
+      getFaqs(),
+    ]);
 
   const dateText = formatDate(content?.wedding_date, locale);
   const city = lz(content, "wedding_city", locale);
@@ -136,6 +143,14 @@ export default async function Home({
         brideInstagram={content?.bride_instagram || ""}
         groomInstagram={content?.groom_instagram || ""}
         d={d}
+      />
+    ),
+    story: (
+      <StorySection
+        posts={storyPosts.slice(0, 3)}
+        totalCount={storyPosts.length}
+        d={d}
+        locale={locale}
       />
     ),
     countdown: (
@@ -195,6 +210,7 @@ export default async function Home({
         locale={locale}
       />
     ),
+    faq: <Faq items={faqs} d={d} locale={locale} />,
     gift: (
       <GiftInfo
         accountName={content?.gift_account_name || ""}

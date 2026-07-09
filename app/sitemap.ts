@@ -4,7 +4,7 @@ import { getSiteUrl } from "@/lib/siteUrl";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = getSiteUrl();
-  const paths = ["", "/wishes", "/moments"];
+  const paths = ["", "/story", "/wishes", "/moments"];
 
   return locales.flatMap((locale) =>
     paths.map((path) => ({
